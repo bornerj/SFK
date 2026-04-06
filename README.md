@@ -330,3 +330,10 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+## Acknowledgements & Credits
+While the SFK concept and architecture are original and proprietary, this project utilizes and builds upon the following open-source resources:
+
+Antigravity Awesome Skills - Used some Skills and Agents.
+dotcontext - Concept Idea of using behavior controls and router to direct AI. 
+Agency Agents - Inspiration and logic for some Skills and agents.
