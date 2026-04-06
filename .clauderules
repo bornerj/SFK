@@ -1,0 +1,9 @@
+# Claude Code Rules
+# Pontes para as Skills do SFK
+
+Para utilizar o conhecimento especializado deste projeto, consulte os diretórios:
+- `kernel/skills/`
+- `kernel/agents/`
+- `kernel/workflows/`
+
+Sempre execute `kernel/BOOTSTRAP.md` no início da sessão para carregar o contexto completo.

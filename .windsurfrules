@@ -1,0 +1,10 @@
+# Windsurf Rules
+# SFK Intelligence Bridge
+
+This project uses the Structured Framework Kit (SFK).
+Core intelligence resides in:
+- `kernel/skills/`
+- `kernel/agents/`
+- `kernel/workflows/`
+
+Follow the protocols in `kernel/BOOTSTRAP.md`.

@@ -1,0 +1,166 @@
+# project.toml — Technical Dictionary of the Project
+# Loaded in EVERY interaction with the AI.
+# This is the single file a solo dev needs to read after 1 month away.
+# NEVER put real secret values here — names only.
+
+# ═══════════════════════════════════════
+# IDENTITY
+# ═══════════════════════════════════════
+
+[project]
+name        = ""      # fill in when copying: your project name
+version     = "1.0"
+description = ""      # fill in: one sentence describing the product
+type        = "web-app"    # web-app | mobile | api | cli | fullstack
+language    = "en-US"
+
+[project.team]
+author  = ""          # fill in when copying: your name
+company = ""          # fill in for a real project
+
+[project.urls]
+repository = ""       # fill in when copying: GitHub/GitLab URL
+docs       = ""       # optional: external docs URL
+
+# ═══════════════════════════════════════
+# HOSTING — Where the project lives (how many servers)
+# ═══════════════════════════════════════
+
+[hosting.frontend]
+provider = ""         # ex: Vercel | Netlify | Cloudflare Pages
+url      = ""         # ex: https://myapp.vercel.app
+service  = ""         # ex: Static deploy / SSR deploy
+
+[hosting.backend]
+provider = ""         # ex: Railway | Render | Fly.io
+url      = ""         # ex: https://api.myapp.up.railway.app
+service  = ""         # ex: Node.js API (Express) — service "api" in Railway
+
+[hosting.database]
+provider = ""         # ex: Railway | Supabase | PlanetScale | Neon
+service  = ""         # ex: PostgreSQL — service "db" in the same Railway project
+url_var  = "DATABASE_URL"   # env var name that holds the connection string
+
+# ═══════════════════════════════════════
+# STACK — What the project uses and which version
+# ═══════════════════════════════════════
+
+[stack.runtime]
+node   = ""           # ex: 20+
+python = ""           # fill in if applicable
+
+[stack.frontend]
+framework = ""        # ex: Vite + React | Next.js | SvelteKit
+version   = ""        # ex: React 18 / Vite 5
+language  = "TypeScript (strict)"
+styling   = ""        # ex: TailwindCSS 3.4.17 | vanilla CSS | Chakra UI
+
+[stack.backend]
+framework   = ""      # ex: Express | Fastify | NestJS | FastAPI
+orm         = ""      # ex: Prisma | Drizzle | SQLAlchemy
+orm_version = ""      # ex: 5.x
+language    = "TypeScript (strict) — Node.js ESM"
+
+[stack.database]
+engine  = ""          # ex: PostgreSQL | MySQL | SQLite | MongoDB
+version = ""          # ex: 16
+access  = "ORM only"  # never raw SQL in app code
+
+[stack.package_manager]
+tool    = "npm"       # npm | pnpm | yarn | bun
+version = ""          # ex: 10.x
+
+# ═══════════════════════════════════════
+# DESIGN — Visual identity and CSS tooling
+# ═══════════════════════════════════════
+
+[design]
+framework         = ""    # ex: TailwindCSS | Chakra UI | MUI | vanilla CSS
+framework_version = ""    # ex: 3.4.17 — pin the version to avoid breaking builds
+build_command     = ""    # ex: npx tailwindcss@3.4.17 -i input.css -o output.css
+component_library = ""    # ex: shadcn/ui | Radix | Headless UI | (none)
+icon_library      = ""    # ex: Lucide | Heroicons | (none)
+primary_color     = ""    # ex: #0F172A
+secondary_color   = ""    # ex: #6366F1
+font_family       = "Inter"
+spacing_unit      = "4px"
+
+# ═══════════════════════════════════════
+# ENVIRONMENT VARIABLES — Separated by server/platform
+# NEVER put real values here — names only
+# ═══════════════════════════════════════
+
+[environments.railway]
+# Where to configure: Railway → Project → Service "api" → Variables
+vars = [
+  "DATABASE_URL",           # PostgreSQL connection string (Railway auto-injects if linked)
+  "JWT_SECRET",             # token generation secret
+  "APP_API_URL",            # this API's own public URL
+  "APP_WEB_URL",            # frontend URL (Vercel)
+  "CORS_ORIGIN",            # must match APP_WEB_URL
+]
+
+[environments.vercel]
+# Where to configure: Vercel → Project → Settings → Environment Variables
+vars = [
+  "VITE_API_URL",           # Railway backend URL
+  "VITE_WEB_URL",           # this frontend's own URL
+]
+
+# Add one [environments.<provider>] block per platform.
+# Example for Stripe keys stored in Railway:
+# [environments.stripe_keys]
+# note = "Set these in Railway alongside the Railway vars above"
+# vars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]
+# webhook_endpoint = ""  # ex: https://api.myapp.up.railway.app/api/public/payments/stripe/webhook
+
+# ═══════════════════════════════════════
+# EXTERNAL INTEGRATIONS — Active third-party APIs
+# Use one [[integrations]] block per integration
+# ═══════════════════════════════════════
+
+# [[integrations]]
+# name     = "Stripe"
+# purpose  = "Payment processing"
+# docs     = "https://stripe.com/docs"
+# env_vars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]
+
+# [[integrations]]
+# name     = "Evolution API"
+# purpose  = "WhatsApp message sending and receiving"
+# base_url = ""    # ex: https://evo.myserver.com
+# env_vars = ["EVOLUTION_API_KEY", "WHATSAPP_INSTANCE", "EVOLUTION_WEBHOOK_URL"]
+
+# [[integrations]]
+# name     = "SendGrid"
+# purpose  = "Transactional email"
+# docs     = "https://docs.sendgrid.com"
+# env_vars = ["SENDGRID_API_KEY"]
+
+# ═══════════════════════════════════════
+# DEV TOOLS — Local environment only, never go to production
+# ═══════════════════════════════════════
+
+# [tools.dev.tunnel]
+# provider  = "ngrok"
+# purpose   = "Expose local API to receive external webhooks in dev"
+# who_calls = "Evolution API and Stripe — both need a public URL for POST callbacks"
+# setup     = "ngrok http 3333 → copy HTTPS URL → paste into EVOLUTION_WEBHOOK_URL and Stripe Dashboard"
+# note      = "URL changes on every restart (free plan). For a fixed URL: ngrok config + paid domain."
+
+# ═══════════════════════════════════════
+# AI CONTEXT REFERENCE — Do not remove this section
+# Used by the AI during onboarding and every session
+# ═══════════════════════════════════════
+
+[ai_context]
+kernel_entry   = "kernel/BOOTSTRAP.md"      # session entry point
+rules          = "kernel/RULES.md"          # sovereign governance
+behavior       = "kernel/SOUL.md"           # AI behavior and restrictions
+identity       = "kernel/project.toml"      # this file — project dictionary
+routing        = "kernel/index.toml"        # selective loading by task type
+engineering    = "kernel/SYSTEM.md"         # project technical standards
+memory_log     = "memory/MODIFICATION_LOG.md"
+memory_status  = "memory/progress.md"
+memory_debug   = "memory/logs/DEBUG-HISTORY.md"
+capabilities   = "kernel/ARCHITECTURE.md"  # agents, skills, scripts
