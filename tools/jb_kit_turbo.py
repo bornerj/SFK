@@ -16,7 +16,9 @@ from datetime import date
 from pathlib import Path
 
 
-BLUEPRINT_DIRS = [".agent", "kernel", "memory", "docs"]
+BLUEPRINT_DIRS = ["kernel", "memory", "docs"]
+EXTRA_CONFIG_FILES = [".cursor", ".clauderules", ".windsurfrules", ".gitignore"]
+
 IGNORE_NAMES = {
     ".git",
     ".idea",
@@ -88,6 +90,8 @@ def validate_target(target: Path, force: bool) -> None:
 
 def copy_blueprint(template_root: Path, target: Path, force: bool) -> None:
     target.mkdir(parents=True, exist_ok=True)
+    
+    # Copy core directories
     for rel_dir in BLUEPRINT_DIRS:
         src_dir = template_root / rel_dir
         if not src_dir.exists():
@@ -99,6 +103,22 @@ def copy_blueprint(template_root: Path, target: Path, force: bool) -> None:
             ignore=ignore_filter,
             dirs_exist_ok=force,
         )
+
+    # Copy extra config files/dirs if they exist
+    for rel_item in EXTRA_CONFIG_FILES:
+        src_item = template_root / rel_item
+        if src_item.exists():
+            dst_item = target / rel_item
+            if src_item.is_dir():
+                shutil.copytree(
+                    src_item,
+                    dst_item,
+                    ignore=ignore_filter,
+                    dirs_exist_ok=force,
+                )
+            else:
+                shutil.copyfile(src_item, dst_item)
+
 
 
 def write_text(path: Path, content: str) -> None:
@@ -204,7 +224,9 @@ CONTEXTO:
 def maybe_init_git(target: Path, init_git: bool) -> None:
     if not init_git:
         return
-    subprocess.run(["git", "init"], cwd=target, check=True)
+    # Use -b main to ensure modern branch naming standards
+    subprocess.run(["git", "init", "-b", "main"], cwd=target, check=True)
+
 
 
 def print_next_steps(target: Path) -> None:

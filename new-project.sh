@@ -7,6 +7,17 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCAFFOLDER="$SCRIPT_DIR/tools/jb_kit_turbo.py"
+LOG_FILE="$SCRIPT_DIR/new-project.log"
+
+# --- logging setup ---
+log() {
+    local msg="[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+    echo "$msg" >> "$LOG_FILE"
+    echo "$1"
+}
+
+# Start log
+echo "--- SFK New Project Session Start: $(date) ---" >> "$LOG_FILE"
 
 # --- locate python ---
 PYTHON=""
@@ -18,12 +29,12 @@ for cmd in python3 python; do
 done
 
 if [ -z "$PYTHON" ]; then
-    echo "ERROR: Python 3 was not found in PATH. Install Python 3 and try again." >&2
+    log "ERROR: Python 3 was not found in PATH. Install Python 3 and try again." >&2
     exit 1
 fi
 
 if [ ! -f "$SCAFFOLDER" ]; then
-    echo "ERROR: Scaffolder not found at '$SCAFFOLDER'." >&2
+    log "ERROR: Scaffolder not found at '$SCAFFOLDER'." >&2
     exit 1
 fi
 
@@ -70,11 +81,29 @@ if [ -z "$TARGET" ]; then
     fi
 fi
 
+# --- Absolute path resolution ---
+# We resolve the target to an absolute path to avoid ambiguity during execution
+if [[ ! "$TARGET" =~ ^/ ]]; then
+    TARGET_ABS="$(cd "$(dirname "$TARGET")" 2>/dev/null && pwd)/$(basename "$TARGET")"
+else
+    TARGET_ABS="$TARGET"
+fi
+
+log "Scaffolding new project: $PROJECT_NAME"
+log "Target folder: $TARGET_ABS"
+
 # Build args array
-ARGS=("$SCAFFOLDER" "$TARGET")
+ARGS=("$SCAFFOLDER" "$TARGET_ABS")
 [ -n "$PROJECT_NAME" ]  && ARGS+=("--project-name" "$PROJECT_NAME")
 [ -n "$INIT_GIT" ]      && ARGS+=("$INIT_GIT")
 [ -n "$KEEP_EXAMPLES" ] && ARGS+=("$KEEP_EXAMPLES")
 [ -n "$FORCE" ]         && ARGS+=("$FORCE")
 
-"$PYTHON" "${ARGS[@]}"
+log "Running scaffolder..."
+if "$PYTHON" "${ARGS[@]}" >> "$LOG_FILE" 2>&1; then
+    log "Scaffolding complete!"
+else
+    log "ERROR: Scaffolding failed. Check $LOG_FILE for details."
+    exit 1
+fi
+
