@@ -101,3 +101,4 @@ Before any code or design work, mentally complete:
   - agents found in kernel/agents
   - skills found in kernel/skills
   - agent(s)/skill(s) that will be used as support, or an objective justification if none are needed
+

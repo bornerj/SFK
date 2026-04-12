@@ -23,6 +23,7 @@ IGNORE_NAMES = {
     ".git",
     ".idea",
     ".vscode",
+    ".shared",
     "__pycache__",
     "node_modules",
     ".next",

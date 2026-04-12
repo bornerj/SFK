@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [1.1.1] - 2026-04-11
+
+### Fixed
+
+#### Project updater (`update-project.sh` + `tools/sfk_updater.py`)
+- Restored synchronization of framework-owned kernel directories: `kernel/agents/`, `kernel/skills/`, and `kernel/workflows/`
+- Fixed Linux shell updater behavior where the process appeared frozen because the Python confirmation prompt was redirected only to the log file
+- `update-project.sh` now mirrors updater output to both terminal and `update-project.log`
+- Shell wrapper now uses `set -euo pipefail` so pipeline failures from the updater are not masked
+
+### Changed
+
+#### Update protection boundaries
+- Kept `kernel/index.toml` as updateable framework state
+- Kept `kernel/SOUL.md` as updateable framework/project-operating contract
+- Preserved project-owned files from overwrite: `kernel/project.toml`, `kernel/SYSTEM.md`, and `kernel/mcp_config.json`
+- Preserved all project memory under `memory/`, with one explicit framework exception: `memory/WORKFLOW_MEMORY_PLAYBOOK.md`
+
+### Validated
+
+- Confirmed `../JBORNER_LP/kernel` had been missing framework directories and restored them through the corrected updater
+- Confirmed a post-update `--dry-run` reports the target project as up to date
+- Confirmed the updater now detects and proposes only `memory/WORKFLOW_MEMORY_PLAYBOOK.md` when that is the only pending framework memory change
+
+---
 ## [1.1.0] - 2026-04-06
 
 ### Changed
