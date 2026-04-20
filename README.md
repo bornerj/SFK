@@ -222,11 +222,18 @@ sfk/
 │   └── scripts/          ← Validation & audit scripts
 │
 ├── memory/               ← Persistence layer
-│   ├── MODIFICATION_LOG.md
-│   ├── progress.md
+│   ├── MODIFICATION_LOG.md          ← Chronological framework/project change log
+│   ├── progress.md                  ← Current module and delivery state
+│   ├── PR-XXXX-DESCRIPTION.md       ← Reusable PR description template
 │   ├── plans/
+│   │   └── PLAN-XXXX-DONE-subject.md ← Reusable completed-plan template
 │   ├── decisions/
+│   │   └── DECISION-XXX.md          ← Reusable decision template
 │   └── logs/
+│       ├── BUILD-HISTORY.md
+│       ├── DEBUG-HISTORY.md
+│       ├── DRIFT-RULES.md
+│       └── SESSION-AUDIT-CHECKLIST.md
 │
 ├── docs/                 ← Product documentation
 │   ├── project/
@@ -237,6 +244,8 @@ sfk/
 │   └── jb_kit_turbo.py
 │
 ├── new-project.ps1       ← Windows wizard
+├── new-project.sh        ← Linux/macOS wizard
+├── update-project.sh     ← Framework updater for existing projects
 └── INSTRUCTIONS.md       ← Full usage guide
 ```
 
