@@ -46,6 +46,7 @@ MITIGATED RISK: Execution without context, unauthorized commit/push, incorrect s
 6. No session can be closed without an audit.
 7. Every functional change must generate persistence in the appropriate memory.
 8. Writing templates in `memory/WORKFLOW_MEMORY_PLAYBOOK.md` under section `## 6) Reusable Templates`
+9. At bootstrap, the repository must first be classified as NEW PROJECT or EXISTING PROJECT before `project.toml` or `SYSTEM.md` are enforced.
 
 ---
 
@@ -282,6 +283,7 @@ MITIGATED RISK: Context loss over time.
 - With active plan: record only the START and END milestone of the plan.
 - Without active plan: record each change in real time.
 - If a change occurs outside the plan: record it in the MODIFICATION_LOG.
+- A repository may be treated as NEW PROJECT only if there are no plans, no decisions, and `memory/MODIFICATION_LOG.md` still contains only examples/template content.
 
 ## 9.3 Bug Record (Mandatory)
 
@@ -307,6 +309,60 @@ Date: YYYY-MM-DD
 Context:
 Decision:
 Consequences:
+
+## 9.5 PR Description Kernel (Mandatory for Publishable Deliveries)
+
+Goal:
+- preserve in the repository the publishable description of the delivery
+- avoid context loss between implementation, commit, push, and PR opening
+- standardize delivery communication across projects
+
+Rule:
+Whenever a delivery reaches a publishable state, the agent must create or update a file
+`memory/PR-XXXX-DESCRIPTION.md`.
+
+Definition of "publishable delivery":
+- a change ready for commit/push
+- a delivery with relevant scope
+- a change that combines code, memory, documentation, or product behavior
+- any work that would normally justify a PR, even if the PR is not yet opened
+
+Minimum required content:
+- PR title
+- objective
+- what was done
+- main affected areas or files
+- validations executed
+- notes, risks, or operational observations
+
+Convention:
+- save in `memory/`
+- use sequential numbering: `PR-0001-DESCRIPTION.md`, `PR-0002-DESCRIPTION.md`, etc.
+- write in the project's/user's default language
+- keep the content aligned with the final commit and the real delivery state
+
+When to create:
+- when finishing a delivery ready for commit
+- before push or publication
+- when closing a relevant `PLAN-XXXX` or a significant delivery block without a plan
+
+When to update:
+- if the delivery scope changes before the final commit
+- if new relevant validations are executed
+- if the PR text becomes outdated relative to the real diff
+
+Relationship with other artifacts:
+- does not replace `PLAN`
+- does not replace `MODIFICATION_LOG`
+- does not replace `DECISION`
+- does not replace commit
+- complements those artifacts as the publication package of the delivery
+
+Closure rule:
+No delivery considered ready for publication may be closed without:
+1. updated memory
+2. commit prepared or completed
+3. `memory/PR-XXXX-DESCRIPTION.md` created or updated
 
 ---
 
@@ -376,6 +432,17 @@ When changing scope/architecture:
 
 New requirements/gaps:
 - `docs/project/REQUIREMENTS.md`
+
+Bootstrap and project-definition documents must obey these rules:
+- First classify the repository as NEW PROJECT or EXISTING PROJECT.
+- NEW PROJECT = no `PLAN-XXXX`, no decisions, and no real entries in `memory/MODIFICATION_LOG.md` beyond the examples/template area.
+- For NEW PROJECT, `kernel/project.toml` and `kernel/SYSTEM.md` are references/examples only and must not be used to validate the repository state.
+- SFK kernel/template files must be written in English.
+- Project-generated deliverables may be written in the language declared in `kernel/project.toml -> [project] language`.
+- `docs/project/PROJECT_OVERVIEW.md` must preserve exactly the same heading structure (`#` and `##`) defined in `../Rifa/docs/project/PROJECT_OVERVIEW.md`.
+- `docs/project/REQUIREMENTS.md` must preserve exactly the same heading structure (`#` and `##`) defined in `../Rifa/docs/project/REQUIREMENTS.md`.
+- `docs/project/REQUIREMENTS.md` must identify requirements with `FR-XXX`, `NFR-XXX`, and `AC-XXX`.
+- `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents and must preserve the same `##` section structure used in `../Rifa/docs/project/SCOPE.md` and `../Rifa/docs/project/SETUP.md`.
 
 Technical evolution (recurring errors/refactors/lessons):
 - `docs/evolutive_changes/EVOLUTION_MEMORY.md`

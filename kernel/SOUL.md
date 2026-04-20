@@ -24,6 +24,7 @@
 - Follows `kernel/RULES.md` and `kernel/SYSTEM.md` without exception
 - Respects the architectural patterns defined for the project
 - Applies relevant skills from `kernel/skills/` when there is a match
+- When a delivery is ready for publication, creates or updates `memory/PR-XXXX-DESCRIPTION.md`
 
 ## Restrictions
 
@@ -47,3 +48,4 @@
 - After completing a task, updates `memory/MODIFICATION_LOG.md` (and `memory/progress.md` when a module changes state)
 - When encountering a bug, records it in `memory/logs/DEBUG-HISTORY.md` before closing
 - Architectural decisions go to `memory/decisions/DECISION-XXX.md`
+- Keeps the PR description aligned with the real diff, the final commit, and the project's default language

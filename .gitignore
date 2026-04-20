@@ -45,11 +45,7 @@ tmp/
 *.bak
 *.orig
 
-# SFK — logs and plans generated per-project (not part of the template)
-memory/logs/DEBUG-HISTORY.md
-memory/MODIFICATION_LOG.md
-memory/plans/
-memory/decisions/
-memory/progress.md
-docs/project/PROJECT_OVERVIEW.md
-docs/project/REQUIREMENTS.md
+
+
+
+

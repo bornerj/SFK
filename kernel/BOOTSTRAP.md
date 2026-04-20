@@ -2,13 +2,32 @@
 Kernel Version 0.6
 Goal: execute the session start checklist and ensure continuity without loss of context.
 
+## Step 0 — Project Lifecycle Classification (mandatory before any other read)
+
+Before applying Layer 0, determine whether the repository is a NEW PROJECT or an EXISTING PROJECT.
+
+Classify as NEW PROJECT only when all conditions below are true:
+- there is no `memory/plans/PLAN-XXXX-...` file yet;
+- there is no file in `memory/decisions/`;
+- `memory/MODIFICATION_LOG.md` still contains only template/example content and no real project history after the examples section.
+
+If any of the conditions above is false, classify as EXISTING PROJECT.
+
+Classification effects:
+- NEW PROJECT:
+  - `kernel/project.toml` and `kernel/SYSTEM.md` must be treated as template/examples only;
+  - do not use them as compliance or validation sources for the current repository state;
+  - use `kernel/RULES.md`, `kernel/SOUL.md`, `kernel/ARCHITECTURE.md`, and the `docs/project/*.md` templates as the active source of bootstrap guidance.
+- EXISTING PROJECT:
+  - load and enforce `kernel/project.toml` and `kernel/SYSTEM.md` normally.
+
 ## LAYER 0 — Mandatory Loading (every session)
 
 Always read, regardless of task type:
-- `kernel/project.toml` — project identity, stack, URLs, and design tokens
 - `kernel/SOUL.md` — AI behavior contract for this project
 - `kernel/RULES.md` — governance + execution + memory + Git (sovereign)
-- `kernel/SYSTEM.md` — technical and organizational rules for the project
+- `kernel/project.toml` — project identity, stack, URLs, and design tokens (EXISTING PROJECT only; template/example only for NEW PROJECT)
+- `kernel/SYSTEM.md` — technical and organizational rules for the project (EXISTING PROJECT only; template/example only for NEW PROJECT)
 
 ## LAYER 1 — Selective Loading by Task Type
 
@@ -89,6 +108,17 @@ Before any code or design work, mentally complete:
 ## Decisions (`memory/decisions/`)
 - Check for decisions with `Status: ACTIVE`.
 - If no decisions are registered, assume this control started on 2026-02-26.
+
+## Documentation Bootstrap Rules (mandatory)
+- SFK kernel/template files must be maintained in English.
+- Project-generated documents may use the language declared in `kernel/project.toml -> [project] language`.
+- `docs/project/PROJECT_OVERVIEW.md` must follow exactly the same section structure (`#` and `##`) as `../Rifa/docs/project/PROJECT_OVERVIEW.md`.
+- `docs/project/REQUIREMENTS.md` must follow exactly the same section structure (`#` and `##`) as `../Rifa/docs/project/REQUIREMENTS.md`.
+- In `docs/project/REQUIREMENTS.md`, functional requirements must use `FR-XXX`, non-functional requirements must use `NFR-XXX`, and acceptance criteria must use `AC-XXX`.
+- `docs/project/SCOPE.md` and `docs/project/SETUP.md` must exist and must keep the same `##` section structure used in `../Rifa/docs/project/SCOPE.md` and `../Rifa/docs/project/SETUP.md`.
+
+## Publication Context (selective)
+- In release, publish, deploy, or final review sessions, also check the most recent `memory/PR-XXXX-DESCRIPTION.md` files when they exist.
 
 ## Readback Confirmation (mandatory)
 - After reading everything to the last line, provide a readback confirming:

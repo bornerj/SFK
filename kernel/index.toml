@@ -2,6 +2,9 @@
 # Read at the start of each session via kernel/BOOTSTRAP.md
 # Defines what to load and when, avoiding unnecessary token reads.
 # Complements (does not replace) kernel/BOOTSTRAP.md.
+# Before enforcing `kernel/project.toml` or `kernel/SYSTEM.md`, classify the repo as
+# NEW PROJECT vs EXISTING PROJECT using the rules in `kernel/BOOTSTRAP.md`.
+# For NEW PROJECT, those two files are examples/templates only.
 
 # -------------------------------------------------------
 # LAYER 0 — Loaded in EVERY interaction
@@ -9,10 +12,21 @@
 
 [always]
 files = [
-  "kernel/project.toml",  # identity, stack, URLs, design tokens
   "kernel/SOUL.md",       # AI behavior and restrictions
   "kernel/RULES.md",      # governance, process, and memory (sovereign)
+  "kernel/project.toml",  # identity/stack only after EXISTING PROJECT classification
 ]
+
+[bootstrap_project_state]
+rule = "Classify NEW PROJECT when there is no PLAN-XXXX, no decisions, and MODIFICATION_LOG still has only template/example content."
+new_project_ignore_for_validation = ["kernel/project.toml", "kernel/SYSTEM.md"]
+new_project_mandatory_docs = [
+  "docs/project/PROJECT_OVERVIEW.md",
+  "docs/project/REQUIREMENTS.md",
+  "docs/project/SCOPE.md",
+  "docs/project/SETUP.md",
+]
+new_project_doc_structure_source = "../Rifa/docs/project/"
 
 # -------------------------------------------------------
 # LAYER 1 — Loaded by task type
@@ -200,6 +214,14 @@ read = [
 write = [
   "memory/progress.md",
 ]
+
+[project_docs_rules]
+kernel_language = "SFK kernel/template files must be maintained in English; project-generated documents may use the language declared in kernel/project.toml"
+project_overview = "docs/project/PROJECT_OVERVIEW.md must match the heading structure from ../Rifa/docs/project/PROJECT_OVERVIEW.md"
+requirements = "docs/project/REQUIREMENTS.md must match the heading structure from ../Rifa/docs/project/REQUIREMENTS.md"
+requirements_ids = "Use FR-XXX for functional requirements, NFR-XXX for non-functional requirements, and AC-XXX for acceptance criteria"
+scope = "docs/project/SCOPE.md is mandatory and must match the ## section structure from ../Rifa/docs/project/SCOPE.md"
+setup = "docs/project/SETUP.md is mandatory and must match the ## section structure from ../Rifa/docs/project/SETUP.md"
 
 # -------------------------------------------------------
 # LAYER 2 — Context maintenance
