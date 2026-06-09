@@ -51,7 +51,7 @@ PROTECTED_KERNEL_FILES: set[str] = {
 KERNEL_SYNC_DIRS: list[str] = ["scripts", "agents", "skills", "workflows"]
 
 # Root-level extra config items to sync (files or directories)
-EXTRA_CONFIG_ITEMS: list[str] = [".clauderules", ".windsurfrules", ".gitignore", ".cursor"]
+EXTRA_CONFIG_ITEMS: list[str] = [".clauderules", "CLAUDE.md", ".windsurfrules", ".gitignore", ".cursor"]
 
 # Memory items that belong to the framework and may be updated
 EXTRA_MEMORY_ITEMS: list[str] = ["WORKFLOW_MEMORY_PLAYBOOK.md"]

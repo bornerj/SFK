@@ -1,9 +1,9 @@
 # SFK — Structured Framework Kit
-# Claude Code Integration Bridge
+# Claude Code Integration
 
 This project uses the **Structured Framework Kit (SFK)** — a persistent memory and
-governance framework for AI-assisted development. SFK is AI-agnostic; this file is
-the Claude Code entry point.
+governance framework for AI-assisted development. SFK is AI-agnostic and works with
+Claude Code, Cursor, Windsurf, Codex, and any AI coding assistant.
 
 ---
 
@@ -13,7 +13,7 @@ the Claude Code entry point.
 
 BOOTSTRAP.md is the session entry point. It will instruct you to:
 1. Classify the project as NEW PROJECT or EXISTING PROJECT
-2. Load Layer 0 (SOUL, RULES, project.toml, SYSTEM.md)
+2. Load Layer 0 (SOUL.md, RULES.md, project.toml, SYSTEM.md)
 3. Load Layer 1 selectively by task type (via kernel/index.toml)
 4. Classify the request type and route to the correct agent
 5. Provide a readback confirmation to the user

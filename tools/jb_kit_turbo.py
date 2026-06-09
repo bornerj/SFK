@@ -17,7 +17,7 @@ from pathlib import Path
 
 
 BLUEPRINT_DIRS = ["kernel", "memory", "docs"]
-EXTRA_CONFIG_FILES = [".cursor", ".clauderules", ".windsurfrules", ".gitignore"]
+EXTRA_CONFIG_FILES = [".cursor", ".clauderules", "CLAUDE.md", ".windsurfrules", ".gitignore"]
 
 IGNORE_NAMES = {
     ".git",
