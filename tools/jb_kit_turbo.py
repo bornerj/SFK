@@ -218,10 +218,10 @@ Use semantic IDs:
 
 Template:
 # ID: ERR-000X: Short semantic title
-SINTOMA:
-CAUSA_RAIZ:
-ACAO:
-CONTEXTO:
+SYMPTOM:
+ROOT_CAUSE:
+ACTION:
+CONTEXT:
 """
 
     write_text(target / "docs/project/PROJECT_OVERVIEW.md", overview)

@@ -42,7 +42,7 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 
 ## 2026-04-14 00:00 (Approx)
 - Bootstrap and documentation rules reinforced to distinguish a new project from an existing project.
-- `kernel/BOOTSTRAP.md`, `kernel/RULES.md` e `kernel/index.toml` atualizados para:
+- `kernel/BOOTSTRAP.md`, `kernel/RULES.md` and `kernel/index.toml` updated to:
   - classify the repository as NEW PROJECT when there are no plans, no decisions, and no real history in `MODIFICATION_LOG`;
   - ignore `kernel/project.toml` and `kernel/SYSTEM.md` as validation sources when the project is new;
   - require `docs/project/PROJECT_OVERVIEW.md` and `docs/project/REQUIREMENTS.md` to match the structure from `../Rifa`.
