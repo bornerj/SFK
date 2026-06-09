@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [1.2.0] - 2026-06-09
+
+### Added
+
+#### `_blueprint/` — Clean Project Start Templates
+- New `_blueprint/` directory at the SFK root separates the framework's own live data from the templates copied to new projects.
+- Solves the root cause of SFK's own filled-in config (SYSTEM.md, progress.md, build notes, drift rules) contaminating newly scaffolded projects.
+- Contains clean, ready-to-fill templates for:
+  - `kernel/SYSTEM.md` — blank template with `[FILL IN]` markers (previously was filled with a specific project's stack)
+  - `memory/progress.md` — empty module table (previously contained SFK's own module states)
+  - `memory/logs/BUILD-HISTORY.md` — blank with format guide (previously contained SFK-specific build notes)
+  - `memory/logs/DRIFT-RULES.md` — commented examples only (previously contained rules tied to SFK's own stack)
+  - `docs/evolutive_changes/EVOLUTION_MEMORY.md` — clean English template
+
+#### `QUICKSTART.md` — Auto-generated in every new project
+- `tools/jb_kit_turbo.py` now generates `QUICKSTART.md` at the project root during scaffolding.
+- Lists: what is already ready (agents, skills, workflows), what must be filled in (in priority order), how to start the first AI session, all slash commands, and the memory system quick reference.
+- Intended as a one-time human reference — not loaded by the AI, safe to delete once the project is configured.
+
+#### `kernel/BOOTSTRAP.md` — Step 0a: Day 1 Onboarding Protocol
+- New section inserted between Step 0 (classification) and LAYER 0 (loading).
+- Activates only when the project is classified as NEW PROJECT.
+- AI will: read QUICKSTART.md if present, detect empty `project.toml` fields and ask for project identity, detect `[FILL IN]` markers in SYSTEM.md and prompt the user, record the Day 1 setup in MODIFICATION_LOG.md.
+
+### Changed
+
+#### `tools/jb_kit_turbo.py`
+- Added `apply_blueprint_overrides()` step in the scaffold pipeline: after copying from the SFK root dirs, the scaffolder applies clean templates from `_blueprint/` to overwrite the project-specific files.
+- Added `write_quickstart()` to generate `QUICKSTART.md` in the new project.
+- Added `"_blueprint"` to `IGNORE_NAMES` to prevent it from being accidentally copied into projects.
+- Updated `print_next_steps()` to reference `QUICKSTART.md` as the starting point.
+
+---
+
 ## [1.1.1] - 2026-04-11
 
 ### Fixed

@@ -21,6 +21,38 @@ Classification effects:
 - EXISTING PROJECT:
   - load and enforce `kernel/project.toml` and `kernel/SYSTEM.md` normally.
 
+## Step 0a — NEW PROJECT: Day 1 Onboarding Protocol
+
+Execute this section **only** when classified as NEW PROJECT (Step 0 above).
+Skip entirely if classified as EXISTING PROJECT.
+
+1. Check if `QUICKSTART.md` exists in the project root — if present, read it.
+
+2. Read `kernel/project.toml`. If `[project] name = ""` (empty string), announce:
+   > "This is a new SFK project. To configure your project identity, I need a few details."
+
+   Ask for and write into `kernel/project.toml`:
+   - Project name
+   - One-sentence description
+   - Primary stack (language + main framework)
+   - Project language/locale (e.g. `en-US`, `pt-BR`)
+
+3. Read `kernel/SYSTEM.md`. If it contains `[FILL IN]` markers, inform the user:
+   > "kernel/SYSTEM.md still has template placeholders. Fill it using kernel/SYSTEM-TEMPLATE.md as a guide before coding begins."
+   Do **not** block the session — proceed if the user wants to defer.
+
+4. Record the onboarding in `memory/MODIFICATION_LOG.md`:
+   ```
+   ## YYYY-MM-DD — Day 1 Setup
+   - Project identity configured: [name], [description], [stack]
+   ```
+
+5. Proceed to the user's actual request.
+
+**Note**: If the user's first message is already about filling `project.toml` or `SYSTEM.md`, skip announcements and act directly.
+
+---
+
 ## LAYER 0 — Mandatory Loading (every session)
 
 Always read, regardless of task type:

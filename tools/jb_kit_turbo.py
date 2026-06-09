@@ -24,6 +24,7 @@ IGNORE_NAMES = {
     ".idea",
     ".vscode",
     ".shared",
+    "_blueprint",
     "__pycache__",
     "node_modules",
     ".next",
@@ -91,7 +92,7 @@ def validate_target(target: Path, force: bool) -> None:
 
 def copy_blueprint(template_root: Path, target: Path, force: bool) -> None:
     target.mkdir(parents=True, exist_ok=True)
-    
+
     # Copy core directories
     for rel_dir in BLUEPRINT_DIRS:
         src_dir = template_root / rel_dir
@@ -120,6 +121,22 @@ def copy_blueprint(template_root: Path, target: Path, force: bool) -> None:
             else:
                 shutil.copyfile(src_item, dst_item)
 
+
+def apply_blueprint_overrides(sfk_root: Path, target: Path) -> None:
+    """
+    Copy clean project-start templates from _blueprint/ over the scaffolded
+    SFK files. This prevents SFK's own filled-in config (SYSTEM.md, progress.md,
+    build notes, drift rules) from contaminating new projects.
+    """
+    blueprint = sfk_root / "_blueprint"
+    if not blueprint.exists():
+        return
+    for src in sorted(blueprint.rglob("*")):
+        if src.is_file() and not should_ignore(src.name, src):
+            rel = src.relative_to(blueprint)
+            dst = target / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
 
 
 def write_text(path: Path, content: str) -> None:
@@ -222,12 +239,120 @@ CONTEXTO:
                 path.unlink()
 
 
+def write_quickstart(target: Path, project_name: str) -> None:
+    today = date.today().isoformat()
+    content = f"""# QUICKSTART — {project_name}
+
+> Created by SFK — Structured Framework Kit on {today}
+
+---
+
+## What Is Already Ready
+
+The scaffolder installed everything below — no action needed:
+
+- `kernel/BOOTSTRAP.md` — session entry point (read by AI every session)
+- `kernel/RULES.md` — sovereign governance rules
+- `kernel/SOUL.md` — AI behavior contract
+- `kernel/TESTING_GUIDE.md` — universal testing directives
+- `kernel/index.toml` — session router by task type
+- `kernel/agents/` — 20 specialist AI personas
+- `kernel/skills/` — 56 domain knowledge modules
+- `kernel/workflows/` — 11 slash commands (/plan, /debug, /deploy, etc.)
+- `kernel/scripts/` — 5 automation scripts
+- `memory/logs/SESSION-AUDIT-CHECKLIST.md` — pre-closure validation
+- `memory/WORKFLOW_MEMORY_PLAYBOOK.md` — memory system documentation
+- `.clauderules`, `.windsurfrules`, `.cursor/` — IDE integrations
+
+---
+
+## Fill In Before First Session
+
+Fill these in order. Items 1 and 2 are required before the AI can work effectively.
+
+### 1. `kernel/project.toml` — REQUIRED
+The technical dictionary of your project. Fill in:
+- `[project]` → name, description, type, language
+- `[project.team]` → author, company
+- `[project.urls]` → repository
+- `[hosting.*]` → where frontend/backend/database will run
+- `[stack.*]` → frameworks and versions you will use
+- `[design]` → styling framework and colors
+- `[environments.*]` → env var names grouped by platform (never actual values)
+- `[[integrations]]` → one block per third-party API (Stripe, SendGrid, etc.)
+
+### 2. `kernel/SYSTEM.md` — REQUIRED
+Technical and engineering standards for your project.
+Use `kernel/SYSTEM-TEMPLATE.md` as a guide.
+Fill in at minimum: Language/Stack, Code Style, Error Handling, Architecture.
+
+### 3. `docs/project/PROJECT_OVERVIEW.md` — IMPORTANT
+Problem statement, target users, scope, milestones.
+
+### 4. `docs/project/REQUIREMENTS.md` — IMPORTANT
+Functional (FR-001+), Non-functional (NFR-001+), Acceptance criteria (AC-001+).
+
+### 5. `docs/project/SCOPE.md` — IMPORTANT
+MVP scope, product rules, what is explicitly out of scope.
+
+### 6. `docs/project/SETUP.md` — FILL WHEN STACK IS DEFINED
+Local setup steps, how to run the project, how to deploy.
+
+---
+
+## Start Your First AI Session
+
+Open your AI tool (Claude Code, Cursor, Windsurf, Codex) in this folder and send:
+
+```
+Read kernel/BOOTSTRAP.md and give me your confirmation readback.
+```
+
+The AI will detect this as a new project and guide you through the initial setup.
+
+---
+
+## Available Slash Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/brainstorm` | Socratic requirements discovery |
+| `/plan` | Break task into structured plan (PLAN-XXXX) |
+| `/create` | Scaffold a new feature |
+| `/debug` | Systematic root cause analysis |
+| `/test` | Generate and run tests |
+| `/deploy` | Pre-flight checks and deploy |
+| `/status` | Current project and session status |
+| `/enhance` | Improve existing code |
+| `/orchestrate` | Multi-agent coordination for complex tasks |
+| `/ui-ux-pro-max` | UI design with 50 visual styles |
+
+---
+
+## Memory System — Quick Reference
+
+| File | Purpose | When Updated |
+|------|---------|--------------|
+| `memory/MODIFICATION_LOG.md` | Macro change history | After every significant change |
+| `memory/progress.md` | Module state snapshot | When a module changes state |
+| `memory/plans/PLAN-XXXX.md` | Detailed execution plans | For complex/structural changes |
+| `memory/decisions/DECISION-XXX.md` | Architectural decisions | When a major decision is made |
+| `memory/logs/DEBUG-HISTORY.md` | Resolved bugs database | After every bug fix |
+
+The AI manages these files automatically — this is just for your reference.
+
+---
+
+> You can delete this file once `kernel/project.toml` and `kernel/SYSTEM.md` are filled in.
+> It is not loaded by the AI during sessions.
+"""
+    write_text(target / "QUICKSTART.md", content)
+
+
 def maybe_init_git(target: Path, init_git: bool) -> None:
     if not init_git:
         return
-    # Use -b main to ensure modern branch naming standards
     subprocess.run(["git", "init", "-b", "main"], cwd=target, check=True)
-
 
 
 def print_next_steps(target: Path) -> None:
@@ -237,9 +362,9 @@ def print_next_steps(target: Path) -> None:
     print("")
     print("Next steps:")
     print(f"1) cd \"{target}\"")
-    print("2) Open your coding assistant in this folder")
-    print("3) Start session with: execute kernel/BOOTSTRAP.md")
-    print("4) Run: brainstorming -> tool-evaluator -> plan-writing")
+    print("2) Open QUICKSTART.md — it lists exactly what to fill in before coding")
+    print("3) Fill in kernel/project.toml and kernel/SYSTEM.md")
+    print("4) Open your AI tool and send: Read kernel/BOOTSTRAP.md and give me your confirmation readback.")
 
 
 def main() -> int:
@@ -251,7 +376,9 @@ def main() -> int:
     try:
         validate_target(target, args.force)
         copy_blueprint(template_root, target, force=args.force)
+        apply_blueprint_overrides(template_root, target)
         reset_starter_docs(target, project_name, keep_examples=args.keep_examples)
+        write_quickstart(target, project_name)
         maybe_init_git(target, args.init_git)
         print_next_steps(target)
         return 0

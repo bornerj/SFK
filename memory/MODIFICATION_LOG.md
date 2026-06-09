@@ -51,6 +51,13 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - `docs/project/SCOPE.md` and `docs/project/SETUP.md` converted to English to keep consistency with SFK's own files.
 - Explicit rule added: SFK kernel/template files stay in English; project-generated documents may follow the language declared in `kernel/project.toml`.
 
+## 2026-06-09
+- SFK v1.2.0 — Blueprint separation and new project onboarding:
+  - `_blueprint/` created: clean templates that override SFK's own data during scaffold (SYSTEM.md, progress.md, BUILD-HISTORY.md, DRIFT-RULES.md, EVOLUTION_MEMORY.md).
+  - `tools/jb_kit_turbo.py`: added `apply_blueprint_overrides()` + `write_quickstart()` to scaffold pipeline.
+  - `kernel/BOOTSTRAP.md`: added Step 0a — NEW PROJECT Day 1 Onboarding Protocol.
+  - `CHANGELOG.md`: v1.2.0 entry added.
+
 ## 2026-04-20 00:00 (Approx)
 - SFK example memory refined for framework use:
   - `memory/PR-0001-DESCRIPTION.md` replaced by `memory/PR-XXXX-DESCRIPTION.md` as a reusable template.
