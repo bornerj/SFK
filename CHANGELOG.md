@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [1.2.1] - 2026-06-09
+
+### Fixed
+
+#### Hardcoded `../Rifa/` references removed from kernel files
+- `kernel/BOOTSTRAP.md`: doc structure rules are now self-referential — no external project path
+- `kernel/RULES.md`: same correction applied
+- `kernel/index.toml`: `new_project_doc_structure_source` now points to `docs/project/`; all `[project_docs_rules]` values updated to remove `../Rifa/` paths
+- Historical entries in `memory/MODIFICATION_LOG.md` intentionally kept as accurate records of past decisions
+
+#### Portuguese content translated to English
+- `tools/jb_kit_turbo.py`: DEBUG-HISTORY template fields (`SINTOMA` → `SYMPTOM`, `CAUSA_RAIZ` → `ROOT_CAUSE`, `ACAO` → `ACTION`, `CONTEXTO` → `CONTEXT`)
+- `memory/MODIFICATION_LOG.md`: 2026-04-14 entry mixed-language line corrected
+
+### Added
+
+#### `CLAUDE.md` — Primary Claude Code integration file
+- Created as the modern entry point for Claude Code (takes precedence over `.clauderules`)
+- Contains full session protocol: mandatory BOOTSTRAP.md read, key files table, capabilities overview, memory recording rules, session closure steps, and git governance
+- Added to `jb_kit_turbo.py` `EXTRA_CONFIG_FILES` — automatically copied to every new project
+- Added to `sfk_updater.py` `EXTRA_CONFIG_ITEMS` — delivered to existing projects on next update run
+
+#### `.clauderules` and `.windsurfrules` — Complete rewrite
+- Both files rewrote from minimal Portuguese stubs (9 lines each) to full English bridge documents
+- Now include: mandatory session start protocol, key files table, capabilities, memory system rules, session closure, and git governance
+- Claude Code and Windsurf users now receive the same level of guidance as Cursor users
+
+---
+
 ## [1.2.0] - 2026-06-09
 
 ### Added
