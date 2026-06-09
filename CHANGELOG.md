@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [1.2.2] - 2026-06-09
+
+### Fixed
+
+#### `tools/sfk_updater.py` — First-time setup and deprecated file detection
+- **`kernel/project.toml`**: added to FIRST-TIME SETUP — if missing in target (old projects from v1.0), the blank template is now added automatically; existing files are never touched
+- **`memory/progress.md`**: same first-time setup logic — added from `_blueprint/` if missing
+- **`memory/logs/SESSION-AUDIT-CHECKLIST.md`**: promoted to framework-owned sync item (like `WORKFLOW_MEMORY_PLAYBOOK.md`) — always updated to latest version
+- **`memory/logs/DRIFT-RULES.md`** and **`memory/logs/BUILD-HISTORY.md`**: added to first-time setup from `_blueprint/` if missing
+- **Deprecated file detection**: updater now scans for 5 known deprecated kernel files (`AUDIT_CHECKLIST.md`, `AUDITOR_MODE.md`, `DRIFT_RULES.md`, `SKILLS_MANIFEST.md`, `OLD_RULES_deprecated.md`) and reports them with reason and origin version — never deleted automatically
+- Output now shows three categories: NEW, UPDATED, FIRST-TIME SETUP, and DEPRECATED
+
+---
+
 ## [1.2.1] - 2026-06-09
 
 ### Fixed
