@@ -26,7 +26,7 @@ new_project_mandatory_docs = [
   "docs/project/SCOPE.md",
   "docs/project/SETUP.md",
 ]
-new_project_doc_structure_source = "../Rifa/docs/project/"
+new_project_doc_structure_source = "docs/project/"
 
 # -------------------------------------------------------
 # LAYER 1 — Loaded by task type
@@ -217,11 +217,10 @@ write = [
 
 [project_docs_rules]
 kernel_language = "SFK kernel/template files must be maintained in English; project-generated documents may use the language declared in kernel/project.toml"
-project_overview = "docs/project/PROJECT_OVERVIEW.md must match the heading structure from ../Rifa/docs/project/PROJECT_OVERVIEW.md"
-requirements = "docs/project/REQUIREMENTS.md must match the heading structure from ../Rifa/docs/project/REQUIREMENTS.md"
-requirements_ids = "Use FR-XXX for functional requirements, NFR-XXX for non-functional requirements, and AC-XXX for acceptance criteria"
-scope = "docs/project/SCOPE.md is mandatory and must match the ## section structure from ../Rifa/docs/project/SCOPE.md"
-setup = "docs/project/SETUP.md is mandatory and must match the ## section structure from ../Rifa/docs/project/SETUP.md"
+project_overview = "docs/project/PROJECT_OVERVIEW.md must preserve its # and ## heading structure across sessions — do not add, remove, or rename top-level sections"
+requirements = "docs/project/REQUIREMENTS.md must preserve its # and ## heading structure. Use FR-XXX for functional requirements, NFR-XXX for non-functional requirements, AC-XXX for acceptance criteria"
+scope = "docs/project/SCOPE.md is mandatory — must exist and maintain its ## section structure across sessions"
+setup = "docs/project/SETUP.md is mandatory — must exist and maintain its ## section structure across sessions"
 
 # -------------------------------------------------------
 # LAYER 2 — Context maintenance

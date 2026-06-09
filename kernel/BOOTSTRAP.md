@@ -144,10 +144,9 @@ Before any code or design work, mentally complete:
 ## Documentation Bootstrap Rules (mandatory)
 - SFK kernel/template files must be maintained in English.
 - Project-generated documents may use the language declared in `kernel/project.toml -> [project] language`.
-- `docs/project/PROJECT_OVERVIEW.md` must follow exactly the same section structure (`#` and `##`) as `../Rifa/docs/project/PROJECT_OVERVIEW.md`.
-- `docs/project/REQUIREMENTS.md` must follow exactly the same section structure (`#` and `##`) as `../Rifa/docs/project/REQUIREMENTS.md`.
-- In `docs/project/REQUIREMENTS.md`, functional requirements must use `FR-XXX`, non-functional requirements must use `NFR-XXX`, and acceptance criteria must use `AC-XXX`.
-- `docs/project/SCOPE.md` and `docs/project/SETUP.md` must exist and must keep the same `##` section structure used in `../Rifa/docs/project/SCOPE.md` and `../Rifa/docs/project/SETUP.md`.
+- `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.
+- `docs/project/REQUIREMENTS.md` must preserve its `#` and `##` heading structure. Functional requirements use `FR-XXX`, non-functional requirements use `NFR-XXX`, acceptance criteria use `AC-XXX`.
+- `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents — they must exist and maintain their `##` section structure across sessions.
 
 ## Publication Context (selective)
 - In release, publish, deploy, or final review sessions, also check the most recent `memory/PR-XXXX-DESCRIPTION.md` files when they exist.

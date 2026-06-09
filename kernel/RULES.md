@@ -439,10 +439,9 @@ Bootstrap and project-definition documents must obey these rules:
 - For NEW PROJECT, `kernel/project.toml` and `kernel/SYSTEM.md` are references/examples only and must not be used to validate the repository state.
 - SFK kernel/template files must be written in English.
 - Project-generated deliverables may be written in the language declared in `kernel/project.toml -> [project] language`.
-- `docs/project/PROJECT_OVERVIEW.md` must preserve exactly the same heading structure (`#` and `##`) defined in `../Rifa/docs/project/PROJECT_OVERVIEW.md`.
-- `docs/project/REQUIREMENTS.md` must preserve exactly the same heading structure (`#` and `##`) defined in `../Rifa/docs/project/REQUIREMENTS.md`.
-- `docs/project/REQUIREMENTS.md` must identify requirements with `FR-XXX`, `NFR-XXX`, and `AC-XXX`.
-- `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents and must preserve the same `##` section structure used in `../Rifa/docs/project/SCOPE.md` and `../Rifa/docs/project/SETUP.md`.
+- `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.
+- `docs/project/REQUIREMENTS.md` must preserve its `#` and `##` heading structure. Requirements use `FR-XXX`, non-functional requirements use `NFR-XXX`, acceptance criteria use `AC-XXX`.
+- `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents — they must exist and maintain their `##` section structure across sessions.
 
 Technical evolution (recurring errors/refactors/lessons):
 - `docs/evolutive_changes/EVOLUTION_MEMORY.md`
