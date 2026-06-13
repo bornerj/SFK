@@ -477,7 +477,15 @@ When the user says "Close Session":
 5. Mark checks and rename file with:
    `-PASS` or `-FAIL`
 
-Session only closes after audit.
+6. Add a summary entry in `memory/MODIFICATION_LOG.md`:
+   ```
+   ## YYYY-MM-DD — SESSION AUDIT — PASS
+   | Item | Resultado |
+   ...
+   ```
+
+Both records (file + MODIFICATION_LOG) are mandatory.
+Session only closes after both are written.
 
 ---
 
