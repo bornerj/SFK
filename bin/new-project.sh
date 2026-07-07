@@ -6,7 +6,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCAFFOLDER="$SCRIPT_DIR/tools/jb_kit_turbo.py"
+SCAFFOLDER="$SCRIPT_DIR/lib/jb_kit_turbo.py"
 LOG_FILE="$SCRIPT_DIR/new-project.log"
 
 # --- logging setup ---

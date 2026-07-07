@@ -85,3 +85,13 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Added `.gitattributes`: `/.sfk/** linguist-vendored`. Added `.claude/` to `.gitignore`.
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
+
+## 2026-07-07 — PLAN-0001 Phase 2 (tooling consolidated into bin/)
+- `tools/` → `bin/lib/` (`jb_kit_turbo.py`, `sfk_updater.py`), `tools/README.md` → `bin/README.md`.
+- Root wrappers → `bin/` (`new-project.{sh,ps1}`, `update-project.{sh,ps1}`); wrapper paths updated `tools/` → `lib/`.
+- `_blueprint/kernel/` → `_blueprint/.sfk/kernel/` so blueprint overrides land at the new engine path.
+- `bin/lib/jb_kit_turbo.py`: `template_root` parents[1]→[2]; `BLUEPRINT_DIRS` `kernel`→`.sfk`; added `.gitattributes` to `EXTRA_CONFIG_FILES`; QUICKSTART text refs `kernel/`→`.sfk/kernel/`.
+- `.sfk/kernel/scripts/import_skill.py`: fixed `PROJECT_ROOT` (parents[3]) and `SKILLS_DIR` (`.sfk/kernel/skills`) — the sed missed this (Python path-join form).
+- `bin/lib/sfk_updater.py`: fixed `__file__` parents; added PHASE-5 warning (its layout logic still targets legacy `kernel/`).
+- Root cleanup: removed `null`, `.codex`, and stale `*.log` files.
+- Validated: scaffolded a fresh project in a temp dir → `.sfk/` isolated, root clean, `memory/`+`docs/` at root, `.gitattributes` propagated, QUICKSTART points to `.sfk/kernel/`.

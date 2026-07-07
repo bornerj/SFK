@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UPDATER="$SCRIPT_DIR/tools/sfk_updater.py"
+UPDATER="$SCRIPT_DIR/lib/sfk_updater.py"
 LOG_FILE="$SCRIPT_DIR/update-project.log"
 
 # --- logging setup ---

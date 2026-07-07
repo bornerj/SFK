@@ -45,7 +45,7 @@ if ($Interactive -or [string]::IsNullOrWhiteSpace($Target)) {
     Ask-MissingValues
 }
 
-$Updater = Join-Path $ScriptDir "tools\sfk_updater.py"
+$Updater = Join-Path $ScriptDir "lib\sfk_updater.py"
 
 if (-not (Test-Path $Updater)) {
     Write-Log "ERROR: Updater engine not found at '$Updater'."

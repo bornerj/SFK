@@ -95,7 +95,7 @@ if ($Interactive -or [string]::IsNullOrWhiteSpace($Target)) {
 }
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Scaffolder = Join-Path $ScriptDir "tools\jb_kit_turbo.py"
+$Scaffolder = Join-Path $ScriptDir "lib\jb_kit_turbo.py"
 
 if (-not (Test-Path $Scaffolder)) {
     throw "Scaffolder not found at '$Scaffolder'."

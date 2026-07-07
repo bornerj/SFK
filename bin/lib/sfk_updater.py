@@ -5,6 +5,15 @@ SFK -- Structured Framework Kit
 ================================
 Update an existing project with the latest SFK kernel files.
 
+!!! PLAN-0001 NOTE (PHASE 5 PENDING) !!!
+The path logic below still targets the LEGACY layout (`kernel/` at root).
+As of PLAN-0001 the engine lives in `.sfk/kernel/` and project config moved to
+root (`sfk.toml`, `SYSTEM.md`). This updater must be reworked in Phase 5 to:
+  - read `.sfk/MANIFEST` as the ownership map;
+  - migrate legacy projects (`kernel/` -> `.sfk/kernel/`, `project.toml` -> `sfk.toml`);
+  - install hooks and `.gitattributes`.
+Do NOT rely on this updater for `.sfk/` projects until Phase 5 lands.
+
 Usage:
     python sfk_updater.py <target> [--yes] [--dry-run]
 
@@ -336,7 +345,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    sfk_root = Path(__file__).resolve().parents[1]
+    sfk_root = Path(__file__).resolve().parents[2]
     target = Path(args.target).resolve()
 
     print()

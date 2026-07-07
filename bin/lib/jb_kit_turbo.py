@@ -16,8 +16,8 @@ from datetime import date
 from pathlib import Path
 
 
-BLUEPRINT_DIRS = ["kernel", "memory", "docs"]
-EXTRA_CONFIG_FILES = [".cursor", ".clauderules", "CLAUDE.md", ".windsurfrules", ".gitignore"]
+BLUEPRINT_DIRS = [".sfk", "memory", "docs"]
+EXTRA_CONFIG_FILES = [".cursor", ".clauderules", "CLAUDE.md", ".windsurfrules", ".gitignore", ".gitattributes"]
 
 IGNORE_NAMES = {
     ".git",
@@ -206,7 +206,7 @@ Last updated: {today}
 Start date: {today}
 
 Use this file for macro operational tracking, according to:
-- `kernel/RULES.md`
+- `.sfk/kernel/RULES.md`
 - `memory/WORKFLOW_MEMORY_PLAYBOOK.md`
 """
 
@@ -251,15 +251,15 @@ def write_quickstart(target: Path, project_name: str) -> None:
 
 The scaffolder installed everything below — no action needed:
 
-- `kernel/BOOTSTRAP.md` — session entry point (read by AI every session)
-- `kernel/RULES.md` — sovereign governance rules
-- `kernel/SOUL.md` — AI behavior contract
-- `kernel/TESTING_GUIDE.md` — universal testing directives
-- `kernel/index.toml` — session router by task type
-- `kernel/agents/` — 20 specialist AI personas
-- `kernel/skills/` — 56 domain knowledge modules
-- `kernel/workflows/` — 11 slash commands (/plan, /debug, /deploy, etc.)
-- `kernel/scripts/` — 5 automation scripts
+- `.sfk/kernel/BOOTSTRAP.md` — session entry point (read by AI every session)
+- `.sfk/kernel/RULES.md` — sovereign governance rules
+- `.sfk/kernel/SOUL.md` — AI behavior contract
+- `.sfk/kernel/TESTING_GUIDE.md` — universal testing directives
+- `.sfk/kernel/index.toml` — session router by task type
+- `.sfk/kernel/agents/` — 20 specialist AI personas
+- `.sfk/kernel/skills/` — 56 domain knowledge modules
+- `.sfk/kernel/workflows/` — 11 slash commands (/plan, /debug, /deploy, etc.)
+- `.sfk/kernel/scripts/` — 5 automation scripts
 - `memory/logs/SESSION-AUDIT-CHECKLIST.md` — pre-closure validation
 - `memory/WORKFLOW_MEMORY_PLAYBOOK.md` — memory system documentation
 - `.clauderules`, `.windsurfrules`, `.cursor/` — IDE integrations
@@ -270,7 +270,7 @@ The scaffolder installed everything below — no action needed:
 
 Fill these in order. Items 1 and 2 are required before the AI can work effectively.
 
-### 1. `kernel/project.toml` — REQUIRED
+### 1. `.sfk/kernel/project.toml` — REQUIRED
 The technical dictionary of your project. Fill in:
 - `[project]` → name, description, type, language
 - `[project.team]` → author, company
@@ -281,9 +281,9 @@ The technical dictionary of your project. Fill in:
 - `[environments.*]` → env var names grouped by platform (never actual values)
 - `[[integrations]]` → one block per third-party API (Stripe, SendGrid, etc.)
 
-### 2. `kernel/SYSTEM.md` — REQUIRED
+### 2. `.sfk/kernel/SYSTEM.md` — REQUIRED
 Technical and engineering standards for your project.
-Use `kernel/SYSTEM-TEMPLATE.md` as a guide.
+Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide.
 Fill in at minimum: Language/Stack, Code Style, Error Handling, Architecture.
 
 ### 3. `docs/project/PROJECT_OVERVIEW.md` — IMPORTANT
@@ -305,7 +305,7 @@ Local setup steps, how to run the project, how to deploy.
 Open your AI tool (Claude Code, Cursor, Windsurf, Codex) in this folder and send:
 
 ```
-Read kernel/BOOTSTRAP.md and give me your confirmation readback.
+Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.
 ```
 
 The AI will detect this as a new project and guide you through the initial setup.
@@ -343,7 +343,7 @@ The AI manages these files automatically — this is just for your reference.
 
 ---
 
-> You can delete this file once `kernel/project.toml` and `kernel/SYSTEM.md` are filled in.
+> You can delete this file once `.sfk/kernel/project.toml` and `.sfk/kernel/SYSTEM.md` are filled in.
 > It is not loaded by the AI during sessions.
 """
     write_text(target / "QUICKSTART.md", content)
@@ -363,13 +363,13 @@ def print_next_steps(target: Path) -> None:
     print("Next steps:")
     print(f"1) cd \"{target}\"")
     print("2) Open QUICKSTART.md — it lists exactly what to fill in before coding")
-    print("3) Fill in kernel/project.toml and kernel/SYSTEM.md")
-    print("4) Open your AI tool and send: Read kernel/BOOTSTRAP.md and give me your confirmation readback.")
+    print("3) Fill in .sfk/kernel/project.toml and .sfk/kernel/SYSTEM.md")
+    print("4) Open your AI tool and send: Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.")
 
 
 def main() -> int:
     args = parse_args()
-    template_root = Path(__file__).resolve().parents[1]
+    template_root = Path(__file__).resolve().parents[2]
     target = Path(args.target).resolve()
     project_name = args.project_name or target.name
 

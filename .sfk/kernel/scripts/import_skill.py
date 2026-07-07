@@ -4,9 +4,9 @@ import argparse
 from pathlib import Path
 
 # Configuração de caminhos (relativos à raiz do projeto)
-# O script reside em .sfk/kernel/scripts/, então subimos dois níveis
-PROJECT_ROOT = Path(__file__).parent.parent.parent
-SKILLS_DIR = PROJECT_ROOT / "kernel" / "skills"
+# O script reside em .sfk/kernel/scripts/, então subimos três níveis até a raiz
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+SKILLS_DIR = PROJECT_ROOT / ".sfk" / "kernel" / "skills"
 CURSOR_RULES_DIR = PROJECT_ROOT / ".cursor" / "rules"
 
 def import_skill(source_path):
