@@ -154,13 +154,13 @@ vars = [
 # ═══════════════════════════════════════
 
 [ai_context]
-kernel_entry   = "kernel/BOOTSTRAP.md"      # session entry point
-rules          = "kernel/RULES.md"          # sovereign governance
-behavior       = "kernel/SOUL.md"           # AI behavior and restrictions
-identity       = "kernel/project.toml"      # this file — project dictionary
-routing        = "kernel/index.toml"        # selective loading by task type
-engineering    = "kernel/SYSTEM.md"         # project technical standards
+kernel_entry   = ".sfk/kernel/BOOTSTRAP.md"      # session entry point
+rules          = ".sfk/kernel/RULES.md"          # sovereign governance
+behavior       = ".sfk/kernel/SOUL.md"           # AI behavior and restrictions
+identity       = ".sfk/kernel/project.toml"      # this file — project dictionary
+routing        = ".sfk/kernel/index.toml"        # selective loading by task type
+engineering    = ".sfk/kernel/SYSTEM.md"         # project technical standards
 memory_log     = "memory/MODIFICATION_LOG.md"
 memory_status  = "memory/progress.md"
 memory_debug   = "memory/logs/DEBUG-HISTORY.md"
-capabilities   = "kernel/ARCHITECTURE.md"  # agents, skills, scripts
+capabilities   = ".sfk/kernel/ARCHITECTURE.md"  # agents, skills, scripts

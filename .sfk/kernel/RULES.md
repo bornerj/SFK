@@ -441,9 +441,9 @@ New requirements/gaps:
 Bootstrap and project-definition documents must obey these rules:
 - First classify the repository as NEW PROJECT or EXISTING PROJECT.
 - NEW PROJECT = no `PLAN-XXXX`, no decisions, and no real entries in `memory/MODIFICATION_LOG.md` beyond the examples/template area.
-- For NEW PROJECT, `kernel/project.toml` and `kernel/SYSTEM.md` are references/examples only and must not be used to validate the repository state.
-- SFK kernel/template files must be written in English.
-- Project-generated deliverables may be written in the language declared in `kernel/project.toml -> [project] language`.
+- For NEW PROJECT, `.sfk/kernel/project.toml` and `.sfk/kernel/SYSTEM.md` are references/examples only and must not be used to validate the repository state.
+- SFK .sfk/kernel/template files must be written in English.
+- Project-generated deliverables may be written in the language declared in `.sfk/kernel/project.toml -> [project] language`.
 - `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.
 - `docs/project/REQUIREMENTS.md` must preserve its `#` and `##` heading structure. Requirements use `FR-XXX`, non-functional requirements use `NFR-XXX`, acceptance criteria use `AC-XXX`.
 - `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents — they must exist and maintain their `##` section structure across sessions.
@@ -570,8 +570,8 @@ Trigger: When the user says "final checks", "run all tests", "validate everythin
 
 | Stage         | Command                                              | Purpose                            |
 |---------------|------------------------------------------------------|------------------------------------|
-| Manual Audit  | python kernel/scripts/checklist.py .                 | Priority-based audit               |
-| Pre-Deploy    | python kernel/scripts/verify_all.py . --url URL      | Full suite + Performance + E2E     |
+| Manual Audit  | python .sfk/kernel/scripts/checklist.py .                 | Priority-based audit               |
+| Pre-Deploy    | python .sfk/kernel/scripts/verify_all.py . --url URL      | Full suite + Performance + E2E     |
 
 Execution order by priority:
 1. Security → 2. Lint → 3. Schema → 4. Tests → 5. UX → 6. SEO → 7. Lighthouse/E2E

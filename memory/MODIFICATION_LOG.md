@@ -77,3 +77,11 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - `kernel/RULES.md`: added Fundamental Principle #10 — **File Boundary Law** (Engine / Project state / Maintainer tooling categories; engine is read-only; never mix categories).
 - `kernel/RULES.md §12.3`: fixed broken reference `kernel/AUDIT_CHECKLIST.md` → `memory/logs/SESSION-AUDIT-CHECKLIST.md`.
 - Pending (next phases): F1 move `kernel/`→`.sfk/kernel/` + path rewrite; F2 tooling→`bin/`; F3 config/memory (sfk.toml, progress.md board, integrations, db migrations, deploy/env); F4 Layer-1 dedup + operating card + pre-commit hook; F5 migrate existing projects via updater.
+
+## 2026-07-07 — PLAN-0001 Phase 1 (engine moved to .sfk/)
+- `kernel/` → `.sfk/kernel/` via `git mv` (244 files). Root no longer has loose engine files.
+- Path rewrite `kernel/` → `.sfk/kernel/` across engine files + root pointers (`CLAUDE.md`, `.clauderules`, `.windsurfrules`, `INSTRUCTIONS.md`, `README.md`, `CONTRIBUTING.md`) + `memory/WORKFLOW_MEMORY_PLAYBOOK.md`. History/tooling/blueprint/cursor left untouched.
+- Added `.sfk/VERSION` (1.3.0-dev, provisional) and `.sfk/MANIFEST` (engine ownership map for the updater).
+- Added `.gitattributes`: `/.sfk/** linguist-vendored`. Added `.claude/` to `.gitignore`.
+- Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
+- Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.

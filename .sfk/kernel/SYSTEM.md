@@ -1,7 +1,7 @@
 ## System (Technical and Organizational Rules)
 
 These rules define the engineering standards for the project.
-Process, continuity, and memory rules are in `kernel/RULES.md`.
+Process, continuity, and memory rules are in `.sfk/kernel/RULES.md`.
 Must be reviewed BEFORE the start of the project.
 
 ## Language and Stack

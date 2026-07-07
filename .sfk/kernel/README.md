@@ -1,4 +1,4 @@
-# kernel/ — SFK · Structured Framework Kit
+# .sfk/kernel/ — SFK · Structured Framework Kit
 
 **SFK is a multi-tenant orchestration layer that provides memory, rules, and procedures as a service, decoupling the AI intelligence from the execution logic.**
 
@@ -6,14 +6,14 @@
 
 ## What is this folder
 
-`kernel/` is the core of SFK. It contains **everything an AI needs to know about this project** before writing a single line of code — identity, behavior, process, technical standards, and session protocol.
+`.sfk/kernel/` is the core of SFK. It contains **everything an AI needs to know about this project** before writing a single line of code — identity, behavior, process, technical standards, and session protocol.
 
 ---
 
 ## Structure
 
 ```
-kernel/
+.sfk/kernel/
 ├── BOOTSTRAP.md         ← Mandatory entry point for every session (v0.6)
 ├── RULES.md             ← Sovereign: governance, process, memory, and Git
 ├── SYSTEM.md            ← Technical contract for the project (stack, standards)
@@ -57,7 +57,7 @@ See `index.toml` for the full trigger → files mapping.
 
 1. Fill in `project.toml` with the name, stack, URLs, and env vars of the new project
 2. Review `SOUL.md` (usually no changes needed)
-4. Use `kernel/SYSTEM-TEMPLATE.md` as a guide to fill in `kernel/SYSTEM.md`
+4. Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide to fill in `.sfk/kernel/SYSTEM.md`
 5. Sync the rest of the system via `memory/WORKFLOW_MEMORY_PLAYBOOK.md` section 9
 
 ---
@@ -65,7 +65,7 @@ See `index.toml` for the full trigger → files mapping.
 ## Relationship with the rest of SFK
 
 ```
-kernel/       ← control (this directory)
+.sfk/kernel/       ← control (this directory)
 .agent/       ← capabilities (20 agents, 46 skills, 11 workflows)
 memory/       ← persistence (logs, plans, decisions, progress)
 docs/         ← product documentation

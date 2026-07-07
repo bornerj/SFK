@@ -60,7 +60,7 @@ Not chat history.
 
 SFK introduces three layers:
 
-### 1. Control Layer (`kernel/`)
+### 1. Control Layer (`.sfk/kernel/`)
 Defines identity, rules, architecture, and behavior.
 
 ### 2. Memory Layer (`memory/`)
@@ -145,7 +145,7 @@ python tools/jb_kit_turbo.py /path/to/my-project --project-name MyProject --init
 
 ### 3. Fill in your project identity
 
-Edit `kernel/project.toml` — the **complete technical dictionary** of your project:
+Edit `.sfk/kernel/project.toml` — the **complete technical dictionary** of your project:
 
 ```toml
 [project]
@@ -198,7 +198,7 @@ env_vars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]
 In your first message of every session:
 
 ```
-Read kernel/BOOTSTRAP.md and give me your confirmation readback.
+Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.
 ```
 
 From there, the AI operates within the project's rules without needing re-explanation.
@@ -209,7 +209,7 @@ From there, the AI operates within the project's rules without needing re-explan
 
 ```
 sfk/
-├── kernel/               ← AI control layer
+├── .sfk/kernel/               ← AI control layer
 │   ├── BOOTSTRAP.md      ← Session entry point (required)
 │   ├── RULES.md          ← Governance, process, memory & Git (sovereign)
 │   ├── SOUL.md           ← AI behavior contract (portable)
@@ -287,7 +287,7 @@ SFK works with any AI that reads text files. Native integration files included:
 | Claude Code  | `.clauderules`              |
 | Windsurf     | `.windsurfrules`            |
 | Cursor       | `.cursor/rules/` (56 rules) |
-| Any other    | `kernel/BOOTSTRAP.md`       |
+| Any other    | `.sfk/kernel/BOOTSTRAP.md`       |
 
 ---
 
@@ -297,7 +297,7 @@ SFK operates in three layers:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  CONTROL & CAPABILITIES  (kernel/)                         │
+│  CONTROL & CAPABILITIES  (.sfk/kernel/)                         │
 │  project.toml · SOUL.md · RULES.md · index.toml            │
 │  BOOTSTRAP.md · ARCHITECTURE.md                            │
 │  agents/ · skills/ · workflows/ · scripts/                 │
@@ -312,8 +312,8 @@ SFK operates in three layers:
 
 ### Session flow
 
-1. AI reads `kernel/BOOTSTRAP.md` → loads identity, rules, behavior (LAYER 0)
-2. Consults `kernel/index.toml` → loads only files relevant to the task type (LAYER 1)
+1. AI reads `.sfk/kernel/BOOTSTRAP.md` → loads identity, rules, behavior (LAYER 0)
+2. Consults `.sfk/kernel/index.toml` → loads only files relevant to the task type (LAYER 1)
 3. Checks `memory/progress.md` → snapshot of current module state
 4. Checks `memory/plans/` → resumes active plan if any
 5. Classifies request → selects agent and skills → executes
@@ -324,8 +324,8 @@ SFK operates in three layers:
 ## Documentation
 
 - **[INSTRUCTIONS.md](./INSTRUCTIONS.md)** — Full usage guide with practical examples
-- **[kernel/ARCHITECTURE.md](./kernel/ARCHITECTURE.md)** — All agents, skills, and scripts
-- **[kernel/README.md](./kernel/README.md)** — Kernel structure and precedence hierarchy
+- **[.sfk/kernel/ARCHITECTURE.md](./.sfk/kernel/ARCHITECTURE.md)** — All agents, skills, and scripts
+- **[.sfk/kernel/README.md](./.sfk/kernel/README.md)** — Kernel structure and precedence hierarchy
 - **[memory/WORKFLOW_MEMORY_PLAYBOOK.md](./memory/WORKFLOW_MEMORY_PLAYBOOK.md)** — Memory system internals
 
 ---

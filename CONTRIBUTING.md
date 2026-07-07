@@ -38,7 +38,7 @@ Thank you for your interest in contributing to the **Structured Framework Kit (S
 Adding a new skill is one of the most valuable contributions. A skill must follow this structure:
 
 ```
-kernel/skills/my-skill-name/
+.sfk/kernel/skills/my-skill-name/
 ├── SKILL.md           ← Required: metadata + instructions
 ├── scripts/           ← Optional: Python or Bash scripts
 ├── references/        ← Optional: templates, docs, reference material
@@ -69,13 +69,13 @@ Brief description of what this skill does.
 - [ ] No hardcoded project-specific assumptions (skills must be reusable)
 - [ ] If using scripts, they work on Python 3.8+
 - [ ] Skill name uses `kebab-case`
-- [ ] Skill is listed in `kernel/ARCHITECTURE.md` under the appropriate category
+- [ ] Skill is listed in `.sfk/kernel/ARCHITECTURE.md` under the appropriate category
 
 ---
 
 ## Agent Contribution Guidelines
 
-New agents must be added to `kernel/agents/` as `agent-name.md` and registered in `kernel/ARCHITECTURE.md`.
+New agents must be added to `.sfk/kernel/agents/` as `agent-name.md` and registered in `.sfk/kernel/ARCHITECTURE.md`.
 
 An agent file must specify:
 - Role and focus area

@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 # Configuração de caminhos (relativos à raiz do projeto)
-# O script reside em kernel/scripts/, então subimos dois níveis
+# O script reside em .sfk/kernel/scripts/, então subimos dois níveis
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 SKILLS_DIR = PROJECT_ROOT / "kernel" / "skills"
 CURSOR_RULES_DIR = PROJECT_ROOT / ".cursor" / "rules"
@@ -31,7 +31,7 @@ def import_skill(source_path):
     # 1. Garantir que o diretório de skills existe
     SKILLS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 2. Copiar pasta para kernel/skills/
+    # 2. Copiar pasta para .sfk/kernel/skills/
     if dest_skill_dir.exists():
         confirm = input(f"⚠️  A skill '{skill_name}' já existe. Deseja sobrescrever? (s/n): ").lower()
         if confirm != 's':
@@ -41,7 +41,7 @@ def import_skill(source_path):
     
     try:
         shutil.copytree(source, dest_skill_dir)
-        print(f"✅ Pasta copiada para: kernel/skills/{skill_name}")
+        print(f"✅ Pasta copiada para: .sfk/kernel/skills/{skill_name}")
     except Exception as e:
         print(f"❌ Erro ao copiar pasta: {e}")
         return
@@ -70,7 +70,7 @@ def import_skill(source_path):
             print(f"⚠️  Aviso: Nenhum arquivo .md encontrado na skill. Cursor não terá uma regra dedicada.")
 
     print(f"\n🎉 Skill '{skill_name}' importada com sucesso!")
-    print(f"📝 Nota: As configurações globais (.clauderules e .windsurfrules) já apontam para a pasta kernel/skills/ e reconhecerão a nova skill automaticamente.")
+    print(f"📝 Nota: As configurações globais (.clauderules e .windsurfrules) já apontam para a pasta .sfk/kernel/skills/ e reconhecerão a nova skill automaticamente.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Importa uma nova skill para o framework SFK.")
