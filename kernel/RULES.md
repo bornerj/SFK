@@ -47,6 +47,11 @@ MITIGATED RISK: Execution without context, unauthorized commit/push, incorrect s
 7. Every functional change must generate persistence in the appropriate memory.
 8. Writing templates in `memory/WORKFLOW_MEMORY_PLAYBOOK.md` under section `## 6) Reusable Templates`
 9. At bootstrap, the repository must first be classified as NEW PROJECT or EXISTING PROJECT before `project.toml` or `SYSTEM.md` are enforced.
+10. **File Boundary Law.** SFK files fall into three categories with distinct lifecycles and must never be mixed:
+    - **Engine** — the SFK kernel (`RULES.md`, `SOUL.md`, `BOOTSTRAP.md`, `index.toml`, `ARCHITECTURE.md`, `agents/`, `skills/`, `workflows/`, `scripts/`): framework code, **read-only** for the project. The AI must never treat engine files as product, and must never edit them except when explicitly maintaining SFK itself.
+    - **Project state** — `memory/`, `docs/`, project config (`project.toml` / `sfk.toml`) and `SYSTEM.md`: the project's own data, owned and evolved per project.
+    - **Maintainer tooling** — scaffolder / updater / CLI: operates *on* projects and never ships inside them.
+    The AI must never place project state inside the engine directory, nor engine files among product code. (Engine consolidation under `.sfk/` is tracked in `memory/plans/PLAN-0001`.)
 
 ---
 
@@ -469,7 +474,7 @@ When the user says "Close Session":
 
 2. State → AUDIT_MODE (no code writing)
 
-3. Evaluate per `kernel/AUDIT_CHECKLIST.md` and return PASS or FAIL
+3. Evaluate per `memory/logs/SESSION-AUDIT-CHECKLIST.md` and return PASS or FAIL
 
 4. Copy checklist to:
    `memory/logs/AUDIT_CHECKLIST_date_time.md`

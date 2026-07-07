@@ -71,3 +71,9 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
   - `kernel/RULES.md` expanded with the PR description kernel for publishable deliveries, including mandatory use, minimum content, and closure rules.
   - `kernel/SOUL.md` updated to keep the PR description aligned with the real diff, the final commit, and the project's default language.
   - `kernel/index.toml` synchronized with the project classification rules, mandatory documentation, and template governance.
+
+## 2026-07-07 — PLAN-0001 Phase 0 (no-risk fixes)
+- Started structural refactor `PLAN-0001` (engine/project/tooling separation) on branch `refactor/engine-project-separation`. Restore points created: physical tarball `SFK-backup-20260707-203040.tar.gz` + git tag `sfk-pre-refactor-20260707-203040` (`main` untouched).
+- `kernel/RULES.md`: added Fundamental Principle #10 — **File Boundary Law** (Engine / Project state / Maintainer tooling categories; engine is read-only; never mix categories).
+- `kernel/RULES.md §12.3`: fixed broken reference `kernel/AUDIT_CHECKLIST.md` → `memory/logs/SESSION-AUDIT-CHECKLIST.md`.
+- Pending (next phases): F1 move `kernel/`→`.sfk/kernel/` + path rewrite; F2 tooling→`bin/`; F3 config/memory (sfk.toml, progress.md board, integrations, db migrations, deploy/env); F4 Layer-1 dedup + operating card + pre-commit hook; F5 migrate existing projects via updater.
