@@ -22,7 +22,7 @@ import sys
 import threading
 import tkinter as tk
 from pathlib import Path
-from tkinter import filedialog, font as tkfont, ttk
+from tkinter import filedialog, font as tkfont, messagebox, ttk
 
 # ---------------------------------------------------------------------------
 # Paths — locate the SFK repo from this file's location
@@ -605,6 +605,124 @@ class NewProjectView(BaseView):
             self.banner.show_error("Não foi possível criar o projeto — veja a saída acima.", before=self._anchor)
 
 
+class UpdateProjectView(BaseView):
+    """Wraps `bin/lib/sfk_updater.py` — adds SFK to an existing project, updates
+    an SFK project to the latest engine, or migrates a legacy layout. Preview
+    (dry-run) is the primary action; Apply requires a same-path preview first
+    plus an explicit confirmation, since it writes to disk."""
+
+    def __init__(self, app: "App", title: str, subtitle: str):
+        super().__init__(app)
+        Header(self, title, subtitle, on_back=lambda: self.app.show("home")).pack(fill="x")
+
+        body = tk.Frame(self, bg=Theme.BG)
+        body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
+
+        self.banner = ResultBanner(body)
+
+        self._anchor = tk.Label(body, text="Pasta do projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self._anchor.pack(anchor="w")
+        self.picker = PathPicker(body)
+        self.picker.pack(fill="x", pady=(Theme.SPACE_XS, Theme.SPACE_MD))
+        self.picker.var.trace_add("write", lambda *_: self._on_path_changed())
+
+        self.skip_backup_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(
+            body, text="Pular o backup automático antes de migrar (não recomendado)",
+            variable=self.skip_backup_var, font=Fonts.body, fg=Theme.TEXT, bg=Theme.BG,
+            selectcolor="white", activebackground=Theme.BG,
+        ).pack(anchor="w", pady=(0, Theme.SPACE_MD))
+
+        actions = tk.Frame(body, bg=Theme.BG)
+        actions.pack(fill="x", pady=(0, Theme.SPACE_MD))
+        self.preview_btn = PrimaryButton(actions, "🔎  Pré-visualizar (não altera nada)", self._run_preview)
+        self.preview_btn.pack(side="left", padx=(0, Theme.SPACE_SM))
+        self.apply_btn = PrimaryButton(actions, "✅  Aplicar alterações", self._run_apply, danger=True)
+        self.apply_btn.pack(side="left")
+
+        tk.Label(body, text="Saída", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.console = ConsolePanel(body)
+        self.console.pack(fill="both", expand=True, pady=(Theme.SPACE_XS, 0))
+
+        self.runner: ProcessRunner | None = None
+        self._mode: str = ""
+        self._last_previewed_target: str | None = None
+
+    def _on_path_changed(self) -> None:
+        # Changing the path invalidates any previous preview for a different folder.
+        self.banner.hide()
+
+    def _set_buttons_enabled(self, enabled: bool) -> None:
+        self.preview_btn.set_enabled(enabled)
+        self.apply_btn.set_enabled(enabled)
+
+    def _run_preview(self) -> None:
+        target = self.picker.get()
+        if not target or not os.path.isdir(target):
+            self.console.clear()
+            self.console.append("⚠️  Escolha uma pasta de projeto existente primeiro.", "error")
+            return
+        self.banner.hide()
+        self.console.clear()
+        self.console.append(f"Pré-visualizando: {target}", "muted")
+        self._mode = "preview"
+        self._set_buttons_enabled(False)
+        self.runner = ProcessRunner(on_line=lambda line: self.console.append(line), on_done=self._on_done)
+        self.runner.run([PYTHON, str(UPDATER), target, "--dry-run"])
+
+    def _run_apply(self) -> None:
+        target = self.picker.get()
+        if not target or not os.path.isdir(target):
+            self.console.clear()
+            self.console.append("⚠️  Escolha uma pasta de projeto existente primeiro.", "error")
+            return
+        if target != self._last_previewed_target:
+            self.banner.show_error(
+                "Pré-visualize esta pasta primeiro (botão acima) antes de aplicar.",
+                before=self._anchor,
+            )
+            return
+        proceed = messagebox.askyesno(
+            "Confirmar alterações",
+            "Isso vai instalar/atualizar o SFK nesta pasta de verdade.\n\n"
+            f"Pasta: {target}\n\n"
+            "Você já viu a pré-visualização acima. Continuar?",
+        )
+        if not proceed:
+            return
+
+        self.banner.hide()
+        self.console.clear()
+        self.console.append(f"Aplicando em: {target}", "muted")
+        self._mode = "apply"
+        self._set_buttons_enabled(False)
+        args = [PYTHON, str(UPDATER), target, "--yes"]
+        if self.skip_backup_var.get():
+            args.append("--no-backup")
+        self.runner = ProcessRunner(on_line=lambda line: self.console.append(line), on_done=self._on_done)
+        self.runner.run(args)
+
+    def _on_done(self, code: int) -> None:
+        self._set_buttons_enabled(True)
+        target = self.picker.get()
+        if code == 0:
+            self.console.append("", None)
+            if self._mode == "preview":
+                self._last_previewed_target = target
+                self.console.append("✅  Pré-visualização concluída. Nada foi alterado.", "accent")
+            else:
+                self.console.append("✅  Alterações aplicadas com sucesso.", "accent")
+                self.banner.show_success(
+                    f"SFK instalado/atualizado em: {target}",
+                    on_open_folder=lambda: open_folder(target),
+                    before=self._anchor,
+                )
+        else:
+            self.console.append("", None)
+            self.console.append(f"❌  Terminou com erro (código {code}).", "error")
+            self.banner.show_error("Algo deu errado — veja a saída acima.", before=self._anchor)
+
+
 class ComingSoonView(BaseView):
     """Placeholder for panels landing in later phases (F2/F3/F4)."""
 
@@ -642,8 +760,14 @@ class App(tk.Tk):
         self._add_view("home", HomeView(self))
         self._add_view("check_project", CheckProjectView(self))
         self._add_view("new_project", NewProjectView(self))
-        self._add_view("add_existing", ComingSoonView(self, "Adicionar o SFK a um projeto existente", "Chega na Fase 3."))
-        self._add_view("update_project", ComingSoonView(self, "Atualizar o SFK de um projeto", "Chega na Fase 3."))
+        self._add_view("add_existing", UpdateProjectView(
+            self, "Adicionar o SFK a um projeto existente",
+            "Instala o SFK sobre um código existente, sem tocar no seu código.",
+        ))
+        self._add_view("update_project", UpdateProjectView(
+            self, "Atualizar o SFK de um projeto",
+            "Traz a versão mais nova. Migra automaticamente projetos com layout antigo.",
+        ))
         self._add_view("skills", ComingSoonView(self, "Skills", "Chega na Fase 4."))
 
         self.show("home")
