@@ -16,8 +16,8 @@ from datetime import date
 from pathlib import Path
 
 
-BLUEPRINT_DIRS = [".sfk", "memory", "docs"]
-EXTRA_CONFIG_FILES = [".cursor", ".clauderules", "CLAUDE.md", ".windsurfrules", ".gitignore", ".gitattributes"]
+BLUEPRINT_DIRS = [".sfk", "memory", "docs", "db"]
+EXTRA_CONFIG_FILES = ["sfk.toml", "SYSTEM.md", ".cursor", ".clauderules", "CLAUDE.md", ".windsurfrules", ".gitignore", ".gitattributes"]
 
 IGNORE_NAMES = {
     ".git",
@@ -270,7 +270,7 @@ The scaffolder installed everything below — no action needed:
 
 Fill these in order. Items 1 and 2 are required before the AI can work effectively.
 
-### 1. `.sfk/kernel/project.toml` — REQUIRED
+### 1. `sfk.toml` — REQUIRED
 The technical dictionary of your project. Fill in:
 - `[project]` → name, description, type, language
 - `[project.team]` → author, company
@@ -281,7 +281,7 @@ The technical dictionary of your project. Fill in:
 - `[environments.*]` → env var names grouped by platform (never actual values)
 - `[[integrations]]` → one block per third-party API (Stripe, SendGrid, etc.)
 
-### 2. `.sfk/kernel/SYSTEM.md` — REQUIRED
+### 2. `SYSTEM.md` — REQUIRED
 Technical and engineering standards for your project.
 Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide.
 Fill in at minimum: Language/Stack, Code Style, Error Handling, Architecture.
@@ -343,7 +343,7 @@ The AI manages these files automatically — this is just for your reference.
 
 ---
 
-> You can delete this file once `.sfk/kernel/project.toml` and `.sfk/kernel/SYSTEM.md` are filled in.
+> You can delete this file once `sfk.toml` and `SYSTEM.md` are filled in.
 > It is not loaded by the AI during sessions.
 """
     write_text(target / "QUICKSTART.md", content)
@@ -363,7 +363,7 @@ def print_next_steps(target: Path) -> None:
     print("Next steps:")
     print(f"1) cd \"{target}\"")
     print("2) Open QUICKSTART.md — it lists exactly what to fill in before coding")
-    print("3) Fill in .sfk/kernel/project.toml and .sfk/kernel/SYSTEM.md")
+    print("3) Fill in sfk.toml and SYSTEM.md")
     print("4) Open your AI tool and send: Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.")
 
 

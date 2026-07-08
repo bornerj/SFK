@@ -15,11 +15,11 @@ If any of the conditions above is false, classify as EXISTING PROJECT.
 
 Classification effects:
 - NEW PROJECT:
-  - `.sfk/kernel/project.toml` and `.sfk/kernel/SYSTEM.md` must be treated as template/examples only;
+  - `sfk.toml` and `SYSTEM.md` must be treated as template/examples only;
   - do not use them as compliance or validation sources for the current repository state;
   - use `.sfk/kernel/RULES.md`, `.sfk/kernel/SOUL.md`, `.sfk/kernel/ARCHITECTURE.md`, and the `docs/project/*.md` templates as the active source of bootstrap guidance.
 - EXISTING PROJECT:
-  - load and enforce `.sfk/kernel/project.toml` and `.sfk/kernel/SYSTEM.md` normally.
+  - load and enforce `sfk.toml` and `SYSTEM.md` normally.
 
 ## Step 0a — NEW PROJECT: Day 1 Onboarding Protocol
 
@@ -28,17 +28,17 @@ Skip entirely if classified as EXISTING PROJECT.
 
 1. Check if `QUICKSTART.md` exists in the project root — if present, read it.
 
-2. Read `.sfk/kernel/project.toml`. If `[project] name = ""` (empty string), announce:
+2. Read `sfk.toml`. If `[project] name = ""` (empty string), announce:
    > "This is a new SFK project. To configure your project identity, I need a few details."
 
-   Ask for and write into `.sfk/kernel/project.toml`:
+   Ask for and write into `sfk.toml`:
    - Project name
    - One-sentence description
    - Primary stack (language + main framework)
    - Project language/locale (e.g. `en-US`, `pt-BR`)
 
-3. Read `.sfk/kernel/SYSTEM.md`. If it contains `[FILL IN]` markers, inform the user:
-   > ".sfk/kernel/SYSTEM.md still has template placeholders. Fill it using .sfk/kernel/SYSTEM-TEMPLATE.md as a guide before coding begins."
+3. Read `SYSTEM.md`. If it contains `[FILL IN]` markers, inform the user:
+   > "SYSTEM.md still has template placeholders. Fill it using .sfk/kernel/SYSTEM-TEMPLATE.md as a guide before coding begins."
    Do **not** block the session — proceed if the user wants to defer.
 
 4. Record the onboarding in `memory/MODIFICATION_LOG.md`:
@@ -49,7 +49,7 @@ Skip entirely if classified as EXISTING PROJECT.
 
 5. Proceed to the user's actual request.
 
-**Note**: If the user's first message is already about filling `project.toml` or `SYSTEM.md`, skip announcements and act directly.
+**Note**: If the user's first message is already about filling `sfk.toml` or `SYSTEM.md`, skip announcements and act directly.
 
 ---
 
@@ -58,8 +58,8 @@ Skip entirely if classified as EXISTING PROJECT.
 Always read, regardless of task type:
 - `.sfk/kernel/SOUL.md` — AI behavior contract for this project
 - `.sfk/kernel/RULES.md` — governance + execution + memory + Git (sovereign)
-- `.sfk/kernel/project.toml` — project identity, stack, URLs, and design tokens (EXISTING PROJECT only; template/example only for NEW PROJECT)
-- `.sfk/kernel/SYSTEM.md` — technical and organizational rules for the project (EXISTING PROJECT only; template/example only for NEW PROJECT)
+- `sfk.toml` — project identity, stack, URLs, and design tokens (EXISTING PROJECT only; template/example only for NEW PROJECT)
+- `SYSTEM.md` — technical and organizational rules for the project (EXISTING PROJECT only; template/example only for NEW PROJECT)
 
 ## LAYER 1 — Selective Loading by Task Type
 
@@ -143,7 +143,7 @@ Before any code or design work, mentally complete:
 
 ## Documentation Bootstrap Rules (mandatory)
 - SFK .sfk/kernel/template files must be maintained in English.
-- Project-generated documents may use the language declared in `.sfk/kernel/project.toml -> [project] language`.
+- Project-generated documents may use the language declared in `sfk.toml -> [project] language`.
 - `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.
 - `docs/project/REQUIREMENTS.md` must preserve its `#` and `##` heading structure. Functional requirements use `FR-XXX`, non-functional requirements use `NFR-XXX`, acceptance criteria use `AC-XXX`.
 - `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents — they must exist and maintain their `##` section structure across sessions.

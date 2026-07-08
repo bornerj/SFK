@@ -16,7 +16,7 @@ SFK/
 │   ├── RULES.md                     ← Sovereign: governance, process, memory, and Git
 │   ├── SYSTEM.md                    ← Technical contract for the project (stack, standards)
 │   ├── SYSTEM-TEMPLATE.md           ← Fill-in guide for SYSTEM.md
-│   ├── project.toml                 ← Technical dictionary: identity, hosting, stack, design,
+│   ├── sfk.toml                 ← Technical dictionary: identity, hosting, stack, design,
 │   │                                   env vars per platform, integrations, dev tools
 │   ├── SOUL.md                      ← Compact and portable AI behavior contract
 │   ├── index.toml                   ← Declarative session router by task type
@@ -44,10 +44,14 @@ SFK/
     ├── project/
     │   ├── PROJECT_OVERVIEW.md
     │   └── REQUIREMENTS.md
-    ├── config/
-    └── evolutive_changes/
-        └── EVOLUTION_MEMORY.md
+    ├── integrations/                ← one runbook per external service (D2)
+    └── deploy/                      ← deploy runbook (providers, steps)
 ```
+
+> Technical-evolution history is not a separate file. Record it in
+> `memory/MODIFICATION_LOG.md` with the tag `##evolution`.
+> Database schema/data lifecycle lives in `db/migrations/` + `db/seeds/`,
+> logged in `memory/logs/BUILD-HISTORY.md` (D3).
 
 ---
 
@@ -57,8 +61,8 @@ The model uses ten pillars (7 original + 3 new):
 
 1. `.sfk/kernel/BOOTSTRAP.md`: session start protocol (v0.6 with LAYER 0/1).
 2. `.sfk/kernel/RULES.md`: process, continuity, and memory rules (sovereign).
-3. `.sfk/kernel/SYSTEM.md`: technical and organizational engineering rules.
-4. `.sfk/kernel/project.toml`: **[NEW]** identity, stack, URLs, and design tokens for the project.
+3. `SYSTEM.md`: technical and organizational engineering rules.
+4. `sfk.toml`: **[NEW]** identity, stack, URLs, and design tokens for the project.
 5. `.sfk/kernel/SOUL.md`: **[NEW]** compact and portable AI behavior contract.
 6. `.sfk/kernel/index.toml`: **[NEW]** declarative router — loads files by task type.
 7. `memory/MODIFICATION_LOG.md`: macro memory and operational traceability.
@@ -69,9 +73,9 @@ The model uses ten pillars (7 original + 3 new):
 
 Core principle:
 - `.sfk/kernel/RULES.md` governs the process (sovereign).
-- `.sfk/kernel/project.toml` + `.sfk/kernel/SOUL.md` define identity and behavior (portable).
+- `sfk.toml` + `.sfk/kernel/SOUL.md` define identity and behavior (portable).
 - `.sfk/kernel/index.toml` optimizes context loading by task type.
-- `.sfk/kernel/SYSTEM.md` governs technical implementation of the concrete project.
+- `SYSTEM.md` governs technical implementation of the concrete project.
 - `memory/MODIFICATION_LOG` records the continuous evolution of changes.
 - `memory/progress.md` provides a snapshot of the current module state.
 - `memory/logs/DEBUG-HISTORY.md` records recurring failures and fixes (RAG).
@@ -85,7 +89,7 @@ Core principle:
 Purpose: mandatory entry point for every session (Kernel v0.6).
 
 Obligations (LAYER 0):
-- always load: `.sfk/kernel/project.toml`, `.sfk/kernel/SOUL.md`, `.sfk/kernel/RULES.md`, `.sfk/kernel/SYSTEM.md`;
+- always load: `sfk.toml`, `.sfk/kernel/SOUL.md`, `.sfk/kernel/RULES.md`, `SYSTEM.md`;
 
 Obligations (LAYER 1):
 - consult `.sfk/kernel/index.toml` to load additional files by task type;
@@ -108,7 +112,7 @@ Defines:
 - commit/push approval rules;
 - where to update complementary documentation.
 
-### `.sfk/kernel/SYSTEM.md`
+### `SYSTEM.md`
 Purpose: technical engineering contract for the concrete project.
 
 Defines:
@@ -116,9 +120,9 @@ Defines:
 - logging, security, validation, backend/frontend architecture;
 - testing and technical quality rules.
 
-Note: when creating a new project, fill in `.sfk/kernel/SYSTEM-TEMPLATE.md` and rename it to `.sfk/kernel/SYSTEM.md`.
+Note: when creating a new project, fill in `.sfk/kernel/SYSTEM-TEMPLATE.md` and rename it to `SYSTEM.md`.
 
-### `.sfk/kernel/project.toml`
+### `sfk.toml`
 Purpose: **technical dictionary of the project**. Loaded in every interaction. The single file a solo dev needs to read after a month away.
 
 Contains:
@@ -217,7 +221,7 @@ Consequences: <impacts and trade-offs>
 7. Classify work:
    - medium/large → create `PLAN-XXXX` and wait for explicit approval before starting;
    - point-in-time → record execution in real time in the `MODIFICATION_LOG`.
-8. Execute changes with technical validations (`.sfk/kernel/SYSTEM.md`).
+8. Execute changes with technical validations (`SYSTEM.md`).
 9. Record continuity checkpoint:
    - with plan: update progress in the `PLAN`;
    - without plan: record each block in the `MODIFICATION_LOG`.
@@ -273,8 +277,9 @@ Rules:
 - Level: justification for choices and trade-offs.
 
 ## Evolution Memory
-- File: `docs/evolutive_changes/EVOLUTION_MEMORY.md`
-- Level: lessons learned, recurrences, and revisions.
+- File: `memory/MODIFICATION_LOG.md` (entries tagged `##evolution`)
+- Level: lessons learned, recurrences, and revisions. No separate evolution file —
+  it is consolidated into the modification log.
 
 ## Debug Memory
 - File: `memory/logs/DEBUG-HISTORY.md`
@@ -386,7 +391,7 @@ Usage rule:
 ## 9) How to port this model to other systems
 
 Implementation checklist:
-1. Fill in `.sfk/kernel/project.toml` as the **complete technical dictionary**:
+1. Fill in `sfk.toml` as the **complete technical dictionary**:
    - `[project]`, `[project.team]`, `[project.urls]`
    - `[hosting.frontend]`, `[hosting.backend]`, `[hosting.database]`
    - `[stack.runtime]`, `[stack.frontend]`, `[stack.backend]`, `[stack.database]`, `[stack.package_manager]`
@@ -395,15 +400,19 @@ Implementation checklist:
    - `[[integrations]]` — one block per active third-party API
    - `[tools.dev.*]` — local tools like ngrok (purpose, who calls, setup)
 2. Fill in `.sfk/kernel/SOUL.md` with the project-specific restrictions (or keep the default).
-3. Fill in `.sfk/kernel/SYSTEM.md` using `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide.
+3. Fill in `SYSTEM.md` using `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide.
 5. Create folders: `memory/plans/`, `memory/decisions/`, `memory/logs/`, `docs/`.
 6. Create `memory/MODIFICATION_LOG.md` and `memory/progress.md`.
 7. Define naming pattern for `PLAN` and `DECISION` (see section 4).
 8. Define commit/push approval rule (see `.sfk/kernel/RULES.md` Git Kernel section).
 9. Verify that `.sfk/kernel/ARCHITECTURE.md` is updated with the project's agents and skills.
 
-> **Do not create separate docs/config files for hosting, env vars, or integrations.**
-> All of that lives in `.sfk/kernel/project.toml`. Testing directives are in `.sfk/kernel/TESTING_GUIDE.md`. Build gotchas go in `memory/logs/BUILD-HISTORY.md`.
+> **Do not create ad-hoc `docs/config` files for hosting, env vars, or integrations.**
+> Structured source of truth is `sfk.toml`: `[hosting.*]`/`[environments.*]` (deploy),
+> `[[integrations]]` (external interfaces index), `[db]` (database lifecycle) — names, never values.
+> Human runbooks live in `docs/integrations/<service>.md` and `docs/deploy/`.
+> DB changes go in `db/migrations/` + `db/seeds/`, logged in `memory/logs/BUILD-HISTORY.md`.
+> Testing directives are in `.sfk/kernel/TESTING_GUIDE.md`.
 
 Monthly audit checklist:
 1. Does `memory/progress.md` reflect the real module state?
@@ -411,7 +420,7 @@ Monthly audit checklist:
 3. Are recent changes in the `MODIFICATION_LOG`?
 4. Are relevant decisions in `DECISION-*`?
 5. Were recent resolved bugs consolidated in `memory/logs/DEBUG-HISTORY.md`?
-6. Is there a discrepancy between `.sfk/kernel/RULES.md`, `.sfk/kernel/SYSTEM.md`, and actual practice?
+6. Is there a discrepancy between `.sfk/kernel/RULES.md`, `SYSTEM.md`, and actual practice?
 7. Are documentation references free of broken links?
 
 ---
@@ -424,9 +433,9 @@ Monthly audit checklist:
 - Sovereign: `.sfk/kernel/RULES.md`
 
 ### Identity and behavior
-- Identity: `.sfk/kernel/project.toml`
+- Identity: `sfk.toml`
 - Behavior: `.sfk/kernel/SOUL.md`
-- Engineering: `.sfk/kernel/SYSTEM.md`
+- Engineering: `SYSTEM.md`
 - Neutral templates: `.sfk/kernel/SYSTEM-TEMPLATE.md`
 
 ### Operational memory

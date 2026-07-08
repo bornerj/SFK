@@ -46,10 +46,10 @@ MITIGATED RISK: Execution without context, unauthorized commit/push, incorrect s
 6. No session can be closed without an audit.
 7. Every functional change must generate persistence in the appropriate memory.
 8. Writing templates in `memory/WORKFLOW_MEMORY_PLAYBOOK.md` under section `## 6) Reusable Templates`
-9. At bootstrap, the repository must first be classified as NEW PROJECT or EXISTING PROJECT before `project.toml` or `SYSTEM.md` are enforced.
+9. At bootstrap, the repository must first be classified as NEW PROJECT or EXISTING PROJECT before `sfk.toml` or `SYSTEM.md` are enforced.
 10. **File Boundary Law.** SFK files fall into three categories with distinct lifecycles and must never be mixed:
     - **Engine** — the SFK kernel (`RULES.md`, `SOUL.md`, `BOOTSTRAP.md`, `index.toml`, `ARCHITECTURE.md`, `agents/`, `skills/`, `workflows/`, `scripts/`): framework code, **read-only** for the project. The AI must never treat engine files as product, and must never edit them except when explicitly maintaining SFK itself.
-    - **Project state** — `memory/`, `docs/`, project config (`project.toml` / `sfk.toml`) and `SYSTEM.md`: the project's own data, owned and evolved per project.
+    - **Project state** — `memory/`, `docs/`, project config (`sfk.toml` / `sfk.toml`) and `SYSTEM.md`: the project's own data, owned and evolved per project.
     - **Maintainer tooling** — scaffolder / updater / CLI: operates *on* projects and never ships inside them.
     The AI must never place project state inside the engine directory, nor engine files among product code. (Engine consolidation under `.sfk/` is tracked in `memory/plans/PLAN-0001`.)
 
@@ -281,7 +281,8 @@ MITIGATED RISK: Context loss over time.
 | Detailed execution | `memory/plans/PLAN-XXXX-DONE-SUBJECT.md`          |
 | Resolved bug       | `memory/logs/DEBUG-HISTORY.md`                    |
 | Decision           | `memory/decisions/`                               |
-| Technical evolution| `docs/evolutive_changes/EVOLUTION_MEMORY.md`      |
+| Technical evolution| `memory/MODIFICATION_LOG.md` (tag `##evolution`)  |
+| DB schema/data      | `memory/logs/BUILD-HISTORY.md` + `db/migrations/` |
 
 ## 9.2 MODIFICATION_LOG Rule
 
@@ -433,7 +434,7 @@ MITIGATED RISK: Implicit architecture/requirements.
 
 When changing scope/architecture:
 - `docs/project/PROJECT_OVERVIEW.md`
-- `docs/evolutive_changes/EVOLUTION_MEMORY.md`
+- `memory/MODIFICATION_LOG.md` (record the evolution with tag `##evolution`)
 
 New requirements/gaps:
 - `docs/project/REQUIREMENTS.md`
@@ -441,19 +442,38 @@ New requirements/gaps:
 Bootstrap and project-definition documents must obey these rules:
 - First classify the repository as NEW PROJECT or EXISTING PROJECT.
 - NEW PROJECT = no `PLAN-XXXX`, no decisions, and no real entries in `memory/MODIFICATION_LOG.md` beyond the examples/template area.
-- For NEW PROJECT, `.sfk/kernel/project.toml` and `.sfk/kernel/SYSTEM.md` are references/examples only and must not be used to validate the repository state.
+- For NEW PROJECT, `sfk.toml` and `SYSTEM.md` are references/examples only and must not be used to validate the repository state.
 - SFK .sfk/kernel/template files must be written in English.
-- Project-generated deliverables may be written in the language declared in `.sfk/kernel/project.toml -> [project] language`.
+- Project-generated deliverables may be written in the language declared in `sfk.toml -> [project] language`.
 - `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.
 - `docs/project/REQUIREMENTS.md` must preserve its `#` and `##` heading structure. Requirements use `FR-XXX`, non-functional requirements use `NFR-XXX`, acceptance criteria use `AC-XXX`.
 - `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents — they must exist and maintain their `##` section structure across sessions.
 
 Technical evolution (recurring errors/refactors/lessons):
-- `docs/evolutive_changes/EVOLUTION_MEMORY.md`
+- `memory/MODIFICATION_LOG.md` — record with tag `##evolution`. There is no separate
+  evolution file; the modification log is the single chronological source.
 
-Integrations and deploy:
-- `docs/config/INTEGRATIONS.md`
-- `docs/config/DEPLOY_ENV_REFERENCE.md`
+External interfaces (single fixed location — D2):
+- `sfk.toml -> [[integrations]]` — one indexed block per third-party service
+  (WhatsApp, Stripe, PayPal, SendGrid, internal APIs, etc.). Names/identifiers only.
+- `docs/integrations/<service>.md` — one human runbook file per service (auth model,
+  endpoints, webhooks, sandbox vs prod, gotchas). Never store secret values.
+
+Database schema and data lifecycle (single fixed location — D3):
+- `db/migrations/NNNN_<verb>_<subject>.sql` — sequential, append-only, never renumber.
+- `db/seeds/` — seed/fixture scripts (test data, reference data).
+- `memory/logs/BUILD-HISTORY.md` — the application ledger: what migration/seed ran,
+  when, and why (e.g. MySQL→PostgreSQL migration, data copy, test seeds).
+- `sfk.toml -> [db]` declares engine, migrations path and seeds path.
+
+Deploy and environments:
+- `sfk.toml -> [hosting.*]` / `[environments.*]` — structured source of truth
+  (platform and variable **names** only, never values).
+- `docs/deploy/` — human deploy runbook (steps, provider specifics).
+- Provider changes are recorded as a `DECISION-XXX` (timeline of hosting moves).
+
+**Names, not values:** `sfk.toml` and `docs/` may name platforms, variables and
+services, but must NEVER contain secrets, tokens, keys or connection strings.
 
 ---
 

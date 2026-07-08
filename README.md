@@ -145,7 +145,7 @@ python tools/jb_kit_turbo.py /path/to/my-project --project-name MyProject --init
 
 ### 3. Fill in your project identity
 
-Edit `.sfk/kernel/project.toml` — the **complete technical dictionary** of your project:
+Edit `sfk.toml` — the **complete technical dictionary** of your project:
 
 ```toml
 [project]
@@ -209,43 +209,51 @@ From there, the AI operates within the project's rules without needing re-explan
 
 ```
 sfk/
-├── .sfk/kernel/               ← AI control layer
-│   ├── BOOTSTRAP.md      ← Session entry point (required)
-│   ├── RULES.md          ← Governance, process, memory & Git (sovereign)
-│   ├── SOUL.md           ← AI behavior contract (portable)
-│   ├── project.toml      ← Project identity, stack, URLs, design tokens
-│   ├── index.toml        ← Declarative session router by task type
-│   ├── SYSTEM.md         ← Technical contract (fill per project)
-│   ├── agents/           ← 20 specialist AI agents
-│   ├── skills/           ← 56 domain knowledge modules
-│   ├── workflows/        ← 11 slash-command procedures
-│   └── scripts/          ← Validation & audit scripts
+├── .sfk/                 ← ENGINE (framework, read-only, isolated)
+│   ├── VERSION           ← Engine version
+│   ├── MANIFEST          ← Engine ownership map (used by the updater)
+│   └── kernel/           ← AI control layer
+│       ├── BOOTSTRAP.md      ← Session entry point (required)
+│       ├── RULES.md          ← Governance, process, memory & Git (sovereign)
+│       ├── SOUL.md           ← AI behavior contract (portable)
+│       ├── index.toml        ← Declarative session router by task type
+│       ├── SYSTEM-TEMPLATE.md ← Guide for the project's SYSTEM.md
+│       ├── agents/           ← 20 specialist AI agents
+│       ├── skills/           ← 56 domain knowledge modules
+│       ├── workflows/        ← 11 slash-command procedures
+│       └── scripts/          ← Validation & audit scripts
 │
-├── memory/               ← Persistence layer
-│   ├── MODIFICATION_LOG.md          ← Chronological framework/project change log
-│   ├── progress.md                  ← Current module and delivery state
+├── sfk.toml              ← PROJECT CONFIG — identity, stack, hosting,
+│                            environments, [[integrations]], [db] (root)
+├── SYSTEM.md             ← PROJECT technical contract (fill per project)
+│
+├── memory/               ← PROJECT STATE — persistence layer
+│   ├── progress.md                  ← Resume Panel + module state (read first)
+│   ├── MODIFICATION_LOG.md          ← Chronological change log (incl. ##evolution)
 │   ├── PR-XXXX-DESCRIPTION.md       ← Reusable PR description template
-│   ├── plans/
-│   │   └── PLAN-XXXX-DONE-subject.md ← Reusable completed-plan template
-│   ├── decisions/
-│   │   └── DECISION-XXX.md          ← Reusable decision template
+│   ├── plans/       └── PLAN-XXXX-DONE-subject.md
+│   ├── decisions/   └── DECISION-XXX.md
 │   └── logs/
-│       ├── BUILD-HISTORY.md
+│       ├── BUILD-HISTORY.md         ← DB/migration/seed application ledger (D3)
 │       ├── DEBUG-HISTORY.md
 │       ├── DRIFT-RULES.md
 │       └── SESSION-AUDIT-CHECKLIST.md
 │
-├── docs/                 ← Product documentation
-│   ├── project/
-│   ├── config/
-│   └── evolutive_changes/
+├── docs/                 ← PROJECT product documentation
+│   ├── project/          ← Overview, requirements, scope, setup
+│   ├── integrations/     ← One runbook per external service (D2)
+│   └── deploy/           ← Deploy runbook (providers, steps)
 │
-├── tools/                ← Scaffolding tools
-│   └── jb_kit_turbo.py
+├── db/                   ← PROJECT database lifecycle (D3)
+│   ├── migrations/       ← NNNN_*.sql — sequential, append-only
+│   └── seeds/            ← Seed / fixture scripts
 │
-├── new-project.ps1       ← Windows wizard
-├── new-project.sh        ← Linux/macOS wizard
-├── update-project.sh     ← Framework updater for existing projects
+├── bin/                  ← MAINTAINER TOOLING (never ships to projects)
+│   ├── lib/              ← jb_kit_turbo.py (scaffolder), sfk_updater.py
+│   ├── new-project.sh    ← Linux/macOS scaffold wizard
+│   ├── new-project.ps1   ← Windows scaffold wizard
+│   └── update-project.sh ← Framework updater for existing projects
+│
 └── INSTRUCTIONS.md       ← Full usage guide
 ```
 
@@ -298,7 +306,7 @@ SFK operates in three layers:
 ```
 ┌────────────────────────────────────────────────────────────┐
 │  CONTROL & CAPABILITIES  (.sfk/kernel/)                         │
-│  project.toml · SOUL.md · RULES.md · index.toml            │
+│  sfk.toml · SOUL.md · RULES.md · index.toml            │
 │  BOOTSTRAP.md · ARCHITECTURE.md                            │
 │  agents/ · skills/ · workflows/ · scripts/                 │
 └────────────────┬───────────────────────────────────────────┘

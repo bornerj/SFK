@@ -24,7 +24,7 @@ SFK operates in three layers:
 ```
 ┌───────────────────────────────────────────────────────────┐
 │  CONTROL AND CAPABILITIES LAYER  (.sfk/kernel/)                 │
-│  project.toml · SOUL.md · RULES.md · index.toml            │
+│  sfk.toml · SOUL.md · RULES.md · index.toml            │
 │  BOOTSTRAP.md · ARCHITECTURE.md                            │
 │  agents/ · skills/ · workflows/ · rules/ · scripts/        │
 └────────────────┬───────────────────────────────────────────┘
@@ -81,7 +81,7 @@ SFK includes a PowerShell script that copies the framework and initializes the p
 
 ### 2. Fill in the project identity
 
-Edit `.sfk/kernel/project.toml` — the **complete technical dictionary** of your project:
+Edit `sfk.toml` — the **complete technical dictionary** of your project:
 
 ```toml
 [project]
@@ -116,7 +116,7 @@ vars = ["VITE_API_URL", "VITE_WEB_URL"]
 
 ### 3. Define the project's technical rules
 
-Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide and save as `.sfk/kernel/SYSTEM.md`:
+Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide and save as `SYSTEM.md`:
 
 ```markdown
 ## Language and Stack
@@ -151,7 +151,7 @@ Read .sfk/kernel/BOOTSTRAP.md and confirm the current project state.
 ```
 
 **What the AI does:**
-- Reads `project.toml` → knows it's a TypeScript web-app
+- Reads `sfk.toml` → knows it's a TypeScript web-app
 - Reads `SOUL.md` → adopts direct, no-preamble behavior
 - Reads `RULES.md` → knows it needs approval before commit/push
 - Checks `memory/plans/` → finds PLAN-0003 in progress
@@ -240,7 +240,7 @@ Close the session.
 | Current project state           | `memory/progress.md`                 |
 | History of changes              | `memory/MODIFICATION_LOG.md`         |
 | Resolved bugs                   | `memory/logs/DEBUG-HISTORY.md`       |
-| Fill in for a new project       | `.sfk/kernel/project.toml` · `.sfk/kernel/SYSTEM-TEMPLATE.md` |
+| Fill in for a new project       | `sfk.toml` · `.sfk/kernel/SYSTEM-TEMPLATE.md` |
 | AI rules                        | `.sfk/kernel/RULES.md` (sovereign)        |
 
 ---

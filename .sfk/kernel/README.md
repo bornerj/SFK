@@ -18,7 +18,7 @@
 ├── RULES.md             ← Sovereign: governance, process, memory, and Git
 ├── SYSTEM.md            ← Technical contract for the project (stack, standards)
 ├── SYSTEM-TEMPLATE.md   ← Fill-in guide for SYSTEM.md for new projects
-├── project.toml         ← Technical dictionary: hosting, stack, design, env vars, integrations
+├── sfk.toml         ← Technical dictionary: hosting, stack, design, env vars, integrations
 ├── SOUL.md              ← Compact and portable AI behavior contract
 ├── TESTING_GUIDE.md     ← Universal testing directives (all projects)
 └── index.toml           ← Declarative session router by task type
@@ -42,7 +42,7 @@ These files are read in **every** session via `BOOTSTRAP.md`:
 
 | File | Purpose |
 |---|---|
-| `project.toml` | Who we are: identity, stack, URLs |
+| `sfk.toml` | Who we are: identity, stack, URLs |
 | `SOUL.md` | How the AI behaves |
 | `RULES.md` | How the process works |
 | `SYSTEM.md` | How the code is written |
@@ -55,9 +55,9 @@ See `index.toml` for the full trigger → files mapping.
 
 ## How to use when copying the template
 
-1. Fill in `project.toml` with the name, stack, URLs, and env vars of the new project
+1. Fill in `sfk.toml` with the name, stack, URLs, and env vars of the new project
 2. Review `SOUL.md` (usually no changes needed)
-4. Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide to fill in `.sfk/kernel/SYSTEM.md`
+4. Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide to fill in `SYSTEM.md`
 5. Sync the rest of the system via `memory/WORKFLOW_MEMORY_PLAYBOOK.md` section 9
 
 ---

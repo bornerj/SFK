@@ -1,4 +1,4 @@
-# project.toml — Technical Dictionary of the Project
+# sfk.toml — Technical Dictionary of the Project
 # Loaded in EVERY interaction with the AI.
 # This is the single file a solo dev needs to read after 1 month away.
 # NEVER put real secret values here — names only.
@@ -119,10 +119,14 @@ vars = [
 # Use one [[integrations]] block per integration
 # ═══════════════════════════════════════
 
+# Each block indexes one external interface. The human runbook lives in
+# docs/integrations/<service>.md (see `runbook`). Names only — never secret values.
+
 # [[integrations]]
 # name     = "Stripe"
 # purpose  = "Payment processing"
 # docs     = "https://stripe.com/docs"
+# runbook  = "docs/integrations/stripe.md"
 # env_vars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]
 
 # [[integrations]]
@@ -136,6 +140,17 @@ vars = [
 # purpose  = "Transactional email"
 # docs     = "https://docs.sendgrid.com"
 # env_vars = ["SENDGRID_API_KEY"]
+
+# ═══════════════════════════════════════
+# DATABASE LIFECYCLE — Schema/data change location (D3)
+# Migrations are sequential and append-only; the number IS the timeline.
+# ═══════════════════════════════════════
+
+[db]
+engine          = ""              # ex: PostgreSQL | MySQL | SQLite (mirror [stack.database])
+migrations_path = "db/migrations" # NNNN_<verb>_<subject>.sql — never renumber
+seeds_path      = "db/seeds"      # fixtures / reference data
+ledger          = "memory/logs/BUILD-HISTORY.md"  # when/where/why each script ran
 
 # ═══════════════════════════════════════
 # DEV TOOLS — Local environment only, never go to production
@@ -157,9 +172,9 @@ vars = [
 kernel_entry   = ".sfk/kernel/BOOTSTRAP.md"      # session entry point
 rules          = ".sfk/kernel/RULES.md"          # sovereign governance
 behavior       = ".sfk/kernel/SOUL.md"           # AI behavior and restrictions
-identity       = ".sfk/kernel/project.toml"      # this file — project dictionary
+identity       = "sfk.toml"      # this file — project dictionary
 routing        = ".sfk/kernel/index.toml"        # selective loading by task type
-engineering    = ".sfk/kernel/SYSTEM.md"         # project technical standards
+engineering    = "SYSTEM.md"         # project technical standards
 memory_log     = "memory/MODIFICATION_LOG.md"
 memory_status  = "memory/progress.md"
 memory_debug   = "memory/logs/DEBUG-HISTORY.md"

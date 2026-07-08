@@ -2,7 +2,7 @@
 # Read at the start of each session via .sfk/kernel/BOOTSTRAP.md
 # Defines what to load and when, avoiding unnecessary token reads.
 # Complements (does not replace) .sfk/kernel/BOOTSTRAP.md.
-# Before enforcing `.sfk/kernel/project.toml` or `.sfk/kernel/SYSTEM.md`, classify the repo as
+# Before enforcing `sfk.toml` or `SYSTEM.md`, classify the repo as
 # NEW PROJECT vs EXISTING PROJECT using the rules in `.sfk/kernel/BOOTSTRAP.md`.
 # For NEW PROJECT, those two files are examples/templates only.
 
@@ -14,12 +14,12 @@
 files = [
   ".sfk/kernel/SOUL.md",       # AI behavior and restrictions
   ".sfk/kernel/RULES.md",      # governance, process, and memory (sovereign)
-  ".sfk/kernel/project.toml",  # identity/stack only after EXISTING PROJECT classification
+  "sfk.toml",  # identity/stack only after EXISTING PROJECT classification
 ]
 
 [bootstrap_project_state]
 rule = "Classify NEW PROJECT when there is no PLAN-XXXX, no decisions, and MODIFICATION_LOG still has only template/example content."
-new_project_ignore_for_validation = [".sfk/kernel/project.toml", ".sfk/kernel/SYSTEM.md"]
+new_project_ignore_for_validation = ["sfk.toml", "SYSTEM.md"]
 new_project_mandatory_docs = [
   "docs/project/PROJECT_OVERVIEW.md",
   "docs/project/REQUIREMENTS.md",
@@ -41,7 +41,7 @@ read = [
   "memory/progress.md",
   "memory/plans/",
   ".sfk/kernel/ARCHITECTURE.md",
-  ".sfk/kernel/SYSTEM.md",
+  "SYSTEM.md",
 ]
 
 [on_planning]
@@ -67,7 +67,7 @@ read = [
   "memory/logs/DEBUG-HISTORY.md",
   "memory/plans/",
   ".sfk/kernel/ARCHITECTURE.md",
-  ".sfk/kernel/SYSTEM.md",
+  "SYSTEM.md",
 ]
 write = [
   "memory/MODIFICATION_LOG.md",
@@ -82,7 +82,7 @@ read = [
   "memory/MODIFICATION_LOG.md",
   "memory/progress.md",
   "memory/plans/",
-  ".sfk/kernel/SYSTEM.md",
+  "SYSTEM.md",
 ]
 write = [
   "memory/logs/DEBUG-HISTORY.md",
@@ -97,7 +97,7 @@ read = [
   "memory/MODIFICATION_LOG.md",
   "memory/progress.md",
   ".sfk/kernel/ARCHITECTURE.md",
-  ".sfk/kernel/SYSTEM.md",
+  "SYSTEM.md",
 ]
 write = [
   "memory/decisions/DECISION-XXX.md",
@@ -136,7 +136,7 @@ read = [
   "memory/progress.md",
   "memory/plans/",
   ".sfk/kernel/ARCHITECTURE.md",
-  ".sfk/kernel/SYSTEM.md",
+  "SYSTEM.md",
 ]
 write = [
   "memory/progress.md",
@@ -148,7 +148,7 @@ trigger = "migration, schema, query, database, alter table, new column, index, s
 read = [
   "memory/logs/DEBUG-HISTORY.md",
   "memory/decisions/",
-  ".sfk/kernel/SYSTEM.md",
+  "SYSTEM.md",
 ]
 write = [
   "memory/logs/DEBUG-HISTORY.md",
@@ -174,7 +174,7 @@ trigger = "add library, new dependency, install, evaluate tool, remove dependenc
 read = [
   "memory/decisions/",
   "memory/logs/DEBUG-HISTORY.md",
-  ".sfk/kernel/project.toml",
+  "sfk.toml",
 ]
 write = [
   "memory/decisions/DECISION-XXX.md",
@@ -198,7 +198,7 @@ write = [
 # Trigger: design system, component, token, color, typography, theme
 trigger = "design system, component, token, color, typography, theme, dark mode, style, UI, visual, animation, layout"
 read = [
-  ".sfk/kernel/project.toml",   # design tokens
+  "sfk.toml",   # design tokens
   ".sfk/kernel/ARCHITECTURE.md",
   "memory/decisions/",
 ]
@@ -216,7 +216,7 @@ write = [
 ]
 
 [project_docs_rules]
-kernel_language = "SFK .sfk/kernel/template files must be maintained in English; project-generated documents may use the language declared in .sfk/kernel/project.toml"
+kernel_language = "SFK .sfk/kernel/template files must be maintained in English; project-generated documents may use the language declared in sfk.toml"
 project_overview = "docs/project/PROJECT_OVERVIEW.md must preserve its # and ## heading structure across sessions — do not add, remove, or rename top-level sections"
 requirements = "docs/project/REQUIREMENTS.md must preserve its # and ## heading structure. Use FR-XXX for functional requirements, NFR-XXX for non-functional requirements, AC-XXX for acceptance criteria"
 scope = "docs/project/SCOPE.md is mandatory — must exist and maintain its ## section structure across sessions"

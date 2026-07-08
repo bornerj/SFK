@@ -9,7 +9,7 @@ Must be reviewed BEFORE the start of the project.
 > This file is read and enforced by the AI in every session.
 
 ## Language and Stack
-[FILL IN — Use kernel/project.toml as reference]
+[FILL IN — Use kernel/sfk.toml as reference]
 
 ## Code Style
 [FILL IN — Define your project's conventions]

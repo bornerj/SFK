@@ -86,6 +86,18 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — PLAN-0001 Phase 3 (project config to root + D1/D2/D3 structures) ##evolution
+- **Config promoted to root** (Category B — project state, no longer buried in the engine):
+  - `.sfk/kernel/project.toml` → `sfk.toml` (root); `.sfk/kernel/SYSTEM.md` → `SYSTEM.md` (root).
+  - References rewritten across engine + root pointers + memory docs (word-boundary sed preserved `pyproject.toml`). Excluded `bin/lib/sfk_updater.py` (F5).
+  - `_blueprint/.sfk/kernel/SYSTEM.md` → `_blueprint/SYSTEM.md`; scaffolder `EXTRA_CONFIG_FILES` now ships `sfk.toml`/`SYSTEM.md` from root.
+- **D1 — Resume Panel:** `memory/progress.md` redefined with a minimal TOML front-block (updated/active_plan/phase/status/branch/blockers/next_action) + "Where am I" line, so returning to a project costs near-zero tokens. Clean template mirrored in `_blueprint/memory/progress.md`.
+- **D2 — External interfaces single location:** `docs/integrations/` (README + `_EXAMPLE-service.md`) as per-service runbooks; `sfk.toml [[integrations]]` gains `runbook` pointer. Deploy runbook home `docs/deploy/`.
+- **D3 — DB lifecycle single location:** `db/migrations/` + `db/seeds/` (sequential, append-only, never renumber) with convention READMEs; `sfk.toml [db]` section (engine, paths, ledger); application ledger = `memory/logs/BUILD-HISTORY.md`. `db` added to scaffolder `BLUEPRINT_DIRS`.
+- **EVOLUTION_MEMORY removed** (req #4): deleted `docs/evolutive_changes/EVOLUTION_MEMORY.md` (root + `_blueprint`); technical evolution now consolidated into `memory/MODIFICATION_LOG.md` with tag `##evolution`. Rules updated in `RULES.md §9.1/§11` and `WORKFLOW_MEMORY_PLAYBOOK.md`.
+- Removed stray `docs/config/INTEGRATIONS.md` (leaked JLR_Beauty draft — framework contamination). Added "names not values" rule to `RULES.md §11`. README directory tree rewritten to the new layout.
+- Validated: fresh scaffold in temp → `sfk.toml`/`SYSTEM.md` at root, `db/`+`docs/integrations/`+`docs/deploy/` propagate, `progress.md` clean Resume Panel, no `EVOLUTION_MEMORY`/`.sfk/kernel/{project.toml,SYSTEM.md}` refs remain.
+
 ## 2026-07-07 — PLAN-0001 Phase 2 (tooling consolidated into bin/)
 - `tools/` → `bin/lib/` (`jb_kit_turbo.py`, `sfk_updater.py`), `tools/README.md` → `bin/README.md`.
 - Root wrappers → `bin/` (`new-project.{sh,ps1}`, `update-project.{sh,ps1}`); wrapper paths updated `tools/` → `lib/`.

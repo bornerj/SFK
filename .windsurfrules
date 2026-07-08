@@ -13,7 +13,7 @@ the Windsurf entry point.
 
 BOOTSTRAP.md is the session entry point. It will instruct you to:
 1. Classify the project as NEW PROJECT or EXISTING PROJECT
-2. Load Layer 0 (SOUL, RULES, project.toml, SYSTEM.md)
+2. Load Layer 0 (SOUL, RULES, sfk.toml, SYSTEM.md)
 3. Load Layer 1 selectively by task type (via .sfk/kernel/index.toml)
 4. Classify the request type and route to the correct agent
 5. Provide a readback confirmation to the user
@@ -29,8 +29,8 @@ Do not skip this step. Do not summarize it. Read it to the last line.
 | `.sfk/kernel/BOOTSTRAP.md` | Session entry point | Every session, first |
 | `.sfk/kernel/RULES.md` | Sovereign governance — never override | Layer 0 |
 | `.sfk/kernel/SOUL.md` | AI behavior contract | Layer 0 |
-| `.sfk/kernel/project.toml` | Project identity, stack, URLs, env vars | Layer 0 |
-| `.sfk/kernel/SYSTEM.md` | Technical and engineering standards | Layer 0 |
+| `sfk.toml` | Project identity, stack, URLs, env vars | Layer 0 |
+| `SYSTEM.md` | Technical and engineering standards | Layer 0 |
 | `.sfk/kernel/index.toml` | Session router — loads files by task type | Layer 1 |
 | `.sfk/kernel/ARCHITECTURE.md` | Inventory of agents, skills, scripts | On demand |
 | `memory/MODIFICATION_LOG.md` | Macro operational history | On demand |
