@@ -86,6 +86,11 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — README.md aligned to v1.3.0 + skill count fix
+- README "Create a new project" commands were stale (root `.\new-project.ps1`, `bash new-project.sh`, `python tools/jb_kit_turbo.py`) → corrected to `bin\new-project.ps1` / `bash bin/new-project.sh`; added USAGE.md pointer. The directory-tree block was already correct (Phase 3).
+- Fixed wrong clone URL `github.com/Jeiel/sfk` → `github.com/bornerj/SFK` (matches origin).
+- Skill count drift (pre-existing): actual count is **57**, docs said 56. Updated README, CLAUDE.md, and scaffolder QUICKSTART text to 57. Agents (20) and workflows (11) verified correct.
+
 ## 2026-07-07 — INSTRUCTIONS.md aligned to v1.3.0 layout
 - Follow-up: the F1/F3 seds only rewrote literal paths in `INSTRUCTIONS.md`; structural/prose refs were still stale. Fixed manually:
   - Layer diagram redrawn as 3 zones (engine `.sfk/` read-only · project config at root `sfk.toml`/`SYSTEM.md` · project state `memory/ docs/ db/`), added OPERATING_CARD/hooks/VERSION/MANIFEST.

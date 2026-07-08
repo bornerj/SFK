@@ -122,8 +122,8 @@ To:
 ### 1. Clone this repository
 
 ```bash
-git clone https://github.com/Jeiel/sfk.git
-cd sfk
+git clone https://github.com/bornerj/SFK.git
+cd SFK
 ```
 
 ### 2. Create a new project from the template
@@ -131,20 +131,23 @@ cd sfk
 **Windows (PowerShell):**
 ```powershell
 # Interactive wizard — recommended for first use
-.\new-project.ps1
+bin\new-project.ps1
 
 # Direct mode with parameters
-.\new-project.ps1 -Target "C:\projects\my-project" -ProjectName "MyProject" -InitGit
+bin\new-project.ps1 -Target "C:\projects\my-project" -ProjectName "MyProject" -InitGit
 ```
 
 **Linux/macOS (Bash):**
 ```bash
 # Interactive wizard
-bash new-project.sh
+bash bin/new-project.sh
 
 # Direct mode
-python tools/jb_kit_turbo.py /path/to/my-project --project-name MyProject --init-git
+bash bin/new-project.sh /path/to/my-project --project-name MyProject --init-git
 ```
+
+> See **[USAGE.md](USAGE.md)** for the full workflow: new project, adding SFK to an
+> existing project, updating SFK, and managing skills.
 
 ### 3. Fill in your project identity
 
@@ -222,7 +225,7 @@ sfk/
 │       ├── index.toml        ← Declarative session router by task type
 │       ├── SYSTEM-TEMPLATE.md ← Guide for the project's SYSTEM.md
 │       ├── agents/           ← 20 specialist AI agents
-│       ├── skills/           ← 56 domain knowledge modules
+│       ├── skills/           ← 57 domain knowledge modules
 │       ├── workflows/        ← 11 slash-command procedures
 │       └── scripts/          ← Validation & audit scripts
 │

@@ -257,7 +257,7 @@ The scaffolder installed everything below — no action needed:
 - `.sfk/kernel/TESTING_GUIDE.md` — universal testing directives
 - `.sfk/kernel/index.toml` — session router by task type
 - `.sfk/kernel/agents/` — 20 specialist AI personas
-- `.sfk/kernel/skills/` — 56 domain knowledge modules
+- `.sfk/kernel/skills/` — 57 domain knowledge modules
 - `.sfk/kernel/workflows/` — 11 slash commands (/plan, /debug, /deploy, etc.)
 - `.sfk/kernel/scripts/` — 5 automation scripts
 - `memory/logs/SESSION-AUDIT-CHECKLIST.md` — pre-closure validation

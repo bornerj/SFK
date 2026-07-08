@@ -43,7 +43,7 @@ Do not skip this step. Do not summarize it. Read it to the last line.
 ## Capabilities
 
 - **20 agents** in `.sfk/kernel/agents/` — specialist AI personas for domain routing
-- **56 skills** in `.sfk/kernel/skills/` — domain knowledge modules (read via agent frontmatter)
+- **57 skills** in `.sfk/kernel/skills/` — domain knowledge modules (read via agent frontmatter)
 - **11 workflows** in `.sfk/kernel/workflows/` — slash commands (/plan, /debug, /deploy, /test, etc.)
 - **5 scripts** in `.sfk/kernel/scripts/` — validation and automation tools
 
