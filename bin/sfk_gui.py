@@ -398,6 +398,9 @@ class BaseView(tk.Frame):
         super().__init__(app, bg=Theme.BG)
         self.app = app
 
+    def on_show(self) -> None:
+        """Optional hook: called every time this view becomes visible."""
+
 
 class HomeView(BaseView):
     ACTIONS = [
@@ -723,6 +726,108 @@ class UpdateProjectView(BaseView):
             self.banner.show_error("Algo deu errado — veja a saída acima.", before=self._anchor)
 
 
+class SkillsView(BaseView):
+    """Import a new skill into this SFK installation (wraps import_skill.py),
+    see what's already installed, and jump to the Update flow to sync skills
+    into a project (skills are part of the engine, kept in one place: MANIFEST)."""
+
+    def __init__(self, app: "App"):
+        super().__init__(app)
+        Header(
+            self, "Skills", "Adicionar conhecimento novo ao SFK ou sincronizar o existente.",
+            on_back=lambda: self.app.show("home"),
+        ).pack(fill="x")
+
+        body = tk.Frame(self, bg=Theme.BG)
+        body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
+
+        self.banner = ResultBanner(body)
+        self._anchor = tk.Label(body, text="Importar uma skill nova", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self._anchor.pack(anchor="w")
+        tk.Label(
+            body, text="Escolha a pasta da skill (deve conter um SKILL.md).",
+            font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
+        ).pack(anchor="w", pady=(0, Theme.SPACE_XS))
+        self.picker = PathPicker(body)
+        self.picker.pack(fill="x", pady=(0, Theme.SPACE_SM))
+        import_actions = tk.Frame(body, bg=Theme.BG)
+        import_actions.pack(fill="x", pady=(0, Theme.SPACE_LG))
+        self.import_btn = PrimaryButton(import_actions, "🧩  Importar skill", self._run_import)
+        self.import_btn.pack(side="left")
+
+        ttk.Separator(body, orient="horizontal").pack(fill="x", pady=(0, Theme.SPACE_LG))
+
+        tk.Label(
+            body, text="Atualizar as skills de um projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG,
+        ).pack(anchor="w")
+        tk.Label(
+            body, text="Skills fazem parte do motor do SFK — sincronizadas junto com o resto do engine.",
+            font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
+        ).pack(anchor="w", pady=(0, Theme.SPACE_SM))
+        SecondaryButton(
+            body, "⬆️  Ir para Atualizar/Adicionar", lambda: self.app.show("update_project"),
+        ).pack(anchor="w", pady=(0, Theme.SPACE_LG))
+
+        ttk.Separator(body, orient="horizontal").pack(fill="x", pady=(0, Theme.SPACE_SM))
+        tk.Label(
+            body, text="Skills já instaladas neste SFK", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG,
+        ).pack(anchor="w", pady=(Theme.SPACE_SM, Theme.SPACE_XS))
+        list_frame = tk.Frame(body, bg=Theme.BG)
+        list_frame.pack(fill="both", expand=True)
+        list_scroll = ttk.Scrollbar(list_frame, orient="vertical")
+        self.skills_list = tk.Listbox(
+            list_frame, font=Fonts.body, fg=Theme.TEXT, bg="white", relief="flat",
+            highlightthickness=1, highlightbackground=Theme.BORDER, yscrollcommand=list_scroll.set,
+            selectbackground=Theme.ACCENT_SOFT, selectforeground=Theme.TEXT, activestyle="none",
+        )
+        list_scroll.configure(command=self.skills_list.yview)
+        self.skills_list.pack(side="left", fill="both", expand=True)
+        list_scroll.pack(side="right", fill="y")
+
+        self.runner: ProcessRunner | None = None
+        self._console_log: list[str] = []
+
+    def on_show(self) -> None:
+        self._refresh_skills_list()
+
+    def _refresh_skills_list(self) -> None:
+        self.skills_list.delete(0, "end")
+        if SKILLS_DIR.exists():
+            for entry in sorted(p.name for p in SKILLS_DIR.iterdir() if p.is_dir()):
+                self.skills_list.insert("end", entry)
+
+    def _run_import(self) -> None:
+        source = self.picker.get()
+        if not source or not os.path.isdir(source):
+            self.banner.show_error("Escolha a pasta de uma skill existente primeiro.", before=self._anchor)
+            return
+
+        skill_name = Path(source).name
+        dest = SKILLS_DIR / skill_name
+        if dest.exists():
+            proceed = messagebox.askyesno(
+                "Sobrescrever skill?",
+                f"A skill '{skill_name}' já existe neste SFK.\nDeseja sobrescrevê-la?",
+            )
+            if not proceed:
+                return
+
+        self.banner.hide()
+        self.import_btn.set_enabled(False)
+        self._console_log = []
+        self.runner = ProcessRunner(on_line=self._console_log.append, on_done=lambda code: self._on_done(code, skill_name))
+        self.runner.run([PYTHON, str(SKILL_IMPORTER), source, "--force"])
+
+    def _on_done(self, code: int, skill_name: str) -> None:
+        self.import_btn.set_enabled(True)
+        if code == 0:
+            self.banner.show_success(f"Skill '{skill_name}' importada com sucesso.", before=self._anchor)
+            self._refresh_skills_list()
+        else:
+            detail = "\n".join(self._console_log[-4:])
+            self.banner.show_error(f"Não foi possível importar '{skill_name}'.\n{detail}", before=self._anchor)
+
+
 class ComingSoonView(BaseView):
     """Placeholder for panels landing in later phases (F2/F3/F4)."""
 
@@ -768,7 +873,7 @@ class App(tk.Tk):
             self, "Atualizar o SFK de um projeto",
             "Traz a versão mais nova. Migra automaticamente projetos com layout antigo.",
         ))
-        self._add_view("skills", ComingSoonView(self, "Skills", "Chega na Fase 4."))
+        self._add_view("skills", SkillsView(self))
 
         self.show("home")
 
@@ -785,7 +890,9 @@ class App(tk.Tk):
         view.place(x=0, y=0, relwidth=1, relheight=1)
 
     def show(self, name: str) -> None:
-        self._views[name].tkraise()
+        view = self._views[name]
+        view.tkraise()
+        view.on_show()
 
 
 def main() -> int:

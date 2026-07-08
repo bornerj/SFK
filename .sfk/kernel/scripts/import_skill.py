@@ -9,17 +9,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SKILLS_DIR = PROJECT_ROOT / ".sfk" / "kernel" / "skills"
 CURSOR_RULES_DIR = PROJECT_ROOT / ".cursor" / "rules"
 
-def import_skill(source_path):
+def import_skill(source_path, force=False):
     # Resolver o caminho (lida com '~' e caminhos relativos)
     source = Path(os.path.expanduser(source_path)).resolve()
-    
+
     if not source.exists():
         print(f"❌ Erro: O caminho '{source}' não existe.")
-        return
-    
+        return False
+
     if not source.is_dir():
         print(f"❌ Erro: '{source}' não é uma pasta.")
-        return
+        return False
 
     # Usar o nome da pasta como nome da skill
     skill_name = source.name
@@ -33,18 +33,19 @@ def import_skill(source_path):
 
     # 2. Copiar pasta para .sfk/kernel/skills/
     if dest_skill_dir.exists():
-        confirm = input(f"⚠️  A skill '{skill_name}' já existe. Deseja sobrescrever? (s/n): ").lower()
-        if confirm != 's':
-            print("❌ Operação cancelada.")
-            return
+        if not force:
+            confirm = input(f"⚠️  A skill '{skill_name}' já existe. Deseja sobrescrever? (s/n): ").lower()
+            if confirm != 's':
+                print("❌ Operação cancelada.")
+                return False
         shutil.rmtree(dest_skill_dir)
-    
+
     try:
         shutil.copytree(source, dest_skill_dir)
         print(f"✅ Pasta copiada para: .sfk/kernel/skills/{skill_name}")
     except Exception as e:
         print(f"❌ Erro ao copiar pasta: {e}")
-        return
+        return False
 
     # 3. Atualizar ponte do Cursor (.cursor/rules/)
     CURSOR_RULES_DIR.mkdir(parents=True, exist_ok=True)
@@ -71,14 +72,16 @@ def import_skill(source_path):
 
     print(f"\n🎉 Skill '{skill_name}' importada com sucesso!")
     print(f"📝 Nota: As configurações globais (.clauderules e .windsurfrules) já apontam para a pasta .sfk/kernel/skills/ e reconhecerão a nova skill automaticamente.")
+    return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Importa uma nova skill para o framework SFK.")
     parser.add_argument("path", nargs="?", help="Caminho da pasta da skill a ser importada")
+    parser.add_argument("--force", action="store_true", help="Sobrescreve sem perguntar (uso não-interativo, ex: GUI)")
     args = parser.parse_args()
 
     if args.path:
-        import_skill(args.path)
+        ok = import_skill(args.path, force=args.force)
     else:
         # Modo interativo
         print("--- SFK Skill Importer ---")
@@ -86,6 +89,9 @@ if __name__ == "__main__":
         # Limpar aspas se o usuário arrastou a pasta
         path_input = path_input.replace('"', '').replace("'", "")
         if path_input:
-            import_skill(path_input)
+            ok = import_skill(path_input, force=args.force)
         else:
             print("❌ Nenhum caminho fornecido.")
+            ok = False
+
+    raise SystemExit(0 if ok else 1)
