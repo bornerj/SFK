@@ -20,9 +20,24 @@ import queue
 import subprocess
 import sys
 import threading
-import tkinter as tk
 from pathlib import Path
-from tkinter import filedialog, font as tkfont, messagebox, ttk
+
+try:
+    import tkinter as tk
+    from tkinter import filedialog, font as tkfont, messagebox, ttk
+except ModuleNotFoundError:
+    print(
+        "\nERRO: o Tkinter não está instalado neste Python.\n"
+        "O SFK Launcher precisa dele para abrir a janela (é uma peça padrão do\n"
+        "Python, mas algumas distros Linux a distribuem separadamente).\n\n"
+        "Instale com um dos comandos abaixo, conforme seu sistema, e tente de novo:\n"
+        "  Debian/Ubuntu/Zorin/Mint:  sudo apt install python3-tk\n"
+        "  Fedora/RHEL:               sudo dnf install python3-tkinter\n"
+        "  Arch/Manjaro:              sudo pacman -S tk\n"
+        "  macOS (via Homebrew):      brew install python-tk\n",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
 
 # ---------------------------------------------------------------------------
 # Paths — locate the SFK repo from this file's location
@@ -840,6 +855,36 @@ class ComingSoonView(BaseView):
         ).pack(expand=True)
 
 
+def build_icon_image(root: tk.Misc, size: int = 64) -> tk.PhotoImage:
+    """Draw the app icon procedurally — no external asset, no PIL dependency.
+    Three stacked bars echo the app's own 3-zone architecture diagram; the
+    middle bar in the console accent color ties the icon to the app's palette."""
+    img = tk.PhotoImage(width=size, height=size, master=root)
+    img.put(Theme.ACCENT, to=(0, 0, size, size))
+
+    def bar(y0_ratio: float, y1_ratio: float, width_ratio: float, color: str) -> None:
+        y0, y1 = int(size * y0_ratio), int(size * y1_ratio)
+        w = int(size * width_ratio)
+        x0 = (size - w) // 2
+        img.put(color, to=(x0, y0, x0 + w, y1))
+
+    bar(0.22, 0.34, 0.62, Theme.BG)
+    bar(0.44, 0.56, 0.50, Theme.CONSOLE_ACCENT)
+    bar(0.66, 0.78, 0.62, Theme.BG)
+    return img
+
+
+def export_icon(path: str) -> None:
+    """Maintainer command: regenerate the static icon file used by the
+    desktop entry / Windows shortcut (`python3 bin/sfk_gui.py --export-icon`)."""
+    root = tk.Tk()
+    root.withdraw()
+    img = build_icon_image(root, size=64)
+    img.write(path, format="png")
+    root.destroy()
+    print(f"Icon written to: {path}")
+
+
 # ---------------------------------------------------------------------------
 # App shell
 # ---------------------------------------------------------------------------
@@ -857,6 +902,8 @@ class App(tk.Tk):
 
         Fonts.load(self)
         self._style_ttk()
+        self._icon_img = build_icon_image(self, size=64)  # keep a reference — Tk drops GC'd images
+        self.iconphoto(True, self._icon_img)
 
         self._container = tk.Frame(self, bg=Theme.BG)
         self._container.pack(fill="both", expand=True)
@@ -896,6 +943,10 @@ class App(tk.Tk):
 
 
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "--export-icon":
+        target = sys.argv[2] if len(sys.argv) > 2 else str(BIN_DIR / "sfk-launcher.png")
+        export_icon(target)
+        return 0
     app = App()
     app.mainloop()
     return 0
