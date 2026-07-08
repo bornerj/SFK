@@ -6,6 +6,54 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [1.3.0] - 2026-07-07
+
+### Changed — Engine/Project separation (PLAN-0001)
+
+The framework engine is now fully isolated from project state, resolving the
+core problem where SFK files mixed with the project's own files at the root.
+
+#### Architecture
+- **Engine moved to `.sfk/`** — kernel, `VERSION`, and `MANIFEST` now live under a
+  single `.sfk/` directory. `.gitattributes` marks `/.sfk/**` as `linguist-vendored`
+  (collapsed diffs, hidden from language stats). `.sfk/MANIFEST` is the ownership map.
+- **Project config promoted to root** — `kernel/project.toml` → `sfk.toml`,
+  `kernel/SYSTEM.md` → `SYSTEM.md`. Project state (`memory/`, `docs/`, `sfk.toml`,
+  `SYSTEM.md`) stays visible at root; the engine stays out of the way.
+- **Maintainer tooling consolidated into `bin/`** — scaffolder/updater under
+  `bin/lib/`, wizards under `bin/`. Never ships to scaffolded projects.
+- **File Boundary Law** added to `RULES.md`: engine (read-only) / project state /
+  maintainer tooling are three categories that must never mix.
+
+#### New project-state structures
+- **Resume Panel** (`memory/progress.md`) — minimal TOML front-block so returning to
+  a project after a break costs near-zero tokens.
+- **Integrations registry** — `sfk.toml [[integrations]]` index + `docs/integrations/`
+  runbooks: a single fixed home for external interfaces (WhatsApp, Stripe, PayPal, …).
+- **Database lifecycle** — `db/migrations/` + `db/seeds/` (sequential, append-only) +
+  `sfk.toml [db]`, logged in `memory/logs/BUILD-HISTORY.md`.
+- **Deploy** — `sfk.toml [hosting.*]/[environments.*]` (names, never values) + `docs/deploy/`.
+
+#### Rule enforcement (deterministic)
+- **Operating Card** (`.sfk/kernel/OPERATING_CARD.md`) — always-loaded ≤20-line digest
+  of the non-negotiables (Layer 0, read first).
+- **pre-commit hook** (`.sfk/kernel/hooks/pre-commit`) — blocks a significant commit
+  missing a `MODIFICATION_LOG.md` update; DB migrations also require `BUILD-HISTORY.md`.
+  Installer sets `core.hooksPath`; `git commit --no-verify` is the documented escape.
+
+#### Removed / consolidated
+- **`EVOLUTION_MEMORY.md` removed** — technical evolution now lives in
+  `memory/MODIFICATION_LOG.md` (tag `##evolution`).
+- **Layer-1 deduplication** — NEW/EXISTING classification single-sourced to
+  `BOOTSTRAP.md` Step 0; doc-heading governance single-sourced to `RULES.md §11`;
+  `SOUL.md` trimmed to persona.
+
+#### Updater (`bin/lib/sfk_updater.py`)
+- Detects CURRENT vs LEGACY layout and **migrates legacy `kernel/` projects to `.sfk/`**
+  (with a timestamped backup), promotes config to root preserving user content, syncs
+  the engine via `.sfk/MANIFEST`, installs hooks and the `.gitattributes` rule.
+
+---
 ## [1.2.2] - 2026-06-09
 
 ### Fixed

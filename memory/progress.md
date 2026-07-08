@@ -14,20 +14,19 @@
 
 ```toml
 updated      = "2026-07-07"
-active_plan  = "PLAN-0001 (all phases done — pending commit + release closure)"
-phase        = "Phase 5 done (updater reworked: legacy kernel/ → .sfk/ migration)"
-status       = "in-progress"          # in-progress | paused | blocked | idle
+active_plan  = "PLAN-0001 DONE — v1.3.0 staged on branch; awaiting merge authorization"
+phase        = "Release closure done (VERSION 1.3.0, CHANGELOG, session audit PASS)"
+status       = "paused"               # in-progress | paused | blocked | idle
 branch       = "refactor/engine-project-separation"
-blockers     = []                     # e.g. ["waiting DECISION-004"]
-next_action  = "Commit Phase 5; then release closure: bump VERSION 1.3.0, CHANGELOG, session audit, merge to main"
+blockers     = ["awaiting user's second authorization to merge/push to main"]
+next_action  = "On approval: merge refactor/engine-project-separation → main (and push if authorized)"
 ```
 
-**Where am I:** Engine/project separation refactor (PLAN-0001) — all 6 phases (F0–F5)
-implemented on branch `refactor/engine-project-separation`; F0–F4 committed. F5 complete:
-`bin/lib/sfk_updater.py` reworked to detect layout, migrate legacy `kernel/` projects to
-`.sfk/` (with backup), sync engine via MANIFEST, install hooks + `.gitattributes`. Validated
-on a legacy fixture (migration + idempotent re-run). Remaining: commit F5, then release
-closure (VERSION bump, CHANGELOG, session audit, merge to main). Nothing blocked.
+**Where am I:** Engine/project separation refactor (PLAN-0001) is fully implemented and
+committed on `refactor/engine-project-separation` (F0–F5: `6debf51`→`670059d`, plus the
+release-closure commit). VERSION bumped to 1.3.0, CHANGELOG written, session audit = PASS.
+`main` is untouched. The only thing left is the **merge to main**, which is gated on the
+user's separate (second) authorization per Git governance. Nothing blocking except that gate.
 
 ---
 

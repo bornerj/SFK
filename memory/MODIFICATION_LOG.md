@@ -86,6 +86,18 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — PLAN-0001 Release closure v1.3.0 + Session Audit
+- `.sfk/VERSION`: `1.3.0-dev` → `1.3.0`. `CHANGELOG.md`: added `[1.3.0]` entry summarizing the engine/project separation.
+- **Session Audit (SESSION-AUDIT-CHECKLIST) — Status: PASS.**
+  1. Decision Integrity: no ACTIVE DECISION contradicted; architectural direction captured in PLAN-0001 + RULES (File Boundary Law).
+  2. State Integrity: PLAN-0001 marked DONE; all 6 phases reflected; scope (6 points + D1–D4) fully respected.
+  3. Operational Memory: every phase recorded here; PLAN updated with commit hashes and closed.
+  4. Debug Memory: no product bug fixed this session — N/A.
+  5. Technical Validation: `py_compile` (updater), functional hook tests (block/pass/`--no-verify`), scaffold tests (F3/F4), legacy migration fixture + idempotent re-run. No SFK product test suite; no secrets/console noise introduced.
+  6. Regression Risk: sensitive area = updater (could harm existing projects) — mitigated by COPY-fixture test, auto-backup, report-only deletes, never-touch list.
+  7. Git Governance: per-phase reviews done; Conventional-Commit messages; Git Record filled (F0 `6debf51`…F5 `670059d`); **push/merge NOT yet authorized (pending second explicit approval)**.
+- Result: PASS for commit stage. Merge `refactor/engine-project-separation` → `main` and any push remain gated on the user's separate authorization.
+
 ## 2026-07-07 — PLAN-0001 Phase 5 (updater reworked for .sfk/ migration) — PLAN COMPLETE
 - Rewrote `bin/lib/sfk_updater.py` for the new architecture:
   - **Layout detection**: CURRENT (`.sfk/kernel/BOOTSTRAP.md`) vs LEGACY (`kernel/BOOTSTRAP.md`) vs NONE.
