@@ -86,6 +86,13 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — INSTRUCTIONS.md aligned to v1.3.0 layout
+- Follow-up: the F1/F3 seds only rewrote literal paths in `INSTRUCTIONS.md`; structural/prose refs were still stale. Fixed manually:
+  - Layer diagram redrawn as 3 zones (engine `.sfk/` read-only · project config at root `sfk.toml`/`SYSTEM.md` · project state `memory/ docs/ db/`), added OPERATING_CARD/hooks/VERSION/MANIFEST.
+  - Scaffolder section: `bin/new-project.sh` + `bin\new-project.ps1` (was root `.\new-project.ps1`); corrected the "what it copies" list (`.sfk/`, root config, `db/`; dropped bogus `.agent/`); noted hook auto-enable on `--init-git`.
+  - Close-session example: audit result recorded in MODIFICATION_LOG (per rule f8dffdf), not a separate AUDIT file; closes on PASS only.
+  - Reference table: added `USAGE.md`, `OPERATING_CARD.md`, updater rows.
+
 ## 2026-07-07 — PLAN-0001 pushed to origin (SHIPPED)
 - Push authorized by the user. `git push origin main` → `875735a..9236fce`. `main` and `origin/main` are in sync. SFK v1.3.0 is published. PLAN-0001 fully closed.
 

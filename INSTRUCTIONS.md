@@ -23,17 +23,23 @@ SFK operates in three layers:
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│  CONTROL AND CAPABILITIES LAYER  (.sfk/kernel/)                 │
-│  sfk.toml · SOUL.md · RULES.md · index.toml            │
-│  BOOTSTRAP.md · ARCHITECTURE.md                            │
-│  agents/ · skills/ · workflows/ · rules/ · scripts/        │
+│  ENGINE LAYER  (.sfk/ — read-only, refreshed by the updater)│
+│  kernel/: BOOTSTRAP · OPERATING_CARD · SOUL · RULES         │
+│           index.toml · ARCHITECTURE                         │
+│           agents/ · skills/ · workflows/ · scripts/ · hooks/│
+│  VERSION · MANIFEST                                         │
 └────────────────┬───────────────────────────────────────────┘
+                 │ governs
+┌────────────────▼────────────────────────────────────────────┐
+│  PROJECT CONFIG  (root)   sfk.toml · SYSTEM.md               │
+└────────────────┬────────────────────────────────────────────┘
                  │ persists to
-┌────────────────▼────────────────────┐
-│  MEMORY LAYER  (memory/)            │  ← Everything that happened is recorded
-│  MODIFICATION_LOG · plans/ · debug  │
-│  decisions/ · progress.md           │
-└─────────────────────────────────────┘
+┌────────────────▼─────────────────────┐
+│  PROJECT STATE  (memory/ docs/ db/)  │  ← Everything that happened is recorded
+│  progress.md (Resume Panel)          │
+│  MODIFICATION_LOG · plans/           │
+│  decisions/ · logs/                  │
+└──────────────────────────────────────┘
 ```
 
 ### Session Flow
@@ -51,33 +57,38 @@ SFK operates in three layers:
 
 ### 1. Create a new project from the template
 
-SFK includes a PowerShell script that copies the framework and initializes the project:
+SFK ships scaffolder wizards under `bin/` that copy the framework and initialize the project:
 
-```powershell
-# Interactive mode (wizard) — recommended for first use
-.\new-project.ps1
-
-# Direct mode with parameters
-.\new-project.ps1 -Target "C:\projects\my-project" -ProjectName "MyProject" -InitGit
+```bash
+# Linux/macOS
+bash bin/new-project.sh /path/to/my-project --project-name "MyProject" --init-git
 ```
 
-**Available parameters:**
+```powershell
+# Windows (PowerShell)
+bin\new-project.ps1 -Target "C:\projects\my-project" -ProjectName "MyProject" -InitGit
+```
 
-| Parameter | Description |
+Run either with no target to launch the interactive wizard.
+
+**Available options** (`.sh` flag / `.ps1` parameter):
+
+| Option | Description |
 |---|---|
-| `-Target` | Destination folder for the new project |
-| `-ProjectName` | Project name (default: folder name) |
-| `-InitGit` | Automatically runs `git init` |
-| `-KeepExamples` | Keeps `*_EXAMPLE.md` files in `docs/project/` |
-| `-Force` | Allows writing to a non-empty folder |
-| `-Interactive` | Forces wizard mode even with parameters defined |
+| `<target>` / `-Target` | Destination folder for the new project |
+| `--project-name` / `-ProjectName` | Project name (default: folder name) |
+| `--init-git` / `-InitGit` | Runs `git init` **and enables the pre-commit hook** |
+| `--keep-examples` / `-KeepExamples` | Keeps `*_EXAMPLE.md` files in `docs/project/` |
+| `--force` / `-Force` | Allows writing to a non-empty folder |
 
-**What the script does automatically:**
-- Copies `.agent/`, `.sfk/kernel/`, `memory/`, `docs/` to the destination
+**What the scaffolder does automatically:**
+- Copies the engine (`.sfk/`), project-state templates (`memory/`, `docs/`, `db/`),
+  root config (`sfk.toml`, `SYSTEM.md`, `.gitattributes`, IDE files) to the destination
 - Generates `docs/project/PROJECT_OVERVIEW.md` and `REQUIREMENTS.md` with the current date
-- Resets `memory/MODIFICATION_LOG.md` and `memory/logs/DEBUG-HISTORY.md`
-- Creates `memory/plans/` and `memory/decisions/` folders
-- Runs `git init` (if `-InitGit` is active)
+- Resets `memory/MODIFICATION_LOG.md` and `memory/logs/DEBUG-HISTORY.md`; adds clean
+  `_blueprint` templates (Resume Panel `progress.md`, etc.)
+- Runs `git init` and enables the pre-commit hook via `core.hooksPath` (if `--init-git`)
+- Writes a `QUICKSTART.md` listing exactly what to fill in
 
 ### 2. Fill in the project identity
 
@@ -226,8 +237,8 @@ Close the session.
 **What the AI does:**
 1. Updates `memory/MODIFICATION_LOG.md` with: what was done / what changed / what remained pending
 2. Enters `AUDITOR-PROTOCOL` → runs `memory/logs/SESSION-AUDIT-CHECKLIST.md`
-3. Saves result in `memory/logs/AUDIT_YYYY-MM-DD_HH-MM-PASS.md`
-4. Only closes after audit
+3. Records the audit result (PASS/FAIL) in `memory/MODIFICATION_LOG.md`
+4. Only closes on PASS (never on FAIL)
 
 ---
 
@@ -235,13 +246,16 @@ Close the session.
 
 | I need to...                    | File                                 |
 |---------------------------------|--------------------------------------|
+| Use SFK (new/existing/update)   | `USAGE.md`                           |
 | Understand the full system      | `memory/WORKFLOW_MEMORY_PLAYBOOK.md` |
-| See agents, skills, and scripts | `.sfk/kernel/ARCHITECTURE.md`             |
-| Current project state           | `memory/progress.md`                 |
+| See agents, skills, and scripts | `.sfk/kernel/ARCHITECTURE.md`        |
+| The always-on non-negotiables   | `.sfk/kernel/OPERATING_CARD.md`      |
+| Current project state           | `memory/progress.md` (Resume Panel)  |
 | History of changes              | `memory/MODIFICATION_LOG.md`         |
 | Resolved bugs                   | `memory/logs/DEBUG-HISTORY.md`       |
-| Fill in for a new project       | `sfk.toml` · `.sfk/kernel/SYSTEM-TEMPLATE.md` |
-| AI rules                        | `.sfk/kernel/RULES.md` (sovereign)        |
+| Fill in for a new project       | `sfk.toml` · `SYSTEM.md` (`.sfk/kernel/SYSTEM-TEMPLATE.md` guide) |
+| Add SFK to / update a project   | `bin/update-project.sh` (see `USAGE.md`) |
+| AI rules                        | `.sfk/kernel/RULES.md` (sovereign)   |
 
 ---
 
