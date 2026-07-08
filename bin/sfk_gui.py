@@ -38,6 +38,19 @@ SKILLS_DIR = SFK_ROOT / ".sfk" / "kernel" / "skills"
 PYTHON = sys.executable or "python3"
 
 
+def open_folder(path: str) -> None:
+    """Open a folder in the OS's file manager, cross-platform."""
+    try:
+        if sys.platform.startswith("win"):
+            os.startfile(path)  # type: ignore[attr-defined]
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", path])
+        else:
+            subprocess.Popen(["xdg-open", path])
+    except Exception:
+        pass  # best-effort convenience action; never worth crashing over
+
+
 # ---------------------------------------------------------------------------
 # Design system — sober, high-contrast, warm-neutral base + teal accent.
 # Deliberately not dark+neon, not purple: a trustworthy utility tone.
@@ -331,6 +344,51 @@ class Header(tk.Frame):
         ttk.Separator(self, orient="horizontal").pack(fill="x", padx=Theme.SPACE_XL, pady=(Theme.SPACE_SM, 0))
 
 
+class ResultBanner(tk.Frame):
+    """Success/error banner shown after an action finishes, with an optional
+    'Abrir pasta' shortcut — closes the loop from action to seeing the result."""
+
+    def __init__(self, parent, **kw):
+        super().__init__(parent, bg=Theme.BG, **kw)
+        self._strip = tk.Frame(self, bg=Theme.ACCENT, width=4)
+        self._strip.pack(side="left", fill="y")
+        self._content = tk.Frame(self, bg=Theme.ACCENT_SOFT)
+        self._content.pack(side="left", fill="both", expand=True)
+        self._label = tk.Label(
+            self._content, text="", font=Fonts.body_bold, fg=Theme.TEXT, bg=Theme.ACCENT_SOFT,
+            justify="left", anchor="w", wraplength=560,
+        )
+        self._label.pack(side="left", fill="x", expand=True, padx=Theme.SPACE_MD, pady=Theme.SPACE_SM)
+        self._action_slot = tk.Frame(self._content, bg=Theme.ACCENT_SOFT)
+        self._action_slot.pack(side="right", padx=Theme.SPACE_MD)
+        self.pack_forget()
+
+    def show_success(self, message: str, on_open_folder=None, before=None) -> None:
+        self._render(message, ok=True, on_open_folder=on_open_folder, before=before)
+
+    def show_error(self, message: str, before=None) -> None:
+        self._render(message, ok=False, on_open_folder=None, before=before)
+
+    def _render(self, message: str, ok: bool, on_open_folder, before=None) -> None:
+        color = Theme.ACCENT if ok else Theme.DANGER
+        soft = Theme.ACCENT_SOFT if ok else Theme.DANGER_SOFT
+        self._strip.configure(bg=color)
+        for child in self._action_slot.winfo_children():
+            child.destroy()
+        self._content.configure(bg=soft)
+        self._action_slot.configure(bg=soft)
+        self._label.configure(text=message, bg=soft, fg=Theme.TEXT)
+        if on_open_folder:
+            SecondaryButton(self._action_slot, "📂  Abrir pasta", on_open_folder).pack()
+        pack_opts = {"fill": "x", "pady": (0, Theme.SPACE_MD)}
+        if before is not None:
+            pack_opts["before"] = before
+        self.pack(**pack_opts)
+
+    def hide(self) -> None:
+        self.pack_forget()
+
+
 # ---------------------------------------------------------------------------
 # Views
 # ---------------------------------------------------------------------------
@@ -428,6 +486,125 @@ class CheckProjectView(BaseView):
             self.console.append(f"❌  Terminou com erro (código {code}).", "error")
 
 
+class NewProjectView(BaseView):
+    """Wraps `bin/lib/jb_kit_turbo.py` — scaffolds a brand-new SFK project."""
+
+    def __init__(self, app: "App"):
+        super().__init__(app)
+        Header(
+            self, "Criar um projeto novo", "Começar do zero, com o SFK já instalado e organizado.",
+            on_back=lambda: self.app.show("home"),
+        ).pack(fill="x")
+
+        body = tk.Frame(self, bg=Theme.BG)
+        body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
+
+        self.banner = ResultBanner(body)  # stays hidden until show_success/show_error
+
+        self._anchor = tk.Label(body, text="Onde criar o projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self._anchor.pack(anchor="w")
+        tk.Label(
+            body, text="Escolha a pasta que vai CONTER a pasta do novo projeto.",
+            font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
+        ).pack(anchor="w", pady=(0, Theme.SPACE_XS))
+        self.parent_picker = PathPicker(body)
+        self.parent_picker.pack(fill="x", pady=(0, Theme.SPACE_MD))
+
+        tk.Label(body, text="Nome do projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.name_var = tk.StringVar()
+        name_entry = tk.Entry(
+            body, textvariable=self.name_var, font=Fonts.body, fg=Theme.TEXT, bg="white",
+            relief="flat", highlightthickness=1, highlightbackground=Theme.BORDER,
+            highlightcolor=Theme.ACCENT, insertbackground=Theme.TEXT,
+        )
+        name_entry.pack(fill="x", ipady=6, pady=(Theme.SPACE_XS, Theme.SPACE_XS))
+        tk.Label(
+            body, text="Vira o nome da pasta e o nome do projeto dentro dos arquivos de configuração.",
+            font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
+        ).pack(anchor="w", pady=(0, Theme.SPACE_MD))
+
+        options = tk.Frame(body, bg=Theme.BG)
+        options.pack(fill="x", pady=(0, Theme.SPACE_MD))
+        self.init_git_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(
+            options, text="Iniciar controle de versão (git) e ativar a proteção automática de memória",
+            variable=self.init_git_var, font=Fonts.body, fg=Theme.TEXT, bg=Theme.BG,
+            selectcolor="white", activebackground=Theme.BG,
+        ).pack(anchor="w")
+        self.force_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(
+            options, text="Permitir criar dentro de uma pasta que já existe e não está vazia",
+            variable=self.force_var, font=Fonts.body, fg=Theme.TEXT, bg=Theme.BG,
+            selectcolor="white", activebackground=Theme.BG,
+        ).pack(anchor="w")
+
+        actions = tk.Frame(body, bg=Theme.BG)
+        actions.pack(fill="x", pady=(0, Theme.SPACE_MD))
+        self.run_btn = PrimaryButton(actions, "🌱  Criar projeto", self._run)
+        self.run_btn.pack(side="left")
+
+        tk.Label(body, text="Saída", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.console = ConsolePanel(body)
+        self.console.pack(fill="both", expand=True, pady=(Theme.SPACE_XS, 0))
+
+        self.runner: ProcessRunner | None = None
+        self._target: str = ""
+
+    def _validate(self) -> str | None:
+        """Returns an error message, or None if inputs are usable."""
+        parent = self.parent_picker.get()
+        name = self.name_var.get().strip()
+        if not parent:
+            return "Escolha onde criar o projeto primeiro."
+        if not os.path.isdir(parent):
+            return "A pasta escolhida não existe mais — escolha novamente."
+        if not name:
+            return "Dê um nome ao projeto."
+        if os.sep in name or (os.altsep and os.altsep in name) or name in {".", ".."}:
+            return "O nome não pode conter barras nem ser '.' ou '..'."
+        target = str(Path(parent) / name)
+        if os.path.isdir(target) and os.listdir(target) and not self.force_var.get():
+            return f"A pasta '{name}' já existe e não está vazia. Marque a opção de permitir, se tiver certeza."
+        self._target = target
+        return None
+
+    def _run(self) -> None:
+        self.banner.hide()
+        error = self._validate()
+        if error:
+            self.console.clear()
+            self.console.append(f"⚠️  {error}", "error")
+            return
+
+        self.console.clear()
+        self.console.append(f"Criando projeto em: {self._target}", "muted")
+        self.run_btn.set_enabled(False)
+
+        args = [PYTHON, str(SCAFFOLDER), self._target, "--project-name", self.name_var.get().strip()]
+        if self.init_git_var.get():
+            args.append("--init-git")
+        if self.force_var.get():
+            args.append("--force")
+
+        self.runner = ProcessRunner(on_line=lambda line: self.console.append(line), on_done=self._on_done)
+        self.runner.run(args)
+
+    def _on_done(self, code: int) -> None:
+        self.run_btn.set_enabled(True)
+        if code == 0:
+            self.console.append("", None)
+            self.console.append("✅  Projeto criado com sucesso.", "accent")
+            self.banner.show_success(
+                f"Projeto criado em: {self._target}",
+                on_open_folder=lambda: open_folder(self._target),
+                before=self._anchor,
+            )
+        else:
+            self.console.append("", None)
+            self.console.append(f"❌  Terminou com erro (código {code}).", "error")
+            self.banner.show_error("Não foi possível criar o projeto — veja a saída acima.", before=self._anchor)
+
+
 class ComingSoonView(BaseView):
     """Placeholder for panels landing in later phases (F2/F3/F4)."""
 
@@ -464,7 +641,7 @@ class App(tk.Tk):
         self._views: dict[str, BaseView] = {}
         self._add_view("home", HomeView(self))
         self._add_view("check_project", CheckProjectView(self))
-        self._add_view("new_project", ComingSoonView(self, "Criar um projeto novo", "Chega na Fase 2."))
+        self._add_view("new_project", NewProjectView(self))
         self._add_view("add_existing", ComingSoonView(self, "Adicionar o SFK a um projeto existente", "Chega na Fase 3."))
         self._add_view("update_project", ComingSoonView(self, "Atualizar o SFK de um projeto", "Chega na Fase 3."))
         self._add_view("skills", ComingSoonView(self, "Skills", "Chega na Fase 4."))

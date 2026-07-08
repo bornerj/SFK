@@ -86,6 +86,11 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-08 — PLAN-0002 Phase 2 (SFK Launcher — New Project panel)
+- `NewProjectView` wired to the real scaffolder (`bin/lib/jb_kit_turbo.py`): folder-picker for the parent directory + project-name field (sanitized: no path separators, no `.`/`..`), checkboxes for `--init-git` (default on) and `--force`; inline pre-flight validation blocks running against a non-empty target unless `--force` is checked.
+- New reusable `ResultBanner` widget (success/error strip + "Abrir pasta" action) and `open_folder()` cross-platform helper (Windows/macOS/Linux); fixed a real Tkinter `pack()` ordering bug — the banner must be packed with `before=<anchor widget>` since `pack()` order follows call order, not creation order.
+- Validated: `py_compile` clean; headless render of all views; unit tests of the 4 validation branches (empty folder / empty name / slash in name / valid); **end-to-end run through the real threaded pipeline** — created an actual project on disk (`sfk.toml`, `SYSTEM.md`, `.sfk/kernel`, `.git` with `core.hooksPath` auto-enabled via `--init-git`), success banner shown; confirmed the non-empty-folder guard blocks without `--force` and allows with it.
+
 ## 2026-07-08 — PLAN-0002 Phase 1 (SFK Launcher GUI — skeleton)
 - Started `PLAN-0002` (standalone Tkinter GUI launcher for SFK), approved by the user (design, phases, name "SFK Launcher").
 - Applied `@frontend-specialist` + skill `frontend-design`: sober high-contrast theme (warm off-white + deep-teal accent, avoiding dark/neon/purple clichés), OS-native font fallback chain (zero-install, no bundled fonts), card-based Home screen as the differentiation anchor, dark console panel as the one deliberate high-contrast surface.
