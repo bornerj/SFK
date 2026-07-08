@@ -262,6 +262,8 @@ The scaffolder installed everything below — no action needed:
 - `.sfk/kernel/scripts/` — 5 automation scripts
 - `memory/logs/SESSION-AUDIT-CHECKLIST.md` — pre-closure validation
 - `memory/WORKFLOW_MEMORY_PLAYBOOK.md` — memory system documentation
+- `.sfk/kernel/OPERATING_CARD.md` — always-loaded non-negotiables digest
+- `.sfk/kernel/hooks/` — pre-commit hook enforcing memory discipline (auto-enabled with `--init-git`)
 - `.clauderules`, `.windsurfrules`, `.cursor/` — IDE integrations
 
 ---
@@ -353,6 +355,15 @@ def maybe_init_git(target: Path, init_git: bool) -> None:
     if not init_git:
         return
     subprocess.run(["git", "init", "-b", "main"], cwd=target, check=True)
+    # Activate the SFK pre-commit hook (memory-discipline enforcement, D4).
+    hook = target / ".sfk/kernel/hooks/pre-commit"
+    if hook.exists():
+        hook.chmod(0o755)
+        subprocess.run(
+            ["git", "config", "core.hooksPath", ".sfk/kernel/hooks"],
+            cwd=target,
+            check=True,
+        )
 
 
 def print_next_steps(target: Path) -> None:
@@ -364,7 +375,8 @@ def print_next_steps(target: Path) -> None:
     print(f"1) cd \"{target}\"")
     print("2) Open QUICKSTART.md — it lists exactly what to fill in before coding")
     print("3) Fill in sfk.toml and SYSTEM.md")
-    print("4) Open your AI tool and send: Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.")
+    print("4) If you did NOT use --init-git: after git init, run bash .sfk/kernel/hooks/install.sh")
+    print("5) Open your AI tool and send: Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.")
 
 
 def main() -> int:

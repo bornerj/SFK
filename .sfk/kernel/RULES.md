@@ -289,7 +289,7 @@ MITIGATED RISK: Context loss over time.
 - With active plan: record only the START and END milestone of the plan.
 - Without active plan: record each change in real time.
 - If a change occurs outside the plan: record it in the MODIFICATION_LOG.
-- A repository may be treated as NEW PROJECT only if there are no plans, no decisions, and `memory/MODIFICATION_LOG.md` still contains only examples/template content.
+- NEW PROJECT vs EXISTING PROJECT is classified by `.sfk/kernel/BOOTSTRAP.md` Step 0 (single source) — do not restate the criteria elsewhere.
 
 ## 9.3 Bug Record (Mandatory)
 
@@ -370,6 +370,21 @@ No delivery considered ready for publication may be closed without:
 2. commit prepared or completed
 3. `memory/PR-XXXX-DESCRIPTION.md` created or updated
 
+## 9.6 Deterministic Enforcement (Operating Card + pre-commit hook)
+
+The memory discipline in §9 is not left to the agent's memory alone — it is enforced
+by two mechanisms so it cannot silently drift (D4):
+
+- **Operating Card** — `.sfk/kernel/OPERATING_CARD.md` is loaded first, every session
+  (Layer 0), as the always-on digest of these non-negotiables. Treat it as a checklist
+  in working memory, not a document to be read once and forgotten.
+- **pre-commit hook** — `.sfk/kernel/hooks/pre-commit` BLOCKS any commit that includes a
+  significant change (source code, product docs, or a DB migration) unless
+  `memory/MODIFICATION_LOG.md` is updated in the same commit; DB migrations/seeds also
+  require `memory/logs/BUILD-HISTORY.md`. Install once with `.sfk/kernel/hooks/install.sh`.
+  Intentional bypass: `git commit --no-verify` (use only when the change is genuinely
+  not significant — never to skip real memory recording).
+
 ---
 
 # 10. GIT KERNEL (2-STEP APPROVAL)
@@ -440,9 +455,8 @@ New requirements/gaps:
 - `docs/project/REQUIREMENTS.md`
 
 Bootstrap and project-definition documents must obey these rules:
-- First classify the repository as NEW PROJECT or EXISTING PROJECT.
-- NEW PROJECT = no `PLAN-XXXX`, no decisions, and no real entries in `memory/MODIFICATION_LOG.md` beyond the examples/template area.
-- For NEW PROJECT, `sfk.toml` and `SYSTEM.md` are references/examples only and must not be used to validate the repository state.
+- Classification (NEW vs EXISTING PROJECT) and its effect on `sfk.toml`/`SYSTEM.md`
+  is owned by `.sfk/kernel/BOOTSTRAP.md` Step 0 — the single source. Do not restate it.
 - SFK .sfk/kernel/template files must be written in English.
 - Project-generated deliverables may be written in the language declared in `sfk.toml -> [project] language`.
 - `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.

@@ -15,18 +15,19 @@
 ```toml
 updated      = "2026-07-07"
 active_plan  = "PLAN-0001"
-phase        = "Phase 3 done (config at root + panel/integrations/db) — ready to commit"
+phase        = "Phase 4 done (Layer-1 dedup + Operating Card + pre-commit hook) — ready to commit"
 status       = "in-progress"          # in-progress | paused | blocked | idle
 branch       = "refactor/engine-project-separation"
 blockers     = []                     # e.g. ["waiting DECISION-004"]
-next_action  = "Commit Phase 3, then Phase 4: Layer-1 dedup + Operating Card + pre-commit hook (D4)"
+next_action  = "Commit Phase 4, then Phase 5: rework sfk_updater.py to migrate legacy kernel/ projects"
 ```
 
 **Where am I:** Executing the engine/project separation refactor (PLAN-0001).
-Phases 0–2 committed. Phase 3 complete: config promoted to root (`sfk.toml`, `SYSTEM.md`),
-Resume Panel added, `docs/integrations/` + `docs/deploy/` + `db/migrations/` + `db/seeds/`
-created, `EVOLUTION_MEMORY` removed (consolidated into `MODIFICATION_LOG` via `##evolution`).
-Next: commit Phase 3, then Phase 4. Nothing blocked.
+Phases 0–3 committed. Phase 4 complete (D4 enforcement): `OPERATING_CARD.md` always-loaded
+digest, `.sfk/kernel/hooks/pre-commit` blocks significant commits missing a memory record,
+Layer-1 dedup (NEW/EXISTING classification single-sourced to BOOTSTRAP Step 0; doc-heading
+rules single-sourced to RULES §11; SOUL trimmed to persona). Next: commit Phase 4, then
+Phase 5 (updater). Nothing blocked.
 
 ---
 

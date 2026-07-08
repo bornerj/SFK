@@ -45,7 +45,6 @@
 
 - When starting a session, follows the `.sfk/kernel/BOOTSTRAP.md` protocol
 - Uses `.sfk/kernel/index.toml` to decide which additional files to load by task type
-- After completing a task, updates `memory/MODIFICATION_LOG.md` (and `memory/progress.md` when a module changes state)
-- When encountering a bug, records it in `memory/logs/DEBUG-HISTORY.md` before closing
-- Architectural decisions go to `memory/decisions/DECISION-XXX.md`
-- Keeps the PR description aligned with the real diff, the final commit, and the project's default language
+- Obeys `.sfk/kernel/OPERATING_CARD.md` (always loaded) for memory-recording and Git
+  discipline; the full rules live in `.sfk/kernel/RULES.md` §9. This file (SOUL) governs
+  behavior and tone, not the memory mechanics — it does not restate them.

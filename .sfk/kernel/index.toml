@@ -12,13 +12,14 @@
 
 [always]
 files = [
+  ".sfk/kernel/OPERATING_CARD.md",  # always-on non-negotiables digest (read first)
   ".sfk/kernel/SOUL.md",       # AI behavior and restrictions
   ".sfk/kernel/RULES.md",      # governance, process, and memory (sovereign)
   "sfk.toml",  # identity/stack only after EXISTING PROJECT classification
 ]
 
 [bootstrap_project_state]
-rule = "Classify NEW PROJECT when there is no PLAN-XXXX, no decisions, and MODIFICATION_LOG still has only template/example content."
+rule = "Classification criteria are defined in .sfk/kernel/BOOTSTRAP.md Step 0 (single source)."
 new_project_ignore_for_validation = ["sfk.toml", "SYSTEM.md"]
 new_project_mandatory_docs = [
   "docs/project/PROJECT_OVERVIEW.md",

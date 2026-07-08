@@ -4,6 +4,7 @@
 .sfk/VERSION
 .sfk/MANIFEST
 .sfk/kernel/BOOTSTRAP.md
+.sfk/kernel/OPERATING_CARD.md
 .sfk/kernel/RULES.md
 .sfk/kernel/SOUL.md
 .sfk/kernel/index.toml
@@ -14,3 +15,4 @@
 .sfk/kernel/skills/
 .sfk/kernel/workflows/
 .sfk/kernel/scripts/
+.sfk/kernel/hooks/

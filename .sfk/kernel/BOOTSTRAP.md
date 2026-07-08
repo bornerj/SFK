@@ -56,6 +56,7 @@ Skip entirely if classified as EXISTING PROJECT.
 ## LAYER 0 — Mandatory Loading (every session)
 
 Always read, regardless of task type:
+- `.sfk/kernel/OPERATING_CARD.md` — the always-loaded non-negotiables digest (read first, keep in working memory)
 - `.sfk/kernel/SOUL.md` — AI behavior contract for this project
 - `.sfk/kernel/RULES.md` — governance + execution + memory + Git (sovereign)
 - `sfk.toml` — project identity, stack, URLs, and design tokens (EXISTING PROJECT only; template/example only for NEW PROJECT)
@@ -142,11 +143,9 @@ Before any code or design work, mentally complete:
 - If no decisions are registered, assume this control started on 2026-02-26.
 
 ## Documentation Bootstrap Rules (mandatory)
-- SFK .sfk/kernel/template files must be maintained in English.
-- Project-generated documents may use the language declared in `sfk.toml -> [project] language`.
-- `docs/project/PROJECT_OVERVIEW.md` must preserve its `#` and `##` heading structure across sessions — do not add, remove, or rename top-level sections.
-- `docs/project/REQUIREMENTS.md` must preserve its `#` and `##` heading structure. Functional requirements use `FR-XXX`, non-functional requirements use `NFR-XXX`, acceptance criteria use `AC-XXX`.
-- `docs/project/SCOPE.md` and `docs/project/SETUP.md` are mandatory project documents — they must exist and maintain their `##` section structure across sessions.
+- Document governance (heading structure, `FR/NFR/AC` identifiers, mandatory project
+  docs, kernel language) is defined once in `.sfk/kernel/RULES.md` §11 — the single
+  source of truth. Load and enforce it; do not restate its rules here.
 
 ## Publication Context (selective)
 - In release, publish, deploy, or final review sessions, also check the most recent `memory/PR-XXXX-DESCRIPTION.md` files when they exist.

@@ -86,6 +86,19 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — PLAN-0001 Phase 4 (D4 enforcement + Layer-1 dedup) ##evolution
+- **D4 — deterministic rule enforcement** so the AI can't silently drift from the memory discipline:
+  - `.sfk/kernel/OPERATING_CARD.md` — new ≤20-line always-loaded digest of non-negotiables (plan/decision/debug/db/integration/modification-log/git-dual-approval/boundaries). Wired into Layer 0 (`BOOTSTRAP.md` + `index.toml [always]`, loaded first).
+  - `.sfk/kernel/hooks/pre-commit` — BLOCKS commits with a significant change (source code / product docs / DB migration) unless `memory/MODIFICATION_LOG.md` is updated in the same commit; DB migrations/seeds also require `memory/logs/BUILD-HISTORY.md`. Escape: `git commit --no-verify`. Installer `.sfk/kernel/hooks/install.sh` (sets `core.hooksPath`).
+  - Scaffolder auto-enables the hook on `--init-git`; QUICKSTART/next-steps updated; MANIFEST lists the new engine files.
+  - New rule `RULES.md §9.6` documents the enforcement pair.
+- **Layer-1 deduplication** (single source of truth per rule):
+  - NEW vs EXISTING PROJECT classification: canonical in `BOOTSTRAP.md` Step 0; `RULES.md §9.2/§11` and `index.toml [bootstrap_project_state]` now point to it instead of restating.
+  - Document-heading governance: canonical in `RULES.md §11`; `BOOTSTRAP.md` "Documentation Bootstrap Rules" now points to it.
+  - `SOUL.md` "Context Management" trimmed to persona/behavior — defers memory mechanics to the Operating Card + RULES §9.
+- Dogfooded: installed the hook on the SFK repo itself (`core.hooksPath = .sfk/kernel/hooks`).
+- Validated in a fresh `--init-git` scaffold: Operating Card present, hook executable and installed, index loads it; functional test — significant-without-log BLOCKED, significant+log PASSES, `--no-verify` bypasses.
+
 ## 2026-07-07 — PLAN-0001 Phase 3 (project config to root + D1/D2/D3 structures) ##evolution
 - **Config promoted to root** (Category B — project state, no longer buried in the engine):
   - `.sfk/kernel/project.toml` → `sfk.toml` (root); `.sfk/kernel/SYSTEM.md` → `SYSTEM.md` (root).
