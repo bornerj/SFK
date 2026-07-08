@@ -23,8 +23,8 @@ SFK operates in three layers:
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│  CONTROL AND CAPABILITIES LAYER  (kernel/)                 │
-│  project.toml · SOUL.md · RULES.md · index.toml            │
+│  CONTROL AND CAPABILITIES LAYER  (.sfk/kernel/)                 │
+│  sfk.toml · SOUL.md · RULES.md · index.toml            │
 │  BOOTSTRAP.md · ARCHITECTURE.md                            │
 │  agents/ · skills/ · workflows/ · rules/ · scripts/        │
 └────────────────┬───────────────────────────────────────────┘
@@ -38,8 +38,8 @@ SFK operates in three layers:
 
 ### Session Flow
 
-1. The AI reads `kernel/BOOTSTRAP.md` → loads identity, rules, and behavior (LAYER 0)
-2. Consults `kernel/index.toml` → loads only the files relevant to the task type (LAYER 1)
+1. The AI reads `.sfk/kernel/BOOTSTRAP.md` → loads identity, rules, and behavior (LAYER 0)
+2. Consults `.sfk/kernel/index.toml` → loads only the files relevant to the task type (LAYER 1)
 3. Checks `memory/progress.md` → snapshot of the current module state
 4. Checks `memory/plans/` → resumes an active plan if any exists
 5. Classifies the request → selects agent and skills → executes
@@ -73,7 +73,7 @@ SFK includes a PowerShell script that copies the framework and initializes the p
 | `-Interactive` | Forces wizard mode even with parameters defined |
 
 **What the script does automatically:**
-- Copies `.agent/`, `kernel/`, `memory/`, `docs/` to the destination
+- Copies `.agent/`, `.sfk/kernel/`, `memory/`, `docs/` to the destination
 - Generates `docs/project/PROJECT_OVERVIEW.md` and `REQUIREMENTS.md` with the current date
 - Resets `memory/MODIFICATION_LOG.md` and `memory/logs/DEBUG-HISTORY.md`
 - Creates `memory/plans/` and `memory/decisions/` folders
@@ -81,7 +81,7 @@ SFK includes a PowerShell script that copies the framework and initializes the p
 
 ### 2. Fill in the project identity
 
-Edit `kernel/project.toml` — the **complete technical dictionary** of your project:
+Edit `sfk.toml` — the **complete technical dictionary** of your project:
 
 ```toml
 [project]
@@ -116,7 +116,7 @@ vars = ["VITE_API_URL", "VITE_WEB_URL"]
 
 ### 3. Define the project's technical rules
 
-Use `kernel/SYSTEM-TEMPLATE.md` as a guide and save as `kernel/SYSTEM.md`:
+Use `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide and save as `SYSTEM.md`:
 
 ```markdown
 ## Language and Stack
@@ -134,7 +134,7 @@ Use `kernel/SYSTEM-TEMPLATE.md` as a guide and save as `kernel/SYSTEM.md`:
 In the first message of every session:
 
 ```
-Read kernel/BOOTSTRAP.md and give me your confirmation readback.
+Read .sfk/kernel/BOOTSTRAP.md and give me your confirmation readback.
 ```
 
 From there, the AI operates within the project's rules without needing re-explanation.
@@ -147,11 +147,11 @@ From there, the AI operates within the project's rules without needing re-explan
 
 **Prompt:**
 ```
-Read kernel/BOOTSTRAP.md and confirm the current project state.
+Read .sfk/kernel/BOOTSTRAP.md and confirm the current project state.
 ```
 
 **What the AI does:**
-- Reads `project.toml` → knows it's a TypeScript web-app
+- Reads `sfk.toml` → knows it's a TypeScript web-app
 - Reads `SOUL.md` → adopts direct, no-preamble behavior
 - Reads `RULES.md` → knows it needs approval before commit/push
 - Checks `memory/plans/` → finds PLAN-0003 in progress
@@ -236,12 +236,12 @@ Close the session.
 | I need to...                    | File                                 |
 |---------------------------------|--------------------------------------|
 | Understand the full system      | `memory/WORKFLOW_MEMORY_PLAYBOOK.md` |
-| See agents, skills, and scripts | `kernel/ARCHITECTURE.md`             |
+| See agents, skills, and scripts | `.sfk/kernel/ARCHITECTURE.md`             |
 | Current project state           | `memory/progress.md`                 |
 | History of changes              | `memory/MODIFICATION_LOG.md`         |
 | Resolved bugs                   | `memory/logs/DEBUG-HISTORY.md`       |
-| Fill in for a new project       | `kernel/project.toml` · `kernel/SYSTEM-TEMPLATE.md` |
-| AI rules                        | `kernel/RULES.md` (sovereign)        |
+| Fill in for a new project       | `sfk.toml` · `.sfk/kernel/SYSTEM-TEMPLATE.md` |
+| AI rules                        | `.sfk/kernel/RULES.md` (sovereign)        |
 
 ---
 
