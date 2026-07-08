@@ -14,19 +14,18 @@
 
 ```toml
 updated      = "2026-07-07"
-active_plan  = "PLAN-0001 DONE — v1.3.0 staged on branch; awaiting merge authorization"
-phase        = "Release closure done (VERSION 1.3.0, CHANGELOG, session audit PASS)"
-status       = "paused"               # in-progress | paused | blocked | idle
-branch       = "refactor/engine-project-separation"
-blockers     = ["awaiting user's second authorization to merge/push to main"]
-next_action  = "On approval: merge refactor/engine-project-separation → main (and push if authorized)"
+active_plan  = "PLAN-0001 DONE — v1.3.0 merged and pushed to origin/main"
+phase        = "Shipped: SFK v1.3.0 (engine/project separation)"
+status       = "idle"                 # in-progress | paused | blocked | idle
+branch       = "main"
+blockers     = []
+next_action  = "None — plan complete and published. Optional: test v1.3.0 in a real AI session / migrate JLR_Beauty."
 ```
 
-**Where am I:** Engine/project separation refactor (PLAN-0001) is fully implemented and
-committed on `refactor/engine-project-separation` (F0–F5: `6debf51`→`670059d`, plus the
-release-closure commit). VERSION bumped to 1.3.0, CHANGELOG written, session audit = PASS.
-`main` is untouched. The only thing left is the **merge to main**, which is gated on the
-user's separate (second) authorization per Git governance. Nothing blocking except that gate.
+**Where am I:** PLAN-0001 (engine/project separation) is fully shipped. Merged to `main`
+(`5dd6b66`) and pushed to `origin/main` (now at `9236fce`). SFK v1.3.0 released: engine in
+`.sfk/`, config at root, Resume Panel, integrations/db structures, Operating Card +
+pre-commit enforcement, legacy-migration updater, and `USAGE.md`. Nothing pending.
 
 ---
 

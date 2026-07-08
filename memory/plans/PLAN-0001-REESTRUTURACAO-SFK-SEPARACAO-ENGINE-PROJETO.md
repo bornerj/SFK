@@ -172,9 +172,9 @@ SFK/
 - Passo 2 (Commit authorization): concedida por fase ("prossiga"/"prossiga próxima fase").
 - Passo 3 (Commit confirmation):
   - F0 `6debf51` · F1 `9269a95` · F2 `0dc7921` · F3 `3db00ee` · F4 `c523ecb` · F5 _pendente (este commit)_.
-- Passo 4 (Push authorization e resultado): _pendente — segunda autorização separada_.
-- Push status: PENDING (branch `refactor/engine-project-separation`; `main` intacto).
-- Fecho de release pendente: VERSION 1.3.0-dev→1.3.0, CHANGELOG v1.3.0, auditoria de sessão, merge→main.
+- Passo 4 (Push authorization e resultado): autorizado pelo usuário; merge `--no-ff` → `main` (`5dd6b66`) e **push para `origin/main`** concluído (`875735a..9236fce`).
+- Push status: DONE (`origin/main` em `9236fce`).
+- Fecho de release: VERSION 1.3.0, CHANGELOG v1.3.0, auditoria de sessão PASS, `USAGE.md` publicado. **PLAN-0001 encerrado.**
 
 ---
 
