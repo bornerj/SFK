@@ -86,6 +86,14 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-08 — PLAN-0002 Phase 1 (SFK Launcher GUI — skeleton)
+- Started `PLAN-0002` (standalone Tkinter GUI launcher for SFK), approved by the user (design, phases, name "SFK Launcher").
+- Applied `@frontend-specialist` + skill `frontend-design`: sober high-contrast theme (warm off-white + deep-teal accent, avoiding dark/neon/purple clichés), OS-native font fallback chain (zero-install, no bundled fonts), card-based Home screen as the differentiation anchor, dark console panel as the one deliberate high-contrast surface.
+- New `bin/sfk_gui.py` (stdlib-only, no pip deps): `Theme`/`Fonts`, threaded `ProcessRunner` (subprocess + queue, non-blocking UI), reusable widgets (`ActionCard` canvas-drawn rounded card, `PrimaryButton`/`SecondaryButton`, `PathPicker` with disk-browse dialog, `ConsolePanel` live read-only console, `Header`), `HomeView` with 5 self-explanatory action cards, fully functional `CheckProjectView` (wraps `sfk_updater.py --dry-run`), `ComingSoonView` stubs for New Project/Add-existing/Update/Skills (land in later phases).
+- Dev environment note: Tkinter was not installed on this machine; user authorized and ran `sudo apt install python3-tk` (reversible, stdlib companion package).
+- Fixed a real bug found in testing: `App._register` collided with Tkinter's internal `Misc._register` (used by `wm_protocol`) — renamed to `_add_view`.
+- Validated: `py_compile` clean; headless smoke test rendered all 6 views without exception; end-to-end test ran `CheckProjectView` against a real scaffolded fixture through the actual threaded runner — console streamed real `sfk_updater.py` output, exit code 0 captured, **zero files modified** (dry-run safety confirmed with a fresh timestamp marker). No visual screenshot possible (no screenshot tool in this Wayland session) — validated functionally instead.
+
 ## 2026-07-07 — README.md aligned to v1.3.0 + skill count fix
 - README "Create a new project" commands were stale (root `.\new-project.ps1`, `bash new-project.sh`, `python tools/jb_kit_turbo.py`) → corrected to `bin\new-project.ps1` / `bash bin/new-project.sh`; added USAGE.md pointer. The directory-tree block was already correct (Phase 3).
 - Fixed wrong clone URL `github.com/Jeiel/sfk` → `github.com/bornerj/SFK` (matches origin).
