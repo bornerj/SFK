@@ -14,20 +14,20 @@
 
 ```toml
 updated      = "2026-07-07"
-active_plan  = "PLAN-0001"
-phase        = "Phase 4 done (Layer-1 dedup + Operating Card + pre-commit hook) — ready to commit"
+active_plan  = "PLAN-0001 (all phases done — pending commit + release closure)"
+phase        = "Phase 5 done (updater reworked: legacy kernel/ → .sfk/ migration)"
 status       = "in-progress"          # in-progress | paused | blocked | idle
 branch       = "refactor/engine-project-separation"
 blockers     = []                     # e.g. ["waiting DECISION-004"]
-next_action  = "Commit Phase 4, then Phase 5: rework sfk_updater.py to migrate legacy kernel/ projects"
+next_action  = "Commit Phase 5; then release closure: bump VERSION 1.3.0, CHANGELOG, session audit, merge to main"
 ```
 
-**Where am I:** Executing the engine/project separation refactor (PLAN-0001).
-Phases 0–3 committed. Phase 4 complete (D4 enforcement): `OPERATING_CARD.md` always-loaded
-digest, `.sfk/kernel/hooks/pre-commit` blocks significant commits missing a memory record,
-Layer-1 dedup (NEW/EXISTING classification single-sourced to BOOTSTRAP Step 0; doc-heading
-rules single-sourced to RULES §11; SOUL trimmed to persona). Next: commit Phase 4, then
-Phase 5 (updater). Nothing blocked.
+**Where am I:** Engine/project separation refactor (PLAN-0001) — all 6 phases (F0–F5)
+implemented on branch `refactor/engine-project-separation`; F0–F4 committed. F5 complete:
+`bin/lib/sfk_updater.py` reworked to detect layout, migrate legacy `kernel/` projects to
+`.sfk/` (with backup), sync engine via MANIFEST, install hooks + `.gitattributes`. Validated
+on a legacy fixture (migration + idempotent re-run). Remaining: commit F5, then release
+closure (VERSION bump, CHANGELOG, session audit, merge to main). Nothing blocked.
 
 ---
 

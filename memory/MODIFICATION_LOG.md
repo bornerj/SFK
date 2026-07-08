@@ -86,6 +86,16 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — PLAN-0001 Phase 5 (updater reworked for .sfk/ migration) — PLAN COMPLETE
+- Rewrote `bin/lib/sfk_updater.py` for the new architecture:
+  - **Layout detection**: CURRENT (`.sfk/kernel/BOOTSTRAP.md`) vs LEGACY (`kernel/BOOTSTRAP.md`) vs NONE.
+  - **Legacy migration** (auto, before sync): `kernel/`→`.sfk/kernel/`, `kernel/project.toml`→`sfk.toml`, `kernel/SYSTEM.md`→`SYSTEM.md` (user content preserved). Timestamped `tar.gz` backup created first (skip with `--no-backup`).
+  - **Engine sync driven by `.sfk/MANIFEST`** (single ownership map) — everything listed is refreshed to latest; anything not listed (`sfk.toml`, `SYSTEM.md`, `mcp_config.json`, `memory/`, `docs/`, `db/`, product code) is never touched.
+  - Installs hooks (`core.hooksPath`), appends the `.sfk` rule to `.gitattributes` (non-destructive), syncs root IDE config + framework memory items, adds clean blueprint templates only when missing.
+  - Deprecated list updated for the new layout (EVOLUTION_MEMORY, docs/config/*) — reported, never deleted. Post-migration guidance printed.
+- Validated on a legacy fixture (COPY): migration moved kernel→.sfk, promoted config to root with content intact, installed VERSION/MANIFEST/hooks, activated `core.hooksPath`, appended gitattributes rule, created backup, reported EVOLUTION_MEMORY as deprecated. Idempotent re-run detected CURRENT and did nothing. `py_compile` clean.
+- **PLAN-0001 complete** (F0–F5). Remaining closure (separate step): VERSION 1.3.0-dev→1.3.0, CHANGELOG, session audit, merge `refactor/engine-project-separation`→`main`.
+
 ## 2026-07-07 — PLAN-0001 Phase 4 (D4 enforcement + Layer-1 dedup) ##evolution
 - **D4 — deterministic rule enforcement** so the AI can't silently drift from the memory discipline:
   - `.sfk/kernel/OPERATING_CARD.md` — new ≤20-line always-loaded digest of non-negotiables (plan/decision/debug/db/integration/modification-log/git-dual-approval/boundaries). Wired into Layer 0 (`BOOTSTRAP.md` + `index.toml [always]`, loaded first).

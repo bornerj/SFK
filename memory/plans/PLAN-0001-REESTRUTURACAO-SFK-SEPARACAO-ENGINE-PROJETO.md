@@ -1,6 +1,6 @@
 # PLAN-0001 — Reestruturação do SFK: separação Engine ↔ Projeto ↔ Tooling
 
-> **Status:** WAITING_APPROVAL (nada será executado até aprovação explícita)
+> **Status:** DONE — F0–F5 implementadas em `refactor/engine-project-separation` (F0–F4 commitadas; F5 pendente de commit). Fecho de release (VERSION/CHANGELOG/merge) pendente.
 > **Data:** 2026-07-07
 > **Autor:** sessão de arquitetura (Opus 4.8)
 > **Tipo:** Estrutural (RULES §5 → exige PLAN aprovado)
@@ -167,12 +167,14 @@ SFK/
 ---
 
 ## 7. Git Record of Delivery
-> A preencher na execução. Nenhum plano vira `-DONE` sem esta seção completa (RULES §10.5).
-- Passo 1 (Pre-commit review): _pendente_
-- Passo 2 (Commit authorization): _pendente_
-- Passo 3 (Commit confirmation): _pendente_
-- Passo 4 (Push authorization e resultado): _pendente_
-- Push status: PENDING
+> Entrega em fases, cada uma com revisão pré-commit + autorização explícita do usuário.
+- Passo 1 (Pre-commit review): feito por fase (F0–F5).
+- Passo 2 (Commit authorization): concedida por fase ("prossiga"/"prossiga próxima fase").
+- Passo 3 (Commit confirmation):
+  - F0 `6debf51` · F1 `9269a95` · F2 `0dc7921` · F3 `3db00ee` · F4 `c523ecb` · F5 _pendente (este commit)_.
+- Passo 4 (Push authorization e resultado): _pendente — segunda autorização separada_.
+- Push status: PENDING (branch `refactor/engine-project-separation`; `main` intacto).
+- Fecho de release pendente: VERSION 1.3.0-dev→1.3.0, CHANGELOG v1.3.0, auditoria de sessão, merge→main.
 
 ---
 
