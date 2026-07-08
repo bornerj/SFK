@@ -2,6 +2,9 @@
 
 > A Persistent Intelligence Layer for AI-driven software systems.
 
+> 📖 **New here?** Read [USAGE.md](USAGE.md) — how SFK works and how to start a
+> project, add SFK to an existing one, update it, and manage skills.
+
 ---
 
 ## The Problem

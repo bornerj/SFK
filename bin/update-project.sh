@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SFK — update-project.sh
 # Updates an existing SFK project with the latest kernel files from this template.
-# Usage: bash update-project.sh [target] [--yes] [--dry-run]
+# Usage: bash update-project.sh [target] [--yes] [--dry-run] [--no-backup]
 
 set -euo pipefail
 
@@ -43,11 +43,13 @@ fi
 TARGET=""
 YES_FLAG=""
 DRY_RUN_FLAG=""
+NO_BACKUP_FLAG=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --yes|-y)     YES_FLAG="--yes";     shift ;;
         --dry-run|-n) DRY_RUN_FLAG="--dry-run"; shift ;;
+        --no-backup)  NO_BACKUP_FLAG="--no-backup"; shift ;;
         -*)  echo "Unknown option: $1"; exit 1 ;;
         *)   TARGET="$1"; shift ;;
     esac
@@ -75,8 +77,9 @@ log "Updating project: $TARGET_ABS"
 
 # Build args
 ARGS=("$UPDATER" "$TARGET_ABS")
-[ -n "$YES_FLAG" ]     && ARGS+=("$YES_FLAG")
-[ -n "$DRY_RUN_FLAG" ] && ARGS+=("$DRY_RUN_FLAG")
+[ -n "$YES_FLAG" ]       && ARGS+=("$YES_FLAG")
+[ -n "$DRY_RUN_FLAG" ]   && ARGS+=("$DRY_RUN_FLAG")
+[ -n "$NO_BACKUP_FLAG" ] && ARGS+=("$NO_BACKUP_FLAG")
 
 log "Running updater..."
 if "$PYTHON" "${ARGS[@]}" 2>&1 | tee -a "$LOG_FILE"; then

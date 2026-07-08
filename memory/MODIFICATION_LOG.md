@@ -86,6 +86,11 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-07 — PLAN-0001 merged to main + usage documentation
+- Merged `refactor/engine-project-separation` → `main` (`--no-ff`, merge commit `5dd6b66`). Local only — **not pushed** (awaiting push authorization). `main` is 9 commits ahead of `origin/main`.
+- Added `USAGE.md` — v1.3.0 usage guide covering: how SFK works, new project, adding SFK to an existing project, updating SFK, updating skills, adding a skill, plus a command reference.
+- `bin/update-project.sh`: added `--no-backup` passthrough (wrapper now matches the updater's flags).
+
 ## 2026-07-07 — PLAN-0001 Release closure v1.3.0 + Session Audit
 - `.sfk/VERSION`: `1.3.0-dev` → `1.3.0`. `CHANGELOG.md`: added `[1.3.0]` entry summarizing the engine/project separation.
 - **Session Audit (SESSION-AUDIT-CHECKLIST) — Status: PASS.**
