@@ -255,6 +255,7 @@ Close the session.
 | Resolved bugs                   | `memory/logs/DEBUG-HISTORY.md`       |
 | Fill in for a new project       | `sfk.toml` · `SYSTEM.md` (`.sfk/kernel/SYSTEM-TEMPLATE.md` guide) |
 | Add SFK to / update a project   | `bin/update-project.sh` (see `USAGE.md`) |
+| Prefer a GUI over commands      | `python3 bin/sfk_gui.py` (SFK Launcher) |
 | AI rules                        | `.sfk/kernel/RULES.md` (sovereign)   |
 
 ---

@@ -13,19 +13,23 @@
 <!-- Keep it small: names and short phrases only, never long prose. -->
 
 ```toml
-updated      = "2026-07-07"
-active_plan  = "PLAN-0001 DONE — v1.3.0 merged and pushed to origin/main"
-phase        = "Shipped: SFK v1.3.0 (engine/project separation)"
+updated      = "2026-07-08"
+active_plan  = "PLAN-0002 DONE — SFK Launcher GUI complete, committed to main"
+phase        = "Shipped: SFK Launcher (bin/sfk_gui.py), F1-F6"
 status       = "idle"                 # in-progress | paused | blocked | idle
 branch       = "main"
 blockers     = []
-next_action  = "None — plan complete and published. Optional: test v1.3.0 in a real AI session / migrate JLR_Beauty."
+next_action  = "Push main to origin (pending authorization). Optional: migrate the real VetSystem project via the GUI's Update panel."
 ```
 
-**Where am I:** PLAN-0001 (engine/project separation) is fully shipped. Merged to `main`
-(`5dd6b66`) and pushed to `origin/main` (now at `9236fce`). SFK v1.3.0 released: engine in
-`.sfk/`, config at root, Resume Panel, integrations/db structures, Operating Card +
-pre-commit enforcement, legacy-migration updater, and `USAGE.md`. Nothing pending.
+**Where am I:** PLAN-0002 (SFK Launcher, a zero-install Tkinter GUI over the
+scaffolder/updater/skill-importer) is fully shipped — all 6 phases committed to
+`main` (not yet pushed). Covers: New Project, Add/Update (with legacy migration,
+tested against the real VetSystem project's shape), Skills (import + list),
+Check-project preview, procedural icon, double-click launchers (`.sh`/`.bat`),
+friendly missing-Tkinter handling. `USAGE.md` and `README.md` updated with a
+GUI entry point. PLAN-0001 (engine/project separation, v1.3.0, shipped and
+pushed earlier) remains underneath it. Nothing blocked.
 
 ---
 
@@ -36,7 +40,8 @@ pre-commit enforcement, legacy-migration updater, and `USAGE.md`. Nothing pendin
 
 | Module              | State       | Updated    | Notes                                                        |
 |---------------------|-------------|------------|--------------------------------------------------------------|
-| Architecture (SFK)  | in-progress | 2026-07-07 | Engine isolated in `.sfk/`; config promoted to root (PLAN-0001) |
+| Architecture (SFK)  | stable      | 2026-07-07 | Engine isolated in `.sfk/`; config promoted to root (PLAN-0001, v1.3.0) |
+| SFK Launcher (GUI)  | stable      | 2026-07-08 | `bin/sfk_gui.py` — zero-install Tkinter app over scaffolder/updater/skill-importer (PLAN-0002) |
 | Audit Protocol      | stable      | 2026-04-06 | Moved into `memory/logs/` with routing support               |
 | Template Memory     | stable      | 2026-04-20 | PR, plan, and decision files converted into reusable examples |
 | Publication Flow    | stable      | 2026-04-20 | Kernel requires PR descriptions and versions framework templates |
@@ -69,7 +74,8 @@ pre-commit enforcement, legacy-migration updater, and `USAGE.md`. Nothing pendin
 <!-- Log of completed tasks. Summarize entries older than 30 days. -->
 <!-- Format: - YYYY-MM-DD: [what was done] (PLAN-XXXX or point-in-time) -->
 
-- 2026-07-07: PLAN-0001 Phases 0–2 — engine isolated into `.sfk/`, tooling into `bin/` (in-progress)
+- 2026-07-08: PLAN-0002 F1–F6 — SFK Launcher GUI (`bin/sfk_gui.py`) shipped: New Project, Add/Update with legacy migration, Skills, Check-project, icon, double-click launchers (DONE)
+- 2026-07-07: PLAN-0001 F0–F5 + release — engine/project separation, SFK v1.3.0 shipped and pushed (DONE)
 - 2026-04-06: Core SFK consolidated (`sfk.toml` expanded, `docs/config` cleaned up, audit assets relocated) (DONE)
 - 2026-04-20: SFK memory and templates converted into versioned reusable examples (point-in-time)
 

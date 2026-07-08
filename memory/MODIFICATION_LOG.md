@@ -86,6 +86,14 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 - Validated: `.sfk/kernel/BOOTSTRAP.md` exists, root `kernel/` gone, IDE pointers updated, no stray active `kernel/` refs, no `.sfk/.sfk/` duplication.
 - Deferred: `project.toml`/`SYSTEM.md` still under `.sfk/kernel/` (move to root as `sfk.toml`/`SYSTEM.md` in F3); tooling path logic (`tools/`, `import_skill.py` parents[]) in F2.
 
+## 2026-07-08 — PLAN-0002 Phase 6 (docs & memory) — PLAN COMPLETE
+- `USAGE.md`: new §0 "Prefer clicking? Use the SFK Launcher (GUI)" — how to run it (`python3 bin/sfk_gui.py` or double-click launchers), what it covers (maps to §2–§6), and the Tkinter dependency note. Added a GUI row to the quick command reference table.
+- `README.md`: added a "🖱️ Prefer clicking?" pointer near the top; directory tree updated with `bin/sfk_gui.py`, `bin/sfk-launcher.sh`, `bin/sfk-launcher.bat`.
+- `INSTRUCTIONS.md`: added a GUI row to the reference table.
+- `memory/plans/PLAN-0002-SFK-LAUNCHER-GUI-STANDALONE.md`: marked **DONE**, Git Record filled with all 6 phase commit hashes (`d1521bd`…`fbfbc8f`), approval checklist checked off.
+- `memory/progress.md`: Resume Panel updated to reflect PLAN-0002 shipped; Modules table gained a "SFK Launcher (GUI)" row; Recent Activity updated.
+- **PLAN-0002 complete** (F1–F6). All commits are on `main` directly (single-phase-per-commit pace, no separate branch this time); push to `origin` remains a separate pending authorization.
+
 ## 2026-07-08 — PLAN-0002 Phase 5 (SFK Launcher — ergonomics & robustness)
 - Friendly missing-Tkinter handling: `import tkinter` moved into a `try/except ModuleNotFoundError` at the top of `bin/sfk_gui.py`, printing distro-specific install commands (apt/dnf/pacman/brew) instead of a raw traceback.
 - App icon generated procedurally (no external asset, no PIL): `build_icon_image()` draws 3 stacked bars (teal background + cream/console-accent bars) echoing the app's own 3-zone architecture diagram; wired into the window via `iconphoto`. Maintainer command `python3 bin/sfk_gui.py --export-icon [path]` regenerates the static asset; committed `bin/sfk-launcher.png` (64x64).

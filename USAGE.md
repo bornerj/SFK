@@ -11,6 +11,36 @@ This guide answers the six operational questions:
 5. [Updating skills](#5-updating-skills)
 6. [Adding a new skill](#6-adding-a-new-skill)
 
+Prefer clicking over typing commands? See [§0 — SFK Launcher (GUI)](#0-prefer-clicking-use-the-sfk-launcher-gui).
+
+---
+
+## 0. Prefer clicking? Use the SFK Launcher (GUI)
+
+`bin/sfk_gui.py` is a **zero-install desktop app** (pure Python standard library —
+no `pip install`, nothing beyond Python itself) that wraps §2–§6 below in a
+window with buttons and folder-browse dialogs. You never type a path or a flag.
+
+Run it:
+```bash
+python3 bin/sfk_gui.py
+```
+Or double-click:
+- **Linux/macOS**: `bin/sfk-launcher.sh` — run `bash bin/sfk-launcher.sh --install-desktop`
+  once to add "SFK Launcher" to your applications menu.
+- **Windows**: `bin/sfk-launcher.bat`
+
+What it offers, one card per action: **criar um projeto novo** (§2), **adicionar o
+SFK a um projeto existente** (§3), **atualizar/migrar** (§4), **skills** — importar
+ou atualizar (§5–§6), and **checar um projeto** (read-only preview). It is a thin
+shell over the exact same scripts described below — same guarantees (dry-run
+first, automatic backup before migrating, never touches your product code, apply
+requires confirmation) — just with buttons instead of typed commands.
+
+Requires Tkinter, which ships with Python on most systems. If it's missing, the
+app prints the exact install command for your OS (e.g. `sudo apt install python3-tk`
+on Debian/Ubuntu/Zorin) instead of crashing.
+
 ---
 
 ## 1. How SFK works now
@@ -207,6 +237,7 @@ Claude Code and Windsurf pick up new skills automatically.
 
 | Goal | Command |
 |------|---------|
+| **Prefer a GUI?** | `python3 bin/sfk_gui.py` (or double-click `bin/sfk-launcher.sh` / `.bat`) |
 | New project | `bash bin/new-project.sh <target> --project-name "Name" --init-git` |
 | Add SFK to existing project | `bash bin/update-project.sh <target> --dry-run` then without `--dry-run` |
 | Update SFK / migrate legacy | `bash bin/update-project.sh <target>` (auto-backs up on migration) |

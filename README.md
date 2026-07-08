@@ -4,6 +4,9 @@
 
 > 📖 **New here?** Read [USAGE.md](USAGE.md) — how SFK works and how to start a
 > project, add SFK to an existing one, update it, and manage skills.
+>
+> 🖱️ **Prefer clicking?** Run `python3 bin/sfk_gui.py` — a zero-install desktop
+> app with buttons for every action below (see [USAGE.md §0](USAGE.md#0-prefer-clicking-use-the-sfk-launcher-gui)).
 
 ---
 
@@ -258,7 +261,10 @@ sfk/
 │   ├── lib/              ← jb_kit_turbo.py (scaffolder), sfk_updater.py
 │   ├── new-project.sh    ← Linux/macOS scaffold wizard
 │   ├── new-project.ps1   ← Windows scaffold wizard
-│   └── update-project.sh ← Framework updater for existing projects
+│   ├── update-project.sh ← Framework updater for existing projects
+│   ├── sfk_gui.py        ← SFK Launcher — zero-install desktop GUI
+│   ├── sfk-launcher.sh   ← Double-click entry point (Linux/macOS)
+│   └── sfk-launcher.bat  ← Double-click entry point (Windows)
 │
 └── INSTRUCTIONS.md       ← Full usage guide
 ```

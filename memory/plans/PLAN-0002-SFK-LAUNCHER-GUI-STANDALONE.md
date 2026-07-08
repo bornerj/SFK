@@ -1,6 +1,6 @@
 # PLAN-0002 — SFK Launcher (GUI standalone, zero-install)
 
-> **Status:** WAITING_APPROVAL (nada será executado até aprovação explícita)
+> **Status:** DONE — F1–F6 implementadas e commitadas em `main`.
 > **Tipo:** COMPLEX CODE · **Categoria de arquivo:** C (tooling do mantenedor → `bin/`)
 > **Base funcional:** `USAGE.md` (os 6 cenários de uso já documentados)
 
@@ -117,12 +117,16 @@ Botões grandes, um por cenário do `USAGE.md`:
 - **Caminhos com espaço / Windows:** args em lista, sem shell; abrir pasta por API do SO.
 
 ## 8. Git Record of Delivery
-> A preencher na execução, por fase. Nenhuma fase fecha sem revisão + autorização.
-- F1…F6: _pendente_
-- Push status: PENDING
+- F1 (esqueleto + Checar projeto): `d1521bd`
+- F2 (Criar projeto novo): `ac50566`
+- F3 (Adicionar/Atualizar): `09aacf3`
+- F4 (Skills): `54fdd90`
+- F5 (Ergonomia: ícone, launchers, erro amigável): `fbfbc8f`
+- F6 (Docs & memória): _este commit_
+- Push status: cada fase commitada em `main` diretamente (sessão em ritmo de commit único por fase, sem branch separada); push ao `origin` é autorização à parte, ainda pendente ao fechar este plano.
 
-## 9. Checklist de aprovação (o que preciso de você)
-- [ ] Aprovar o princípio (seção 2) e o desenho de experiência (seção 4).
-- [ ] Confirmar a ordem das 6 fases.
-- [ ] Autorizar início pela **F1** (esqueleto), ou indicar outra.
-- [ ] Confirmar o nome do app: **"SFK Launcher"** (ou sugerir outro).
+## 9. Checklist de aprovação (o que preciso de você) — CONCLUÍDO
+- [x] Aprovar o princípio (seção 2) e o desenho de experiência (seção 4).
+- [x] Confirmar a ordem das 6 fases.
+- [x] Autorizar início pela **F1** (esqueleto).
+- [x] Confirmar o nome do app: **"SFK Launcher"**.
