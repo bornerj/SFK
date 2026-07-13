@@ -4,6 +4,26 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 
 ---
 
+## 2026-07-13 — SESSION CLOSURE — PASS
+| Item | Result |
+|---|---|
+| Decision Integrity | PASS — no ACTIVE `DECISION-*` exists in this repo; nothing contradicted; no structural/auth/schema/API change occurred this session |
+| State Integrity | PASS — `PLAN-0001`, `PLAN-0002`, `PLAN-0003`, `PLAN-0004` all `DONE`; no open plan; scope respected in all (out-of-scope items explicitly deferred, not silently done) |
+| Operational Memory | PASS — every change recorded in this log in real time; both plans updated with real phase progress and closed with a filled Git Record |
+| Debug Memory | PASS — 3 bugs fixed this session, all recorded in `memory/logs/DEBUG-HISTORY.md` (ERR-0001, ERR-0002, ERR-0003), full ID/SYMPTOM/ROOT_CAUSE/ACTION/CONTEXT template |
+| Technical Validation | PASS, with a noted caveat — no formal lint/test-suite tool is configured for this repo's Python tooling (`bin/lib/*.py`); validation was `py_compile` (syntax) + functional fixture testing (dry-run, apply, byte-identical diffs on pre-existing files, LEGACY/CURRENT regression, dry-run against the user's real reported project) — same methodology already established in this repo's prior sessions (`PLAN-0001`/`PLAN-0002`), not a gap introduced here |
+| Regression Risk | PASS — no sensitive area touched (auth/payment/scheduling/external integration); change is scaffolder/updater tooling only; fixture-based functional coverage exists for the changed paths; no unresolved prior debug-history entry could resurface (these are the first entries in the file) |
+| Git Governance | PASS — files reviewed and summarized before every commit; Conventional Commits messages; Git Record of Delivery filled for `PLAN-0002`/`PLAN-0003`/`PLAN-0004` including push hashes; every commit and every push explicitly authorized by the user, separately |
+
+Session summary: fixed the user-reported bug (SFK Launcher "Adicionar SFK a projeto
+existente" failing on genuinely SFK-less projects — `PLAN-0003`), a collateral leak
+found while investigating it (`PLAN-0004`, new-project scaffolder copying this repo's
+own real plans/PRs), and a follow-up doc correction (`_blueprint/SYSTEM.md` stale
+`kernel/` references, ERR-0003). 4 commits, all pushed to `origin/main`
+(`a0377d5..f8b2abe`). Nothing pending, nothing blocked.
+
+Full checklist copy: `memory/logs/AUDIT_CHECKLIST_2026-07-13-PASS.md`.
+
 ## 2026-07-13 — _blueprint/SYSTEM.md: fix stale pre-.sfk/ layout references (point-in-time) ##bug
 - `_blueprint/SYSTEM.md` (the blank `SYSTEM.md` handed to every new/bootstrapped project — user-requested follow-up to `PLAN-0003`'s closing notes) still referenced the pre-v1.3.0 layout: `kernel/RULES.md`, `kernel/SYSTEM-TEMPLATE.md`, `kernel/sfk.toml` (the last one doubly wrong — `sfk.toml` lives at the project root, never under `kernel/`). Corrected to `.sfk/kernel/RULES.md`, `.sfk/kernel/SYSTEM-TEMPLATE.md`, `sfk.toml`. This repo's own root `SYSTEM.md` was already correct; only the `_blueprint/` starter was stale. Recorded as `memory/logs/DEBUG-HISTORY.md` ERR-0003.
 - Single file, no behavior change, below the plan threshold — point-in-time execution per Anti-Scope-Drift.
