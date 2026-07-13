@@ -123,7 +123,7 @@ Botões grandes, um por cenário do `USAGE.md`:
 - F4 (Skills): `54fdd90`
 - F5 (Ergonomia: ícone, launchers, erro amigável): `fbfbc8f`
 - F6 (Docs & memória): _este commit_
-- Push status: cada fase commitada em `main` diretamente (sessão em ritmo de commit único por fase, sem branch separada); push ao `origin` é autorização à parte, ainda pendente ao fechar este plano.
+- Push status: cada fase commitada em `main` diretamente (sessão em ritmo de commit único por fase, sem branch separada); COMPLETED — pushed to `origin/main` on 2026-07-13 alongside `PLAN-0003`/`PLAN-0004` (`a0377d5..d7086d7`), authorized by the user in that session.
 
 ## 9. Checklist de aprovação (o que preciso de você) — CONCLUÍDO
 - [x] Aprovar o princípio (seção 2) e o desenho de experiência (seção 4).

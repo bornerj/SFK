@@ -122,8 +122,8 @@ um arquivo só) — ver seção 8 para confirmar a ordem com o usuário.
 - Step 1 (Pre-commit review): feito — arquivos listados e resumidos ao usuário, validações (py_compile + fixture fria + regressão LEGACY/CURRENT + dry-run no projeto real) executadas antes do pedido de autorização.
 - Step 2 (Commit authorization): usuário autorizou commit único combinado com `PLAN-0004`.
 - Step 3 (Commit confirmation): _este commit_
-- Step 4 (Push authorization and result): pendente — autorização separada de push ainda não pedida/concedida.
-- Push status: PENDING
+- Step 4 (Push authorization and result): usuário autorizou (junto com commit adicional do ERR-0003) — `git push origin main` → `a0377d5..d7086d7`.
+- Push status: COMPLETED
 
 ## 8. Checklist de aprovação (preciso de você antes de codar) — CONCLUÍDO
 - [x] Aprovar as fases F1–F5 acima.

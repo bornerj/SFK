@@ -14,28 +14,28 @@
 
 ```toml
 updated      = "2026-07-13"
-active_plan  = "PLAN-0004 DONE (uncommitted); PLAN-0003 DONE (uncommitted)"
-phase        = "Bug fix implemented & validated: 'Adicionar SFK a projeto existente' now works on real no-SFK projects"
-status       = "in-progress"          # in-progress | paused | blocked | idle
+active_plan  = "PLAN-0002, PLAN-0003, PLAN-0004 all DONE — committed and pushed to origin/main"
+phase        = "idle — bug fix shipped: 'Adicionar SFK a projeto existente' now works on real no-SFK projects"
+status       = "idle"                 # in-progress | paused | blocked | idle
 branch       = "main"
 blockers     = []
-next_action  = "Present consolidated pre-commit review for PLAN-0003 + PLAN-0004, get commit authorization (then a separate push authorization)."
+next_action  = "None pending. Optional: run the real apply (not just dry-run) against the user's actual project via the GUI, if they want it done now."
 ```
 
 **Where am I:** Bug reported via SFK Launcher GUI: "Adicionar SFK a projeto existente"
 errored with "not an SFK project" on a genuinely SFK-less project — root cause was
 `sfk_updater.py` never implementing a real path for layout `none` (only `current`/
-`legacy`). Two plans, both implemented and validated (not yet committed):
-`PLAN-0004` (collateral finding, confirmed by the user — the new-project scaffolder
-was leaking this repo's own real `PLAN-0001/0002/0003`/`PR-0001-DESCRIPTION.md` into
-scaffolded projects; fixed via `jb_kit_turbo.is_own_delivery_history()`) and
-`PLAN-0003` (the reported bug — updater bootstrap install for layout `none`,
-strictly additive; depends on `PLAN-0004`'s filter + two extracted blank-template
-generators). Both regression-tested (CURRENT/LEGACY unaffected) and validated
-against the user's actual reported project path via dry-run. See
-`memory/logs/DEBUG-HISTORY.md` ERR-0001/ERR-0002 for full detail. PLAN-0001/PLAN-0002
-(engine separation + SFK Launcher GUI) remain shipped underneath, `main` still
-pending push authorization from before.
+`legacy`). Fixed across three commits, all pushed to `origin/main`
+(`a0377d5..d7086d7`): `PLAN-0004` (collateral finding, confirmed by the user — the
+new-project scaffolder was leaking this repo's own real
+`PLAN-0001/0002/0003`/`PR-0001-DESCRIPTION.md` into scaffolded projects; fixed via
+`jb_kit_turbo.is_own_delivery_history()`), `PLAN-0003` (the reported bug — updater
+bootstrap install for layout `none`, strictly additive), and a point-in-time follow-up
+fixing stale pre-`.sfk/` references in `_blueprint/SYSTEM.md` (ERR-0003). All
+regression-tested (CURRENT/LEGACY unaffected) and validated against the user's actual
+reported project path via dry-run. See `memory/logs/DEBUG-HISTORY.md`
+ERR-0001/ERR-0002/ERR-0003 for full detail. `PLAN-0002` (SFK Launcher GUI, previously
+pending push) shipped in the same push. Nothing blocked, nothing pending.
 
 ---
 
