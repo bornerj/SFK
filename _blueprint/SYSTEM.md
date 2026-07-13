@@ -1,15 +1,15 @@
 ## System (Technical and Organizational Rules)
 
 These rules define the engineering standards for the project.
-Process, continuity, and memory rules are in `kernel/RULES.md`.
+Process, continuity, and memory rules are in `.sfk/kernel/RULES.md`.
 Must be reviewed BEFORE the start of the project.
 
-> Fill in this file using `kernel/SYSTEM-TEMPLATE.md` as a guide.
+> Fill in this file using `.sfk/kernel/SYSTEM-TEMPLATE.md` as a guide.
 > Remove sections that do not apply to your stack.
 > This file is read and enforced by the AI in every session.
 
 ## Language and Stack
-[FILL IN — Use kernel/sfk.toml as reference]
+[FILL IN — Use sfk.toml as reference]
 
 ## Code Style
 [FILL IN — Define your project's conventions]

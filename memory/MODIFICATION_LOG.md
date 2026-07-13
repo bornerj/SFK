@@ -4,6 +4,10 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 
 ---
 
+## 2026-07-13 — _blueprint/SYSTEM.md: fix stale pre-.sfk/ layout references (point-in-time) ##bug
+- `_blueprint/SYSTEM.md` (the blank `SYSTEM.md` handed to every new/bootstrapped project — user-requested follow-up to `PLAN-0003`'s closing notes) still referenced the pre-v1.3.0 layout: `kernel/RULES.md`, `kernel/SYSTEM-TEMPLATE.md`, `kernel/sfk.toml` (the last one doubly wrong — `sfk.toml` lives at the project root, never under `kernel/`). Corrected to `.sfk/kernel/RULES.md`, `.sfk/kernel/SYSTEM-TEMPLATE.md`, `sfk.toml`. This repo's own root `SYSTEM.md` was already correct; only the `_blueprint/` starter was stale. Recorded as `memory/logs/DEBUG-HISTORY.md` ERR-0003.
+- Single file, no behavior change, below the plan threshold — point-in-time execution per Anti-Scope-Drift.
+
 ## 2026-07-13 — PLAN-0004 F1–F3 (scaffolder: stop leaking real delivery history) ##bug
 - Bug reported by the user: SFK Launcher "Adicionar SFK a projeto existente" failed with "not an SFK project" on a project that genuinely has no SFK yet — investigation traced the root cause to `sfk_updater.py` never having a real bootstrap path for layout `none` (tracked as `PLAN-0003`). While investigating, found a related but separate leak in the *new-project* scaffolder and confirmed scope with the user: only the framework (`.sfk/` + blank `memory/`/`docs/`/`db/` skeleton) should ever propagate to a project — never this repo's own real plans/PRs.
 - `bin/lib/jb_kit_turbo.py`: added `REAL_HISTORY_PATTERN` (`^(PLAN|DECISION|PR)-\d+`) + `is_own_delivery_history()`, wired into `should_ignore()` (shared by `ignore_filter`/`copytree` and `apply_blueprint_overrides`). Template files (`PLAN-XXXX-...`, `DECISION-XXX.md`, `PR-XXXX-...`) are unaffected; files with a real sequence number are now skipped during scaffolding, self-applying to any future `PLAN-000N` without touching the filter again.

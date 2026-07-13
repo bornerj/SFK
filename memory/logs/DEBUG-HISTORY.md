@@ -53,3 +53,24 @@ confirmed byte-identical after apply); LEGACY and CURRENT layouts regression-tes
 (byte-identical migration content, no plan changes); dry-run against the user's
 actual reported project path confirmed the fix (clean additive plan instead of the
 error).
+
+# ID: ERR-0003: _blueprint/SYSTEM.md pointed to the pre-.sfk/ legacy layout ##bug
+SYMPTOM: Flagged as a side-finding while validating `PLAN-0003` (the bootstrap path
+copies `_blueprint/SYSTEM.md` into a project's `SYSTEM.md` on first install, same as
+the new-project scaffolder already did). The file itself still referenced the old
+root-`kernel/` layout from before the v1.3.0 `.sfk/` restructuring (`PLAN-0001`).
+ROOT_CAUSE: `_blueprint/SYSTEM.md` was never updated when `PLAN-0001` moved the engine
+to `.sfk/kernel/` and promoted `sfk.toml` to the project root. It still said
+`kernel/RULES.md`, `kernel/SYSTEM-TEMPLATE.md`, and `kernel/sfk.toml` — the last one
+doubly wrong, since `sfk.toml` lives at the project root, never under `kernel/` at all.
+This repo's own root `SYSTEM.md` was already correct; only the `_blueprint/` starter
+template was stale.
+ACTION: Corrected all three references in `_blueprint/SYSTEM.md` to
+`.sfk/kernel/RULES.md`, `.sfk/kernel/SYSTEM-TEMPLATE.md`, and `sfk.toml`. No other
+`kernel/`-without-`.sfk/` references remained in the file (verified by grep). Both
+consumers of this template — the new-project scaffolder (`jb_kit_turbo.py`
+`apply_blueprint_overrides()`) and the `PLAN-0003` bootstrap path — now hand out a
+correct `SYSTEM.md` on first install.
+CONTEXT: Noted but not fixed in `PLAN-0003`'s closing `MODIFICATION_LOG.md` entry
+(2026-07-13); fixed here as a point-in-time correction (single file, no behavior
+change, below the plan threshold).
