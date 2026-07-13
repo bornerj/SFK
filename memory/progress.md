@@ -13,23 +13,29 @@
 <!-- Keep it small: names and short phrases only, never long prose. -->
 
 ```toml
-updated      = "2026-07-08"
-active_plan  = "PLAN-0002 DONE — SFK Launcher GUI complete, committed to main"
-phase        = "Shipped: SFK Launcher (bin/sfk_gui.py), F1-F6"
-status       = "idle"                 # in-progress | paused | blocked | idle
+updated      = "2026-07-13"
+active_plan  = "PLAN-0004 DONE (uncommitted); PLAN-0003 DONE (uncommitted)"
+phase        = "Bug fix implemented & validated: 'Adicionar SFK a projeto existente' now works on real no-SFK projects"
+status       = "in-progress"          # in-progress | paused | blocked | idle
 branch       = "main"
 blockers     = []
-next_action  = "Push main to origin (pending authorization). Optional: migrate the real VetSystem project via the GUI's Update panel."
+next_action  = "Present consolidated pre-commit review for PLAN-0003 + PLAN-0004, get commit authorization (then a separate push authorization)."
 ```
 
-**Where am I:** PLAN-0002 (SFK Launcher, a zero-install Tkinter GUI over the
-scaffolder/updater/skill-importer) is fully shipped — all 6 phases committed to
-`main` (not yet pushed). Covers: New Project, Add/Update (with legacy migration,
-tested against the real VetSystem project's shape), Skills (import + list),
-Check-project preview, procedural icon, double-click launchers (`.sh`/`.bat`),
-friendly missing-Tkinter handling. `USAGE.md` and `README.md` updated with a
-GUI entry point. PLAN-0001 (engine/project separation, v1.3.0, shipped and
-pushed earlier) remains underneath it. Nothing blocked.
+**Where am I:** Bug reported via SFK Launcher GUI: "Adicionar SFK a projeto existente"
+errored with "not an SFK project" on a genuinely SFK-less project — root cause was
+`sfk_updater.py` never implementing a real path for layout `none` (only `current`/
+`legacy`). Two plans, both implemented and validated (not yet committed):
+`PLAN-0004` (collateral finding, confirmed by the user — the new-project scaffolder
+was leaking this repo's own real `PLAN-0001/0002/0003`/`PR-0001-DESCRIPTION.md` into
+scaffolded projects; fixed via `jb_kit_turbo.is_own_delivery_history()`) and
+`PLAN-0003` (the reported bug — updater bootstrap install for layout `none`,
+strictly additive; depends on `PLAN-0004`'s filter + two extracted blank-template
+generators). Both regression-tested (CURRENT/LEGACY unaffected) and validated
+against the user's actual reported project path via dry-run. See
+`memory/logs/DEBUG-HISTORY.md` ERR-0001/ERR-0002 for full detail. PLAN-0001/PLAN-0002
+(engine separation + SFK Launcher GUI) remain shipped underneath, `main` still
+pending push authorization from before.
 
 ---
 
@@ -74,6 +80,8 @@ pushed earlier) remains underneath it. Nothing blocked.
 <!-- Log of completed tasks. Summarize entries older than 30 days. -->
 <!-- Format: - YYYY-MM-DD: [what was done] (PLAN-XXXX or point-in-time) -->
 
+- 2026-07-13: PLAN-0003 F1–F5 — `sfk_updater.py` bootstrap install for layout `none` (ERR-0002); fixes "Adicionar SFK a projeto existente" on real no-SFK projects (implemented & validated, uncommitted)
+- 2026-07-13: PLAN-0004 F1–F4 — scaffolder (`jb_kit_turbo.py`) stops copying this repo's real PLAN/PR files into new projects (ERR-0001) (implemented & validated, uncommitted)
 - 2026-07-08: PLAN-0002 F1–F6 — SFK Launcher GUI (`bin/sfk_gui.py`) shipped: New Project, Add/Update with legacy migration, Skills, Check-project, icon, double-click launchers (DONE)
 - 2026-07-07: PLAN-0001 F0–F5 + release — engine/project separation, SFK v1.3.0 shipped and pushed (DONE)
 - 2026-04-06: Core SFK consolidated (`sfk.toml` expanded, `docs/config` cleaned up, audit assets relocated) (DONE)

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -36,6 +37,17 @@ EXAMPLE_DOCS = {
     Path("docs/project/PROJECT_OVERVIEW_EXAMPLE.md"),
     Path("docs/project/REQUIREMENTS_EXAMPLE.md"),
 }
+
+# Files named with a real sequence number (PLAN-0001, DECISION-001, PR-0001-...) are
+# this SFK repo's own delivery history, not templates — never propagate them to a
+# scaffolded project. Template files keep the literal placeholder (PLAN-XXXX,
+# DECISION-XXX, PR-XXXX) and are unaffected by this pattern. Reused by
+# sfk_updater.py for the same reason on the bootstrap-install path.
+REAL_HISTORY_PATTERN = re.compile(r"^(PLAN|DECISION|PR)-\d+")
+
+
+def is_own_delivery_history(name: str) -> bool:
+    return bool(REAL_HISTORY_PATTERN.match(name))
 
 
 def parse_args() -> argparse.Namespace:
@@ -69,6 +81,8 @@ def should_ignore(name: str, full_path: Path) -> bool:
     if name in IGNORE_NAMES:
         return True
     if full_path.suffix.lower() in IGNORE_SUFFIXES:
+        return True
+    if is_own_delivery_history(name):
         return True
     return False
 
@@ -144,10 +158,8 @@ def write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def reset_starter_docs(target: Path, project_name: str, keep_examples: bool) -> None:
-    today = date.today().isoformat()
-
-    overview = f"""# Project Overview
+def blank_project_overview(project_name: str, today: str) -> str:
+    return f"""# Project Overview
 
 ## Summary
 - Project: {project_name}
@@ -177,7 +189,9 @@ def reset_starter_docs(target: Path, project_name: str, keep_examples: bool) -> 
 - M3:
 """
 
-    requirements = f"""# Requirements
+
+def blank_requirements(today: str) -> str:
+    return f"""# Requirements
 
 Last updated: {today}
 
@@ -201,7 +215,9 @@ Last updated: {today}
 - [ ] AC-002:
 """
 
-    modification_log = f"""# Modification Log
+
+def blank_modification_log(today: str) -> str:
+    return f"""# Modification Log
 
 Start date: {today}
 
@@ -210,7 +226,9 @@ Use this file for macro operational tracking, according to:
 - `memory/WORKFLOW_MEMORY_PLAYBOOK.md`
 """
 
-    debug_history = """# Debug History
+
+def blank_debug_history() -> str:
+    return """# Debug History
 
 Use semantic IDs:
 - ERR-0001
@@ -224,10 +242,14 @@ ACTION:
 CONTEXT:
 """
 
-    write_text(target / "docs/project/PROJECT_OVERVIEW.md", overview)
-    write_text(target / "docs/project/REQUIREMENTS.md", requirements)
-    write_text(target / "memory/MODIFICATION_LOG.md", modification_log)
-    write_text(target / "memory/logs/DEBUG-HISTORY.md", debug_history)
+
+def reset_starter_docs(target: Path, project_name: str, keep_examples: bool) -> None:
+    today = date.today().isoformat()
+
+    write_text(target / "docs/project/PROJECT_OVERVIEW.md", blank_project_overview(project_name, today))
+    write_text(target / "docs/project/REQUIREMENTS.md", blank_requirements(today))
+    write_text(target / "memory/MODIFICATION_LOG.md", blank_modification_log(today))
+    write_text(target / "memory/logs/DEBUG-HISTORY.md", blank_debug_history())
 
     (target / "memory/plans").mkdir(parents=True, exist_ok=True)
     (target / "memory/decisions").mkdir(parents=True, exist_ok=True)

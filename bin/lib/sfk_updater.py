@@ -3,8 +3,9 @@
 """
 SFK -- Structured Framework Kit
 ================================
-Update an existing SFK project to the latest engine, and migrate legacy
-projects (root `kernel/` layout) to the current `.sfk/` layout.
+Update an existing SFK project to the latest engine, migrate legacy projects
+(root `kernel/` layout) to the current `.sfk/` layout, and bootstrap SFK onto a
+project that has none yet.
 
 Usage:
     python sfk_updater.py <target> [--yes] [--dry-run] [--no-backup]
@@ -12,7 +13,7 @@ Usage:
 Layouts detected:
   - CURRENT : target has `.sfk/kernel/BOOTSTRAP.md`  → engine sync only.
   - LEGACY  : target has `kernel/BOOTSTRAP.md` (no `.sfk/`) → migrate, then sync.
-  - NONE    : neither → not an SFK project (aborts).
+  - NONE    : neither → bootstrap install (add SFK to an existing project).
 
 Migration (LEGACY → CURRENT), applied before syncing:
   - `kernel/`            → `.sfk/kernel/`
@@ -20,15 +21,21 @@ Migration (LEGACY → CURRENT), applied before syncing:
   - `kernel/SYSTEM.md`   → `SYSTEM.md` (root; user-owned content preserved)
   A timestamped backup archive of the target is created first (unless --no-backup).
 
-Engine sync (both layouts): every path listed in `.sfk/MANIFEST` is overwritten
+Bootstrap (NONE → CURRENT), strictly additive — never overwrites a file that
+already exists in the target: installs the `.sfk/` engine, blank `sfk.toml`/
+`SYSTEM.md`, blank starter `memory/`/`docs/`/`db/` skeleton (never this repo's
+own real plans/decisions/PR descriptions — only the `XXXX`/`XXX` template files,
+via `jb_kit_turbo.is_own_delivery_history`), IDE config, gitattributes and hooks.
+
+Engine sync (CURRENT/LEGACY): every path listed in `.sfk/MANIFEST` is overwritten
 with the latest version. The MANIFEST is the single ownership map — anything not
 in it (sfk.toml, SYSTEM.md, .sfk/kernel/mcp_config.json, memory/, docs/, db/,
-product code) is NEVER touched.
+product code) is NEVER touched. Also synced: root IDE config (.clauderules,
+CLAUDE.md, .windsurfrules, .gitignore, .cursor/), framework-owned memory items,
+and clean blueprint templates added only when missing.
 
-Also synced: root IDE config (.clauderules, CLAUDE.md, .windsurfrules, .gitignore,
-.cursor/), framework-owned memory items, and clean blueprint templates added only
-when missing. `.gitattributes` gets the `.sfk` vendor rule appended if absent.
-Git hooks are (re)installed via core.hooksPath.
+`.gitattributes` gets the `.sfk` vendor rule appended if absent (all layouts).
+Git hooks are (re)installed via core.hooksPath (all layouts).
 """
 
 from __future__ import annotations
@@ -42,6 +49,12 @@ import tarfile
 from datetime import datetime
 from pathlib import Path
 from typing import NamedTuple
+
+from jb_kit_turbo import (  # sibling module in bin/lib/
+    blank_debug_history,
+    blank_modification_log,
+    is_own_delivery_history,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -205,10 +218,9 @@ def _diff_item(src: Path, dst: Path, first_time: bool = False) -> SyncItem | Non
     return None
 
 
-def build_sync_plan(sfk_root: Path, target: Path) -> list[SyncItem]:
+def build_manifest_items(sfk_root: Path, target: Path) -> list[SyncItem]:
+    """Engine files/dirs, driven by `.sfk/MANIFEST` (always latest)."""
     items: list[SyncItem] = []
-
-    # 1. Engine files/dirs, driven by the MANIFEST (always latest).
     for entry in read_manifest(sfk_root):
         src = sfk_root / entry
         dst = target / entry
@@ -224,6 +236,23 @@ def build_sync_plan(sfk_root: Path, target: Path) -> list[SyncItem]:
                 item = _diff_item(src, dst)
                 if item:
                     items.append(item)
+    return items
+
+
+def collect_new_only(src_dir: Path, dst_dir: Path, skip=None) -> list[SyncItem]:
+    """Per-file additive copy: only files missing at the destination, never a diff/overwrite."""
+    items: list[SyncItem] = []
+    for f, rel in collect_dir_files(src_dir):
+        if skip and skip(f.name):
+            continue
+        dst = dst_dir / rel
+        if not dst.exists():
+            items.append(SyncItem(f, dst, True, False, is_first_time=True))
+    return items
+
+
+def build_sync_plan(sfk_root: Path, target: Path) -> list[SyncItem]:
+    items: list[SyncItem] = build_manifest_items(sfk_root, target)
 
     # 2. Root-level IDE/config items.
     for name in EXTRA_CONFIG_ITEMS:
@@ -259,6 +288,108 @@ def build_sync_plan(sfk_root: Path, target: Path) -> list[SyncItem]:
                 items.append(SyncItem(src_item, dst_item, True, False, is_first_time=True))
 
     return items
+
+
+# Root-level dirs whose already-blank templates are safe to copy verbatim from the
+# SFK repo (unlike memory/MODIFICATION_LOG.md / DEBUG-HISTORY.md, nothing here holds
+# this repo's own real project history).
+BOOTSTRAP_TEMPLATE_DIRS: list[str] = [
+    "docs/project", "docs/integrations", "docs/deploy",
+    "db/migrations", "db/seeds",
+]
+
+BOOTSTRAP_NOTES: list[str] = [
+    "First-time install: sfk.toml and SYSTEM.md were added as blank templates — fill them in before the first AI session.",
+    "memory/MODIFICATION_LOG.md and memory/logs/DEBUG-HISTORY.md start blank — nothing from your project's history was touched.",
+    "Files that already existed in your project were never overwritten — only missing SFK files were added.",
+    "Run your first AI session so it re-reads .sfk/kernel/BOOTSTRAP.md under the new layout.",
+]
+
+
+def build_bootstrap_items(sfk_root: Path, target: Path) -> list[SyncItem]:
+    """Layout NONE plan: install SFK into an existing project. Strictly additive —
+    every item here is skipped if the destination already exists."""
+    items: list[SyncItem] = build_manifest_items(sfk_root, target)
+
+    # Root config — doesn't exist yet for a "none" project.
+    sfk_toml_src = sfk_root / "sfk.toml"
+    if sfk_toml_src.exists() and not (target / "sfk.toml").exists():
+        items.append(SyncItem(sfk_toml_src, target / "sfk.toml", True, False, is_first_time=True))
+    system_md_src = sfk_root / "_blueprint" / "SYSTEM.md"
+    if system_md_src.exists() and not (target / "SYSTEM.md").exists():
+        items.append(SyncItem(system_md_src, target / "SYSTEM.md", True, False, is_first_time=True))
+
+    # Root-level IDE/config items — new-only here (unlike CURRENT/LEGACY sync above,
+    # a first bootstrap must never clobber a .gitignore/CLAUDE.md the project already has).
+    for name in EXTRA_CONFIG_ITEMS:
+        src_item = sfk_root / name
+        if not src_item.exists():
+            continue
+        if src_item.is_file():
+            dst_item = target / name
+            if not dst_item.exists():
+                items.append(SyncItem(src_item, dst_item, True, False, is_first_time=True))
+        else:
+            items += collect_new_only(src_item, target / name)
+
+    # Framework-owned memory items (WORKFLOW_MEMORY_PLAYBOOK.md, SESSION-AUDIT-CHECKLIST.md).
+    for name in EXTRA_MEMORY_ITEMS:
+        src_item = sfk_root / "memory" / name
+        if src_item.exists() and not (target / "memory" / name).exists():
+            items.append(SyncItem(src_item, target / "memory" / name, True, False, is_first_time=True))
+
+    # Blank blueprint templates (progress.md, DRIFT-RULES.md, BUILD-HISTORY.md).
+    blueprint = sfk_root / "_blueprint"
+    if blueprint.exists():
+        for src_rel, dst_rel in BLUEPRINT_NEW_ONLY_ITEMS:
+            src_item = blueprint / src_rel
+            dst_item = target / dst_rel
+            if src_item.exists() and not dst_item.exists():
+                items.append(SyncItem(src_item, dst_item, True, False, is_first_time=True))
+
+    # docs/, db/ — already-blank templates in this repo, safe direct copy.
+    for rel_dir in BOOTSTRAP_TEMPLATE_DIRS:
+        src_dir = sfk_root / rel_dir
+        if src_dir.exists():
+            items += collect_new_only(src_dir, target / rel_dir)
+
+    # memory/plans, memory/decisions — template files only, never this repo's real
+    # delivered plans/decisions.
+    for rel_dir in ("memory/plans", "memory/decisions"):
+        src_dir = sfk_root / rel_dir
+        if src_dir.exists():
+            items += collect_new_only(src_dir, target / rel_dir, skip=is_own_delivery_history)
+
+    # memory/*-DESCRIPTION.md at root — template only (PR-XXXX-DESCRIPTION.md).
+    for f in sorted(sfk_root.glob("memory/*-DESCRIPTION.md")):
+        if is_own_delivery_history(f.name):
+            continue
+        dst = target / "memory" / f.name
+        if not dst.exists():
+            items.append(SyncItem(f, dst, True, False, is_first_time=True))
+
+    return items
+
+
+def build_bootstrap_generated_content(target: Path) -> list[tuple[Path, str]]:
+    """Files that must NOT be copied verbatim from this repo (they hold this repo's
+    own real history) — generated blank instead, new-only."""
+    today = datetime.now().strftime("%Y-%m-%d")
+    pairs: list[tuple[Path, str]] = []
+    mod_log = target / "memory" / "MODIFICATION_LOG.md"
+    if not mod_log.exists():
+        pairs.append((mod_log, blank_modification_log(today)))
+    debug_hist = target / "memory" / "logs" / "DEBUG-HISTORY.md"
+    if not debug_hist.exists():
+        pairs.append((debug_hist, blank_debug_history()))
+    return pairs
+
+
+def apply_generated(pairs: list[tuple[Path, str]]) -> int:
+    for dst, content in pairs:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(content, encoding="utf-8")
+    return len(pairs)
 
 
 def find_deprecated_files(target: Path) -> dict[Path, str]:
@@ -369,13 +500,7 @@ def main() -> int:
     print(f"\nSFK — Update Project\n  Template : {sfk_root}\n  Target   : {target}\n")
 
     layout = detect_layout(target)
-    if layout == "none":
-        print(
-            f"ERROR: '{target}' is not an SFK project "
-            f"(no .sfk/kernel/BOOTSTRAP.md or kernel/BOOTSTRAP.md).",
-            file=sys.stderr,
-        )
-        return 1
+    bootstrap = layout == "none"
 
     migration = plan_migration(target) if layout == "legacy" else []
 
@@ -383,8 +508,13 @@ def main() -> int:
         print("Detected LEGACY layout — migration required:")
         for mv in migration:
             print(f"    {mv.src.relative_to(target)}  ->  {mv.dst.relative_to(target)}")
-    else:
+    elif layout == "current":
         print("Detected CURRENT layout (.sfk/).")
+    else:
+        print(
+            "Detected NONE layout — first-time install (bootstrap).\n"
+            "  Nothing pre-existing in the target is overwritten; only missing SFK files are added."
+        )
 
     # Migration is destructive-ish (moves): confirm and back up before doing it.
     if migration:
@@ -413,10 +543,19 @@ def main() -> int:
         pass
 
     print("\nScanning engine for changes...")
-    items = build_sync_plan(sfk_root, build_target)
+    if bootstrap:
+        items = build_bootstrap_items(sfk_root, build_target)
+        generated = build_bootstrap_generated_content(build_target)
+    else:
+        items = build_sync_plan(sfk_root, build_target)
+        generated = []
     deprecated = find_deprecated_files(build_target)
 
     print_plan(items, build_target)
+    if generated:
+        print(f"\n  GENERATED (blank starter, not copied from this repo) ({len(generated)}):")
+        for dst, _ in generated:
+            print(f"    + {dst.relative_to(build_target)}")
     print_deprecated(deprecated, build_target)
 
     if args.dry_run:
@@ -429,17 +568,18 @@ def main() -> int:
         print("\n[dry-run] No files were written.")
         return 0
 
-    if not items and not deprecated and not migration:
+    if not items and not generated and not deprecated and not migration:
         print("\nNothing to do — project is already current.")
         return 0
 
-    if items and not args.yes:
+    if (items or generated) and not args.yes:
         ans = input("\nApply engine sync? [y/N] ").strip().lower()
         if ans not in {"y", "yes", "s", "sim"}:
             print("Cancelled (migration, if any, was already applied).")
             return 0
 
     applied = apply_sync(items) if items else 0
+    applied += apply_generated(generated) if generated else 0
     ga_note = ensure_gitattributes(build_target, dry_run=False)
     hook_note = install_hooks(build_target, dry_run=False)
 
@@ -447,7 +587,15 @@ def main() -> int:
     for note in (ga_note, hook_note):
         if note:
             print(f"    · {note}")
-    print("    Never touched: sfk.toml, SYSTEM.md, .sfk/kernel/mcp_config.json, memory/, docs/, db/")
+    if bootstrap:
+        print("    Never overwritten: any file that already existed in your project.")
+    else:
+        print("    Never touched: sfk.toml, SYSTEM.md, .sfk/kernel/mcp_config.json, memory/, docs/, db/")
+
+    if bootstrap:
+        print("\n📌  Bootstrap notes:")
+        for note in BOOTSTRAP_NOTES:
+            print(f"    - {note}")
 
     if migration:
         print("\n📌  Post-migration notes:")
