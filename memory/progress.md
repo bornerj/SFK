@@ -13,29 +13,30 @@
 <!-- Keep it small: names and short phrases only, never long prose. -->
 
 ```toml
-updated      = "2026-07-13"
-active_plan  = "PLAN-0002, PLAN-0003, PLAN-0004 all DONE — committed and pushed to origin/main"
-phase        = "idle — bug fix shipped: 'Adicionar SFK a projeto existente' now works on real no-SFK projects"
+updated      = "2026-07-17"
+active_plan  = "PLAN-0005 DONE — implemented and validated, uncommitted"
+phase        = "idle — SFK Launcher GUI: compact layout + PT/EN language switch shipped"
 status       = "idle"                 # in-progress | paused | blocked | idle
 branch       = "main"
 blockers     = []
-next_action  = "None pending. Optional: run the real apply (not just dry-run) against the user's actual project via the GUI, if they want it done now."
+next_action  = "None pending. Awaiting user's commit approval for PLAN-0005 (bin/sfk_gui.py, bin/lib/gui_i18n.py, memory/*)."
 ```
 
-**Where am I:** Bug reported via SFK Launcher GUI: "Adicionar SFK a projeto existente"
-errored with "not an SFK project" on a genuinely SFK-less project — root cause was
-`sfk_updater.py` never implementing a real path for layout `none` (only `current`/
-`legacy`). Fixed across three commits, all pushed to `origin/main`
-(`a0377d5..d7086d7`): `PLAN-0004` (collateral finding, confirmed by the user — the
-new-project scaffolder was leaking this repo's own real
-`PLAN-0001/0002/0003`/`PR-0001-DESCRIPTION.md` into scaffolded projects; fixed via
-`jb_kit_turbo.is_own_delivery_history()`), `PLAN-0003` (the reported bug — updater
-bootstrap install for layout `none`, strictly additive), and a point-in-time follow-up
-fixing stale pre-`.sfk/` references in `_blueprint/SYSTEM.md` (ERR-0003). All
-regression-tested (CURRENT/LEGACY unaffected) and validated against the user's actual
-reported project path via dry-run. See `memory/logs/DEBUG-HISTORY.md`
-ERR-0001/ERR-0002/ERR-0003 for full detail. `PLAN-0002` (SFK Launcher GUI, previously
-pending push) shipped in the same push. Nothing blocked, nothing pending.
+**Where am I:** User reported the SFK Launcher GUI (`bin/sfk_gui.py`) window was too
+big — the last Home card ("Checar um projeto") was cut off, requiring a manual resize
+— and asked for a PT/EN language toggle, top-right, visible on every screen, with
+smaller fonts overall. Delivered as `PLAN-0005`: new `bin/lib/gui_i18n.py` (PT/EN
+string dict + `Lang` singleton, preference persisted to
+`~/.sfk_launcher_lang`); `Theme`/`Fonts`/`ActionCard` shrunk and `App.geometry`
+recalculated (760x580, was 880x620) so all 5 Home cards fit without resizing;
+`LangSwitch` widget added top-right on the root window; every static-text widget
+across `Header`, `PathPicker`, `ResultBanner` and all 6 views now retranslates
+in-place on language switch (no rebuild, no loss of typed input). Validated with a
+live `DISPLAY`: card-fit geometry check, language-switch + persistence round-trip,
+and a full real dry-run flow through `sfk_updater.py` — all passed. Nothing blocked.
+Previous session's bug-fix work (`PLAN-0002/0003/0004`) is already committed and
+pushed to `origin/main`; this plan's changes are implemented and validated but not
+yet committed — awaiting the user's explicit commit authorization.
 
 ---
 
@@ -47,7 +48,7 @@ pending push) shipped in the same push. Nothing blocked, nothing pending.
 | Module              | State       | Updated    | Notes                                                        |
 |---------------------|-------------|------------|--------------------------------------------------------------|
 | Architecture (SFK)  | stable      | 2026-07-07 | Engine isolated in `.sfk/`; config promoted to root (PLAN-0001, v1.3.0) |
-| SFK Launcher (GUI)  | stable      | 2026-07-08 | `bin/sfk_gui.py` — zero-install Tkinter app over scaffolder/updater/skill-importer (PLAN-0002) |
+| SFK Launcher (GUI)  | stable      | 2026-07-17 | `bin/sfk_gui.py` — zero-install Tkinter app; compact layout + PT/EN language switch (`bin/lib/gui_i18n.py`, PLAN-0005) |
 | Audit Protocol      | stable      | 2026-04-06 | Moved into `memory/logs/` with routing support               |
 | Template Memory     | stable      | 2026-04-20 | PR, plan, and decision files converted into reusable examples |
 | Publication Flow    | stable      | 2026-04-20 | Kernel requires PR descriptions and versions framework templates |
@@ -80,6 +81,7 @@ pending push) shipped in the same push. Nothing blocked, nothing pending.
 <!-- Log of completed tasks. Summarize entries older than 30 days. -->
 <!-- Format: - YYYY-MM-DD: [what was done] (PLAN-XXXX or point-in-time) -->
 
+- 2026-07-17: PLAN-0005 — SFK Launcher GUI compact layout + PT/EN language switch (`bin/lib/gui_i18n.py` new, `bin/sfk_gui.py` retranslation wiring) (implemented & validated, uncommitted)
 - 2026-07-13: PLAN-0003 F1–F5 — `sfk_updater.py` bootstrap install for layout `none` (ERR-0002); fixes "Adicionar SFK a projeto existente" on real no-SFK projects (implemented & validated, uncommitted)
 - 2026-07-13: PLAN-0004 F1–F4 — scaffolder (`jb_kit_turbo.py`) stops copying this repo's real PLAN/PR files into new projects (ERR-0001) (implemented & validated, uncommitted)
 - 2026-07-08: PLAN-0002 F1–F6 — SFK Launcher GUI (`bin/sfk_gui.py`) shipped: New Project, Add/Update with legacy migration, Skills, Check-project, icon, double-click launchers (DONE)

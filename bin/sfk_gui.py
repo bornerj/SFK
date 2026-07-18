@@ -52,6 +52,9 @@ SKILLS_DIR = SFK_ROOT / ".sfk" / "kernel" / "skills"
 
 PYTHON = sys.executable or "python3"
 
+sys.path.insert(0, str(BIN_DIR / "lib"))
+from gui_i18n import Lang  # noqa: E402 — needs BIN_DIR/lib on sys.path first
+
 
 def open_folder(path: str) -> None:
     """Open a folder in the OS's file manager, cross-platform."""
@@ -91,11 +94,11 @@ class Theme:
     CONSOLE_ACCENT = "#59D9B3"
     CONSOLE_ERROR = "#F2A28A"
 
-    SPACE_XS = 4
-    SPACE_SM = 8
-    SPACE_MD = 16
-    SPACE_LG = 24
-    SPACE_XL = 32
+    SPACE_XS = 3
+    SPACE_SM = 6
+    SPACE_MD = 12
+    SPACE_LG = 18
+    SPACE_XL = 24
 
 
 def resolve_font(root: tk.Tk, candidates: list[str], size: int, weight: str = "normal") -> tkfont.Font:
@@ -125,13 +128,13 @@ class Fonts:
 
     @classmethod
     def load(cls, root: tk.Tk) -> None:
-        cls.title = resolve_font(root, UI_FONT_CANDIDATES, 22, "bold")
-        cls.h1 = resolve_font(root, UI_FONT_CANDIDATES, 15, "bold")
-        cls.h2 = resolve_font(root, UI_FONT_CANDIDATES, 12, "bold")
-        cls.body = resolve_font(root, UI_FONT_CANDIDATES, 11, "normal")
-        cls.body_bold = resolve_font(root, UI_FONT_CANDIDATES, 11, "bold")
-        cls.small = resolve_font(root, UI_FONT_CANDIDATES, 9, "normal")
-        cls.mono = resolve_font(root, MONO_FONT_CANDIDATES, 10, "normal")
+        cls.title = resolve_font(root, UI_FONT_CANDIDATES, 18, "bold")
+        cls.h1 = resolve_font(root, UI_FONT_CANDIDATES, 13, "bold")
+        cls.h2 = resolve_font(root, UI_FONT_CANDIDATES, 11, "bold")
+        cls.body = resolve_font(root, UI_FONT_CANDIDATES, 10, "normal")
+        cls.body_bold = resolve_font(root, UI_FONT_CANDIDATES, 10, "bold")
+        cls.small = resolve_font(root, UI_FONT_CANDIDATES, 8, "normal")
+        cls.mono = resolve_font(root, MONO_FONT_CANDIDATES, 9, "normal")
 
 
 # ---------------------------------------------------------------------------
@@ -202,10 +205,10 @@ class ActionCard(tk.Canvas):
     Drawn on a Canvas (rounded rect) instead of a stock button — a small
     custom touch instead of an all-default look."""
 
-    RADIUS = 14
+    RADIUS = 12
 
     def __init__(self, parent, icon: str, title: str, subtitle: str, command, **kw):
-        super().__init__(parent, bg=Theme.BG, highlightthickness=0, height=92, **kw)
+        super().__init__(parent, bg=Theme.BG, highlightthickness=0, height=72, **kw)
         self._command = command
         self._hover = False
         self.bind("<Configure>", self._redraw)
@@ -214,6 +217,10 @@ class ActionCard(tk.Canvas):
         self.bind("<Leave>", self._on_leave)
         self.configure(cursor="hand2")
         self._icon, self._title, self._subtitle = icon, title, subtitle
+
+    def set_texts(self, title: str, subtitle: str) -> None:
+        self._title, self._subtitle = title, subtitle
+        self._redraw()
 
     def _on_enter(self, _e=None):
         self._hover = True
@@ -234,14 +241,14 @@ class ActionCard(tk.Canvas):
     def _redraw(self, _e=None):
         self.delete("all")
         w = self.winfo_width() or 400
-        h = self.winfo_height() or 92
+        h = self.winfo_height() or 72
         fill = Theme.CARD_HOVER if self._hover else Theme.CARD_BG
         border = Theme.ACCENT if self._hover else Theme.CARD_BORDER
         self._rounded_rect(2, 2, w - 2, h - 2, self.RADIUS, fill=fill, outline=border, width=1.5)
-        self.create_text(28, h / 2, text=self._icon, font=("", 26), anchor="w", fill=Theme.ACCENT)
-        self.create_text(76, h / 2 - 12, text=self._title, font=Fonts.h1, anchor="w", fill=Theme.TEXT)
-        self.create_text(76, h / 2 + 12, text=self._subtitle, font=Fonts.body, anchor="w", fill=Theme.TEXT_MUTED,
-                          width=w - 100)
+        self.create_text(24, h / 2, text=self._icon, font=("", 20), anchor="w", fill=Theme.ACCENT)
+        self.create_text(64, h / 2 - 9, text=self._title, font=Fonts.h1, anchor="w", fill=Theme.TEXT)
+        self.create_text(64, h / 2 + 9, text=self._subtitle, font=Fonts.body, anchor="w", fill=Theme.TEXT_MUTED,
+                          width=w - 88)
 
 
 class PrimaryButton(tk.Label):
@@ -264,6 +271,9 @@ class PrimaryButton(tk.Label):
     def set_enabled(self, enabled: bool) -> None:
         self._enabled = enabled
         self.configure(bg=self._bg if enabled else Theme.BORDER, cursor="hand2" if enabled else "arrow")
+
+    def set_text(self, text: str) -> None:
+        self.configure(text=f"  {text}  ")
 
     def _on_click(self, _e=None):
         if self._enabled:
@@ -290,6 +300,9 @@ class SecondaryButton(tk.Label):
         self.bind("<Enter>", lambda _e: self.configure(bg=Theme.CARD_HOVER))
         self.bind("<Leave>", lambda _e: self.configure(bg=Theme.BG))
 
+    def set_text(self, text: str) -> None:
+        self.configure(text=f"  {text}  ")
+
 
 class PathPicker(tk.Frame):
     """Entry + 'Procurar…' button — the user never types a path by hand."""
@@ -303,15 +316,19 @@ class PathPicker(tk.Frame):
             highlightcolor=Theme.ACCENT, insertbackground=Theme.TEXT,
         )
         entry.pack(side="left", fill="x", expand=True, ipady=6, padx=(0, Theme.SPACE_SM))
-        SecondaryButton(self, "📁  Procurar…", self._browse).pack(side="left")
+        self.browse_btn = SecondaryButton(self, Lang.t("common.browse"), self._browse)
+        self.browse_btn.pack(side="left")
 
     def _browse(self) -> None:
-        path = filedialog.askdirectory(title="Escolha a pasta", mustexist=False)
+        path = filedialog.askdirectory(title=Lang.t("common.choose_folder_dialog"), mustexist=False)
         if path:
             self.var.set(path)
 
     def get(self) -> str:
         return self.var.get().strip()
+
+    def retranslate(self) -> None:
+        self.browse_btn.set_text(Lang.t("common.browse"))
 
 
 class ConsolePanel(tk.Frame):
@@ -350,13 +367,25 @@ class Header(tk.Frame):
         super().__init__(parent, bg=Theme.BG, **kw)
         row = tk.Frame(self, bg=Theme.BG)
         row.pack(fill="x", padx=Theme.SPACE_XL, pady=(Theme.SPACE_LG, Theme.SPACE_SM))
+        self.back_btn = None
         if on_back:
-            SecondaryButton(row, "←  Início", on_back).pack(side="left", padx=(0, Theme.SPACE_MD))
+            self.back_btn = SecondaryButton(row, Lang.t("common.back"), on_back)
+            self.back_btn.pack(side="left", padx=(0, Theme.SPACE_MD))
         text_col = tk.Frame(row, bg=Theme.BG)
         text_col.pack(side="left", fill="x", expand=True)
-        tk.Label(text_col, text=title, font=Fonts.title, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
-        tk.Label(text_col, text=subtitle, font=Fonts.body, fg=Theme.TEXT_MUTED, bg=Theme.BG).pack(anchor="w")
+        self.title_label = tk.Label(text_col, text=title, font=Fonts.title, fg=Theme.TEXT, bg=Theme.BG)
+        self.title_label.pack(anchor="w")
+        self.subtitle_label = tk.Label(text_col, text=subtitle, font=Fonts.body, fg=Theme.TEXT_MUTED, bg=Theme.BG)
+        self.subtitle_label.pack(anchor="w")
         ttk.Separator(self, orient="horizontal").pack(fill="x", padx=Theme.SPACE_XL, pady=(Theme.SPACE_SM, 0))
+
+    def set_texts(self, title: str, subtitle: str) -> None:
+        self.title_label.configure(text=title)
+        self.subtitle_label.configure(text=subtitle)
+
+    def retranslate(self) -> None:
+        if self.back_btn:
+            self.back_btn.set_text(Lang.t("common.back"))
 
 
 class ResultBanner(tk.Frame):
@@ -394,7 +423,7 @@ class ResultBanner(tk.Frame):
         self._action_slot.configure(bg=soft)
         self._label.configure(text=message, bg=soft, fg=Theme.TEXT)
         if on_open_folder:
-            SecondaryButton(self._action_slot, "📂  Abrir pasta", on_open_folder).pack()
+            SecondaryButton(self._action_slot, Lang.t("common.open_folder"), on_open_folder).pack()
         pack_opts = {"fill": "x", "pady": (0, Theme.SPACE_MD)}
         if before is not None:
             pack_opts["before"] = before
@@ -416,38 +445,45 @@ class BaseView(tk.Frame):
     def on_show(self) -> None:
         """Optional hook: called every time this view becomes visible."""
 
+    def retranslate(self) -> None:
+        """Optional hook: called after the language switch, on every view
+        already built — update any static widget text via Lang.t()."""
+
 
 class HomeView(BaseView):
     ACTIONS = [
-        ("🌱", "Criar um projeto novo",
-         "Começar do zero com o SFK já instalado.", "new_project"),
-        ("➕", "Adicionar o SFK a um projeto que já existe",
-         "Instalar o SFK sobre um código existente, sem tocar nele.", "add_existing"),
-        ("⬆️", "Atualizar o SFK de um projeto",
-         "Trazer a versão mais nova (migra layout antigo automaticamente).", "update_project"),
-        ("🧩", "Skills — importar ou atualizar",
-         "Adicionar conhecimento novo ao SFK ou sincronizar o existente.", "skills"),
-        ("🔎", "Checar um projeto",
-         "Ver o que mudaria, sem alterar nada (pré-visualização).", "check_project"),
+        ("🌱", "home.action.new_project", "new_project"),
+        ("➕", "home.action.add_existing", "add_existing"),
+        ("⬆️", "home.action.update_project", "update_project"),
+        ("🧩", "home.action.skills", "skills"),
+        ("🔎", "home.action.check_project", "check_project"),
     ]
 
     def __init__(self, app: "App"):
         super().__init__(app)
-        tk.Label(
-            self, text="SFK Launcher", font=Fonts.title, fg=Theme.TEXT, bg=Theme.BG,
-        ).pack(anchor="w", padx=Theme.SPACE_XL, pady=(Theme.SPACE_XL, 0))
-        tk.Label(
-            self, text="O que você quer fazer?", font=Fonts.body, fg=Theme.TEXT_MUTED, bg=Theme.BG,
-        ).pack(anchor="w", padx=Theme.SPACE_XL, pady=(0, Theme.SPACE_LG))
+        self.title_label = tk.Label(self, text=Lang.t("home.title"), font=Fonts.title, fg=Theme.TEXT, bg=Theme.BG)
+        self.title_label.pack(anchor="w", padx=Theme.SPACE_XL, pady=(Theme.SPACE_XL, 0))
+        self.subtitle_label = tk.Label(
+            self, text=Lang.t("home.subtitle"), font=Fonts.body, fg=Theme.TEXT_MUTED, bg=Theme.BG,
+        )
+        self.subtitle_label.pack(anchor="w", padx=Theme.SPACE_XL, pady=(0, Theme.SPACE_LG))
 
         cards = tk.Frame(self, bg=Theme.BG)
         cards.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=(0, Theme.SPACE_XL))
-        for icon, title, subtitle, route in self.ACTIONS:
+        self.cards: list[ActionCard] = []
+        for icon, key, route in self.ACTIONS:
             card = ActionCard(
-                cards, icon, title, subtitle,
+                cards, icon, Lang.t(f"{key}.title"), Lang.t(f"{key}.subtitle"),
                 command=lambda r=route: self.app.show(r),
             )
             card.pack(fill="x", pady=Theme.SPACE_SM)
+            self.cards.append(card)
+
+    def retranslate(self) -> None:
+        self.title_label.configure(text=Lang.t("home.title"))
+        self.subtitle_label.configure(text=Lang.t("home.subtitle"))
+        for card, (_icon, key, _route) in zip(self.cards, self.ACTIONS):
+            card.set_texts(Lang.t(f"{key}.title"), Lang.t(f"{key}.subtitle"))
 
 
 class CheckProjectView(BaseView):
@@ -456,37 +492,48 @@ class CheckProjectView(BaseView):
 
     def __init__(self, app: "App"):
         super().__init__(app)
-        Header(
-            self, "Checar um projeto", "Mostra o que mudaria — não altera nada no disco.",
+        self.header = Header(
+            self, Lang.t("check.header_title"), Lang.t("check.header_subtitle"),
             on_back=lambda: self.app.show("home"),
-        ).pack(fill="x")
+        )
+        self.header.pack(fill="x")
 
         body = tk.Frame(self, bg=Theme.BG)
         body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
 
-        tk.Label(body, text="Pasta do projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.folder_label = tk.Label(body, text=Lang.t("check.folder_label"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self.folder_label.pack(anchor="w")
         self.picker = PathPicker(body)
         self.picker.pack(fill="x", pady=(Theme.SPACE_XS, Theme.SPACE_MD))
 
         actions = tk.Frame(body, bg=Theme.BG)
         actions.pack(fill="x", pady=(0, Theme.SPACE_MD))
-        self.run_btn = PrimaryButton(actions, "🔎  Checar agora", self._run)
+        self.run_btn = PrimaryButton(actions, Lang.t("check.run_button"), self._run)
         self.run_btn.pack(side="left")
 
-        tk.Label(body, text="Saída", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.output_label = tk.Label(body, text=Lang.t("common.output"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self.output_label.pack(anchor="w")
         self.console = ConsolePanel(body)
         self.console.pack(fill="both", expand=True, pady=(Theme.SPACE_XS, 0))
 
         self.runner: ProcessRunner | None = None
 
+    def retranslate(self) -> None:
+        self.header.set_texts(Lang.t("check.header_title"), Lang.t("check.header_subtitle"))
+        self.header.retranslate()
+        self.folder_label.configure(text=Lang.t("check.folder_label"))
+        self.picker.retranslate()
+        self.run_btn.set_text(Lang.t("check.run_button"))
+        self.output_label.configure(text=Lang.t("common.output"))
+
     def _run(self) -> None:
         target = self.picker.get()
         if not target:
             self.console.clear()
-            self.console.append("⚠️  Escolha uma pasta primeiro.", "error")
+            self.console.append(Lang.t("check.err_no_folder"), "error")
             return
         self.console.clear()
-        self.console.append(f"Checando: {target}", "muted")
+        self.console.append(Lang.t("check.checking").format(target=target), "muted")
         self.run_btn.set_enabled(False)
         self.runner = ProcessRunner(
             on_line=lambda line: self.console.append(line),
@@ -498,10 +545,10 @@ class CheckProjectView(BaseView):
         self.run_btn.set_enabled(True)
         if code == 0:
             self.console.append("", None)
-            self.console.append("✅  Verificação concluída.", "accent")
+            self.console.append(Lang.t("check.done_ok"), "accent")
         else:
             self.console.append("", None)
-            self.console.append(f"❌  Terminou com erro (código {code}).", "error")
+            self.console.append(Lang.t("common.error_done").format(code=code), "error")
 
 
 class NewProjectView(BaseView):
@@ -509,26 +556,29 @@ class NewProjectView(BaseView):
 
     def __init__(self, app: "App"):
         super().__init__(app)
-        Header(
-            self, "Criar um projeto novo", "Começar do zero, com o SFK já instalado e organizado.",
+        self.header = Header(
+            self, Lang.t("new.header_title"), Lang.t("new.header_subtitle"),
             on_back=lambda: self.app.show("home"),
-        ).pack(fill="x")
+        )
+        self.header.pack(fill="x")
 
         body = tk.Frame(self, bg=Theme.BG)
         body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
 
         self.banner = ResultBanner(body)  # stays hidden until show_success/show_error
 
-        self._anchor = tk.Label(body, text="Onde criar o projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self._anchor = tk.Label(body, text=Lang.t("new.anchor_label"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
         self._anchor.pack(anchor="w")
-        tk.Label(
-            body, text="Escolha a pasta que vai CONTER a pasta do novo projeto.",
+        self.anchor_hint = tk.Label(
+            body, text=Lang.t("new.anchor_hint"),
             font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
-        ).pack(anchor="w", pady=(0, Theme.SPACE_XS))
+        )
+        self.anchor_hint.pack(anchor="w", pady=(0, Theme.SPACE_XS))
         self.parent_picker = PathPicker(body)
         self.parent_picker.pack(fill="x", pady=(0, Theme.SPACE_MD))
 
-        tk.Label(body, text="Nome do projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.name_label = tk.Label(body, text=Lang.t("new.name_label"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self.name_label.pack(anchor="w")
         self.name_var = tk.StringVar()
         name_entry = tk.Entry(
             body, textvariable=self.name_var, font=Fonts.body, fg=Theme.TEXT, bg="white",
@@ -536,53 +586,70 @@ class NewProjectView(BaseView):
             highlightcolor=Theme.ACCENT, insertbackground=Theme.TEXT,
         )
         name_entry.pack(fill="x", ipady=6, pady=(Theme.SPACE_XS, Theme.SPACE_XS))
-        tk.Label(
-            body, text="Vira o nome da pasta e o nome do projeto dentro dos arquivos de configuração.",
+        self.name_hint = tk.Label(
+            body, text=Lang.t("new.name_hint"),
             font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
-        ).pack(anchor="w", pady=(0, Theme.SPACE_MD))
+        )
+        self.name_hint.pack(anchor="w", pady=(0, Theme.SPACE_MD))
 
         options = tk.Frame(body, bg=Theme.BG)
         options.pack(fill="x", pady=(0, Theme.SPACE_MD))
         self.init_git_var = tk.BooleanVar(value=True)
-        tk.Checkbutton(
-            options, text="Iniciar controle de versão (git) e ativar a proteção automática de memória",
+        self.checkbox_git = tk.Checkbutton(
+            options, text=Lang.t("new.checkbox_git"),
             variable=self.init_git_var, font=Fonts.body, fg=Theme.TEXT, bg=Theme.BG,
             selectcolor="white", activebackground=Theme.BG,
-        ).pack(anchor="w")
+        )
+        self.checkbox_git.pack(anchor="w")
         self.force_var = tk.BooleanVar(value=False)
-        tk.Checkbutton(
-            options, text="Permitir criar dentro de uma pasta que já existe e não está vazia",
+        self.checkbox_force = tk.Checkbutton(
+            options, text=Lang.t("new.checkbox_force"),
             variable=self.force_var, font=Fonts.body, fg=Theme.TEXT, bg=Theme.BG,
             selectcolor="white", activebackground=Theme.BG,
-        ).pack(anchor="w")
+        )
+        self.checkbox_force.pack(anchor="w")
 
         actions = tk.Frame(body, bg=Theme.BG)
         actions.pack(fill="x", pady=(0, Theme.SPACE_MD))
-        self.run_btn = PrimaryButton(actions, "🌱  Criar projeto", self._run)
+        self.run_btn = PrimaryButton(actions, Lang.t("new.run_button"), self._run)
         self.run_btn.pack(side="left")
 
-        tk.Label(body, text="Saída", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.output_label = tk.Label(body, text=Lang.t("common.output"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self.output_label.pack(anchor="w")
         self.console = ConsolePanel(body)
         self.console.pack(fill="both", expand=True, pady=(Theme.SPACE_XS, 0))
 
         self.runner: ProcessRunner | None = None
         self._target: str = ""
 
+    def retranslate(self) -> None:
+        self.header.set_texts(Lang.t("new.header_title"), Lang.t("new.header_subtitle"))
+        self.header.retranslate()
+        self._anchor.configure(text=Lang.t("new.anchor_label"))
+        self.anchor_hint.configure(text=Lang.t("new.anchor_hint"))
+        self.parent_picker.retranslate()
+        self.name_label.configure(text=Lang.t("new.name_label"))
+        self.name_hint.configure(text=Lang.t("new.name_hint"))
+        self.checkbox_git.configure(text=Lang.t("new.checkbox_git"))
+        self.checkbox_force.configure(text=Lang.t("new.checkbox_force"))
+        self.run_btn.set_text(Lang.t("new.run_button"))
+        self.output_label.configure(text=Lang.t("common.output"))
+
     def _validate(self) -> str | None:
         """Returns an error message, or None if inputs are usable."""
         parent = self.parent_picker.get()
         name = self.name_var.get().strip()
         if not parent:
-            return "Escolha onde criar o projeto primeiro."
+            return Lang.t("new.err_no_parent")
         if not os.path.isdir(parent):
-            return "A pasta escolhida não existe mais — escolha novamente."
+            return Lang.t("new.err_parent_missing")
         if not name:
-            return "Dê um nome ao projeto."
+            return Lang.t("new.err_no_name")
         if os.sep in name or (os.altsep and os.altsep in name) or name in {".", ".."}:
-            return "O nome não pode conter barras nem ser '.' ou '..'."
+            return Lang.t("new.err_bad_name")
         target = str(Path(parent) / name)
         if os.path.isdir(target) and os.listdir(target) and not self.force_var.get():
-            return f"A pasta '{name}' já existe e não está vazia. Marque a opção de permitir, se tiver certeza."
+            return Lang.t("new.err_target_exists").format(name=name)
         self._target = target
         return None
 
@@ -595,7 +662,7 @@ class NewProjectView(BaseView):
             return
 
         self.console.clear()
-        self.console.append(f"Criando projeto em: {self._target}", "muted")
+        self.console.append(Lang.t("new.creating").format(target=self._target), "muted")
         self.run_btn.set_enabled(False)
 
         args = [PYTHON, str(SCAFFOLDER), self._target, "--project-name", self.name_var.get().strip()]
@@ -611,16 +678,16 @@ class NewProjectView(BaseView):
         self.run_btn.set_enabled(True)
         if code == 0:
             self.console.append("", None)
-            self.console.append("✅  Projeto criado com sucesso.", "accent")
+            self.console.append(Lang.t("new.created_ok"), "accent")
             self.banner.show_success(
-                f"Projeto criado em: {self._target}",
+                Lang.t("new.created_banner").format(target=self._target),
                 on_open_folder=lambda: open_folder(self._target),
                 before=self._anchor,
             )
         else:
             self.console.append("", None)
-            self.console.append(f"❌  Terminou com erro (código {code}).", "error")
-            self.banner.show_error("Não foi possível criar o projeto — veja a saída acima.", before=self._anchor)
+            self.console.append(Lang.t("common.error_done").format(code=code), "error")
+            self.banner.show_error(Lang.t("new.failed_banner"), before=self._anchor)
 
 
 class UpdateProjectView(BaseView):
@@ -629,42 +696,59 @@ class UpdateProjectView(BaseView):
     (dry-run) is the primary action; Apply requires a same-path preview first
     plus an explicit confirmation, since it writes to disk."""
 
-    def __init__(self, app: "App", title: str, subtitle: str):
+    def __init__(self, app: "App", title_key: str, subtitle_key: str):
         super().__init__(app)
-        Header(self, title, subtitle, on_back=lambda: self.app.show("home")).pack(fill="x")
+        self._title_key = title_key
+        self._subtitle_key = subtitle_key
+        self.header = Header(
+            self, Lang.t(title_key), Lang.t(subtitle_key), on_back=lambda: self.app.show("home"),
+        )
+        self.header.pack(fill="x")
 
         body = tk.Frame(self, bg=Theme.BG)
         body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
 
         self.banner = ResultBanner(body)
 
-        self._anchor = tk.Label(body, text="Pasta do projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self._anchor = tk.Label(body, text=Lang.t("update.anchor_label"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
         self._anchor.pack(anchor="w")
         self.picker = PathPicker(body)
         self.picker.pack(fill="x", pady=(Theme.SPACE_XS, Theme.SPACE_MD))
         self.picker.var.trace_add("write", lambda *_: self._on_path_changed())
 
         self.skip_backup_var = tk.BooleanVar(value=False)
-        tk.Checkbutton(
-            body, text="Pular o backup automático antes de migrar (não recomendado)",
+        self.checkbox_skip_backup = tk.Checkbutton(
+            body, text=Lang.t("update.checkbox_skip_backup"),
             variable=self.skip_backup_var, font=Fonts.body, fg=Theme.TEXT, bg=Theme.BG,
             selectcolor="white", activebackground=Theme.BG,
-        ).pack(anchor="w", pady=(0, Theme.SPACE_MD))
+        )
+        self.checkbox_skip_backup.pack(anchor="w", pady=(0, Theme.SPACE_MD))
 
         actions = tk.Frame(body, bg=Theme.BG)
         actions.pack(fill="x", pady=(0, Theme.SPACE_MD))
-        self.preview_btn = PrimaryButton(actions, "🔎  Pré-visualizar (não altera nada)", self._run_preview)
+        self.preview_btn = PrimaryButton(actions, Lang.t("update.preview_button"), self._run_preview)
         self.preview_btn.pack(side="left", padx=(0, Theme.SPACE_SM))
-        self.apply_btn = PrimaryButton(actions, "✅  Aplicar alterações", self._run_apply, danger=True)
+        self.apply_btn = PrimaryButton(actions, Lang.t("update.apply_button"), self._run_apply, danger=True)
         self.apply_btn.pack(side="left")
 
-        tk.Label(body, text="Saída", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG).pack(anchor="w")
+        self.output_label = tk.Label(body, text=Lang.t("common.output"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self.output_label.pack(anchor="w")
         self.console = ConsolePanel(body)
         self.console.pack(fill="both", expand=True, pady=(Theme.SPACE_XS, 0))
 
         self.runner: ProcessRunner | None = None
         self._mode: str = ""
         self._last_previewed_target: str | None = None
+
+    def retranslate(self) -> None:
+        self.header.set_texts(Lang.t(self._title_key), Lang.t(self._subtitle_key))
+        self.header.retranslate()
+        self._anchor.configure(text=Lang.t("update.anchor_label"))
+        self.picker.retranslate()
+        self.checkbox_skip_backup.configure(text=Lang.t("update.checkbox_skip_backup"))
+        self.preview_btn.set_text(Lang.t("update.preview_button"))
+        self.apply_btn.set_text(Lang.t("update.apply_button"))
+        self.output_label.configure(text=Lang.t("common.output"))
 
     def _on_path_changed(self) -> None:
         # Changing the path invalidates any previous preview for a different folder.
@@ -678,11 +762,11 @@ class UpdateProjectView(BaseView):
         target = self.picker.get()
         if not target or not os.path.isdir(target):
             self.console.clear()
-            self.console.append("⚠️  Escolha uma pasta de projeto existente primeiro.", "error")
+            self.console.append(Lang.t("update.err_no_folder"), "error")
             return
         self.banner.hide()
         self.console.clear()
-        self.console.append(f"Pré-visualizando: {target}", "muted")
+        self.console.append(Lang.t("update.previewing").format(target=target), "muted")
         self._mode = "preview"
         self._set_buttons_enabled(False)
         self.runner = ProcessRunner(on_line=lambda line: self.console.append(line), on_done=self._on_done)
@@ -692,26 +776,21 @@ class UpdateProjectView(BaseView):
         target = self.picker.get()
         if not target or not os.path.isdir(target):
             self.console.clear()
-            self.console.append("⚠️  Escolha uma pasta de projeto existente primeiro.", "error")
+            self.console.append(Lang.t("update.err_no_folder"), "error")
             return
         if target != self._last_previewed_target:
-            self.banner.show_error(
-                "Pré-visualize esta pasta primeiro (botão acima) antes de aplicar.",
-                before=self._anchor,
-            )
+            self.banner.show_error(Lang.t("update.preview_required"), before=self._anchor)
             return
         proceed = messagebox.askyesno(
-            "Confirmar alterações",
-            "Isso vai instalar/atualizar o SFK nesta pasta de verdade.\n\n"
-            f"Pasta: {target}\n\n"
-            "Você já viu a pré-visualização acima. Continuar?",
+            Lang.t("update.apply_confirm_title"),
+            Lang.t("update.apply_confirm_message").format(target=target),
         )
         if not proceed:
             return
 
         self.banner.hide()
         self.console.clear()
-        self.console.append(f"Aplicando em: {target}", "muted")
+        self.console.append(Lang.t("update.applying").format(target=target), "muted")
         self._mode = "apply"
         self._set_buttons_enabled(False)
         args = [PYTHON, str(UPDATER), target, "--yes"]
@@ -727,18 +806,18 @@ class UpdateProjectView(BaseView):
             self.console.append("", None)
             if self._mode == "preview":
                 self._last_previewed_target = target
-                self.console.append("✅  Pré-visualização concluída. Nada foi alterado.", "accent")
+                self.console.append(Lang.t("update.preview_done"), "accent")
             else:
-                self.console.append("✅  Alterações aplicadas com sucesso.", "accent")
+                self.console.append(Lang.t("update.apply_done"), "accent")
                 self.banner.show_success(
-                    f"SFK instalado/atualizado em: {target}",
+                    Lang.t("update.applied_banner").format(target=target),
                     on_open_folder=lambda: open_folder(target),
                     before=self._anchor,
                 )
         else:
             self.console.append("", None)
-            self.console.append(f"❌  Terminou com erro (código {code}).", "error")
-            self.banner.show_error("Algo deu errado — veja a saída acima.", before=self._anchor)
+            self.console.append(Lang.t("common.error_done").format(code=code), "error")
+            self.banner.show_error(Lang.t("update.failed_banner"), before=self._anchor)
 
 
 class SkillsView(BaseView):
@@ -748,45 +827,51 @@ class SkillsView(BaseView):
 
     def __init__(self, app: "App"):
         super().__init__(app)
-        Header(
-            self, "Skills", "Adicionar conhecimento novo ao SFK ou sincronizar o existente.",
+        self.header = Header(
+            self, Lang.t("skills.header_title"), Lang.t("skills.header_subtitle"),
             on_back=lambda: self.app.show("home"),
-        ).pack(fill="x")
+        )
+        self.header.pack(fill="x")
 
         body = tk.Frame(self, bg=Theme.BG)
         body.pack(fill="both", expand=True, padx=Theme.SPACE_XL, pady=Theme.SPACE_MD)
 
         self.banner = ResultBanner(body)
-        self._anchor = tk.Label(body, text="Importar uma skill nova", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
+        self._anchor = tk.Label(body, text=Lang.t("skills.import_anchor"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG)
         self._anchor.pack(anchor="w")
-        tk.Label(
-            body, text="Escolha a pasta da skill (deve conter um SKILL.md).",
+        self.import_hint = tk.Label(
+            body, text=Lang.t("skills.import_hint"),
             font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
-        ).pack(anchor="w", pady=(0, Theme.SPACE_XS))
+        )
+        self.import_hint.pack(anchor="w", pady=(0, Theme.SPACE_XS))
         self.picker = PathPicker(body)
         self.picker.pack(fill="x", pady=(0, Theme.SPACE_SM))
         import_actions = tk.Frame(body, bg=Theme.BG)
         import_actions.pack(fill="x", pady=(0, Theme.SPACE_LG))
-        self.import_btn = PrimaryButton(import_actions, "🧩  Importar skill", self._run_import)
+        self.import_btn = PrimaryButton(import_actions, Lang.t("skills.import_button"), self._run_import)
         self.import_btn.pack(side="left")
 
         ttk.Separator(body, orient="horizontal").pack(fill="x", pady=(0, Theme.SPACE_LG))
 
-        tk.Label(
-            body, text="Atualizar as skills de um projeto", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG,
-        ).pack(anchor="w")
-        tk.Label(
-            body, text="Skills fazem parte do motor do SFK — sincronizadas junto com o resto do engine.",
+        self.sync_title = tk.Label(
+            body, text=Lang.t("skills.sync_title"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG,
+        )
+        self.sync_title.pack(anchor="w")
+        self.sync_hint = tk.Label(
+            body, text=Lang.t("skills.sync_hint"),
             font=Fonts.small, fg=Theme.TEXT_MUTED, bg=Theme.BG,
-        ).pack(anchor="w", pady=(0, Theme.SPACE_SM))
-        SecondaryButton(
-            body, "⬆️  Ir para Atualizar/Adicionar", lambda: self.app.show("update_project"),
-        ).pack(anchor="w", pady=(0, Theme.SPACE_LG))
+        )
+        self.sync_hint.pack(anchor="w", pady=(0, Theme.SPACE_SM))
+        self.sync_btn = SecondaryButton(
+            body, Lang.t("skills.sync_button"), lambda: self.app.show("update_project"),
+        )
+        self.sync_btn.pack(anchor="w", pady=(0, Theme.SPACE_LG))
 
         ttk.Separator(body, orient="horizontal").pack(fill="x", pady=(0, Theme.SPACE_SM))
-        tk.Label(
-            body, text="Skills já instaladas neste SFK", font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG,
-        ).pack(anchor="w", pady=(Theme.SPACE_SM, Theme.SPACE_XS))
+        self.installed_title = tk.Label(
+            body, text=Lang.t("skills.installed_title"), font=Fonts.h2, fg=Theme.TEXT, bg=Theme.BG,
+        )
+        self.installed_title.pack(anchor="w", pady=(Theme.SPACE_SM, Theme.SPACE_XS))
         list_frame = tk.Frame(body, bg=Theme.BG)
         list_frame.pack(fill="both", expand=True)
         list_scroll = ttk.Scrollbar(list_frame, orient="vertical")
@@ -802,6 +887,18 @@ class SkillsView(BaseView):
         self.runner: ProcessRunner | None = None
         self._console_log: list[str] = []
 
+    def retranslate(self) -> None:
+        self.header.set_texts(Lang.t("skills.header_title"), Lang.t("skills.header_subtitle"))
+        self.header.retranslate()
+        self._anchor.configure(text=Lang.t("skills.import_anchor"))
+        self.import_hint.configure(text=Lang.t("skills.import_hint"))
+        self.picker.retranslate()
+        self.import_btn.set_text(Lang.t("skills.import_button"))
+        self.sync_title.configure(text=Lang.t("skills.sync_title"))
+        self.sync_hint.configure(text=Lang.t("skills.sync_hint"))
+        self.sync_btn.set_text(Lang.t("skills.sync_button"))
+        self.installed_title.configure(text=Lang.t("skills.installed_title"))
+
     def on_show(self) -> None:
         self._refresh_skills_list()
 
@@ -814,15 +911,15 @@ class SkillsView(BaseView):
     def _run_import(self) -> None:
         source = self.picker.get()
         if not source or not os.path.isdir(source):
-            self.banner.show_error("Escolha a pasta de uma skill existente primeiro.", before=self._anchor)
+            self.banner.show_error(Lang.t("skills.err_no_folder"), before=self._anchor)
             return
 
         skill_name = Path(source).name
         dest = SKILLS_DIR / skill_name
         if dest.exists():
             proceed = messagebox.askyesno(
-                "Sobrescrever skill?",
-                f"A skill '{skill_name}' já existe neste SFK.\nDeseja sobrescrevê-la?",
+                Lang.t("skills.overwrite_confirm_title"),
+                Lang.t("skills.overwrite_confirm_message").format(skill_name=skill_name),
             )
             if not proceed:
                 return
@@ -836,11 +933,11 @@ class SkillsView(BaseView):
     def _on_done(self, code: int, skill_name: str) -> None:
         self.import_btn.set_enabled(True)
         if code == 0:
-            self.banner.show_success(f"Skill '{skill_name}' importada com sucesso.", before=self._anchor)
+            self.banner.show_success(Lang.t("skills.imported_ok").format(skill_name=skill_name), before=self._anchor)
             self._refresh_skills_list()
         else:
             detail = "\n".join(self._console_log[-4:])
-            self.banner.show_error(f"Não foi possível importar '{skill_name}'.\n{detail}", before=self._anchor)
+            self.banner.show_error(Lang.t("skills.import_failed").format(skill_name=skill_name, detail=detail), before=self._anchor)
 
 
 class ComingSoonView(BaseView):
@@ -848,11 +945,17 @@ class ComingSoonView(BaseView):
 
     def __init__(self, app: "App", title: str, phase_note: str):
         super().__init__(app)
-        Header(self, title, phase_note, on_back=lambda: self.app.show("home")).pack(fill="x")
-        tk.Label(
-            self, text="🚧  Em construção nesta fase do plano.", font=Fonts.h1,
+        self.header = Header(self, title, phase_note, on_back=lambda: self.app.show("home"))
+        self.header.pack(fill="x")
+        self.note_label = tk.Label(
+            self, text=Lang.t("comingsoon.note"), font=Fonts.h1,
             fg=Theme.TEXT_MUTED, bg=Theme.BG,
-        ).pack(expand=True)
+        )
+        self.note_label.pack(expand=True)
+
+    def retranslate(self) -> None:
+        self.header.retranslate()
+        self.note_label.configure(text=Lang.t("comingsoon.note"))
 
 
 def build_icon_image(root: tk.Misc, size: int = 64) -> tk.PhotoImage:
@@ -885,6 +988,35 @@ def export_icon(path: str) -> None:
     print(f"Icon written to: {path}")
 
 
+class LangSwitch(tk.Frame):
+    """PT/EN toggle, always visible top-right on every screen — lives directly
+    on the root window (not inside the swapped view container), so it survives
+    `tkraise()` between views instead of being part of any single one.
+
+    Drawn as a bordered chip (not bare text on the background) so it reads as
+    a clickable control at a glance instead of blending into the app chrome."""
+
+    def __init__(self, parent):
+        super().__init__(parent, bg=Theme.CARD_BG, highlightthickness=1, highlightbackground=Theme.CARD_BORDER)
+        self._pt = tk.Label(
+            self, text=Lang.t("common.lang_pt"), font=Fonts.body_bold, bg=Theme.CARD_BG, cursor="hand2",
+        )
+        self._sep = tk.Label(self, text="/", font=Fonts.body, fg=Theme.BORDER, bg=Theme.CARD_BG)
+        self._en = tk.Label(
+            self, text=Lang.t("common.lang_en"), font=Fonts.body_bold, bg=Theme.CARD_BG, cursor="hand2",
+        )
+        self._pt.pack(side="left", padx=(Theme.SPACE_SM, Theme.SPACE_XS), pady=Theme.SPACE_XS)
+        self._sep.pack(side="left")
+        self._en.pack(side="left", padx=(Theme.SPACE_XS, Theme.SPACE_SM), pady=Theme.SPACE_XS)
+        self._pt.bind("<Button-1>", lambda _e: Lang.set("pt"))
+        self._en.bind("<Button-1>", lambda _e: Lang.set("en"))
+        self.refresh()
+
+    def refresh(self) -> None:
+        self._pt.configure(fg=Theme.ACCENT if Lang.current == "pt" else Theme.TEXT_MUTED)
+        self._en.configure(fg=Theme.ACCENT if Lang.current == "en" else Theme.TEXT_MUTED)
+
+
 # ---------------------------------------------------------------------------
 # App shell
 # ---------------------------------------------------------------------------
@@ -895,9 +1027,11 @@ class App(tk.Tk):
         global _GLOBAL_ROOT
         _GLOBAL_ROOT = self
 
-        self.title("SFK Launcher")
-        self.geometry("880x620")
-        self.minsize(720, 520)
+        Lang.load()
+
+        self.title(Lang.t("app.title"))
+        self.geometry("760x580")
+        self.minsize(680, 480)
         self.configure(bg=Theme.BG)
 
         Fonts.load(self)
@@ -913,16 +1047,25 @@ class App(tk.Tk):
         self._add_view("check_project", CheckProjectView(self))
         self._add_view("new_project", NewProjectView(self))
         self._add_view("add_existing", UpdateProjectView(
-            self, "Adicionar o SFK a um projeto existente",
-            "Instala o SFK sobre um código existente, sem tocar no seu código.",
+            self, "update.route.add_existing.title", "update.route.add_existing.subtitle",
         ))
         self._add_view("update_project", UpdateProjectView(
-            self, "Atualizar o SFK de um projeto",
-            "Traz a versão mais nova. Migra automaticamente projetos com layout antigo.",
+            self, "update.route.update_project.title", "update.route.update_project.subtitle",
         ))
         self._add_view("skills", SkillsView(self))
 
+        self._lang_switch = LangSwitch(self)
+        self._lang_switch.place(relx=1.0, x=-Theme.SPACE_MD, y=Theme.SPACE_SM, anchor="ne")
+        self._lang_switch.lift()
+        Lang.on_change(self._on_lang_change)
+
         self.show("home")
+
+    def _on_lang_change(self) -> None:
+        self.title(Lang.t("app.title"))
+        self._lang_switch.refresh()
+        for view in self._views.values():
+            view.retranslate()
 
     def _style_ttk(self) -> None:
         style = ttk.Style(self)
@@ -939,6 +1082,7 @@ class App(tk.Tk):
     def show(self, name: str) -> None:
         view = self._views[name]
         view.tkraise()
+        self._lang_switch.lift()  # defensive: some WMs re-stack siblings on tkraise()
         view.on_show()
 
 
