@@ -1,6 +1,6 @@
 # PLAN-0005 — SFK Launcher GUI: compactar layout + alternador de idioma PT/EN
 
-> **Status:** IMPLEMENTADO E VALIDADO (F1–F4 completas) — aguardando autorização de commit (Git Record ainda pendente; plano só pode virar DONE depois do commit/push).
+> **Status:** DONE — F1–F5 implementadas, validadas, commitadas e enviadas para `origin/main`.
 > **Tipo:** DESIGN/UI (COMPLEX CODE) · **Categoria de arquivo:** C (tooling do mantenedor → `bin/`)
 > **Origem:** Usuário reportou que a janela do SFK Launcher (`bin/sfk_gui.py`) é grande
 > demais — o último card da Home ("Checar um projeto") fica cortado e exige
@@ -105,10 +105,11 @@ Decisões já validadas com o usuário (ver seção 8):
   (chip com borda + re-lift defensivo) revalidado após o feedback do usuário testando
   via atalho do menu do Zorin.
 - Step 2 (Commit authorization): usuário autorizou ("faça commit e push").
-- Step 3 (Commit confirmation): _este commit_
-- Step 4 (Push authorization and result): usuário autorizou junto com o commit — ver
-  hash de push abaixo.
-- Push status: PENDING
+- Step 3 (Commit confirmation): `f0085d6` — "feat(gui): SFK Launcher compact layout +
+  PT/EN language switch" — 6 arquivos, +760/-163.
+- Step 4 (Push authorization and result): usuário autorizou junto com o commit —
+  `git push origin main` → `57c1f35..f0085d6`.
+- Push status: COMPLETED
 
 ## 8. Checklist de aprovação — CONCLUÍDO
 - [x] Escopo da tradução = tudo (labels, botões, checkboxes, console, diálogos) —

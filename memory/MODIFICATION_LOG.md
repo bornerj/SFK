@@ -4,6 +4,27 @@ This log tracks relevant changes in the SFK framework and also serves as a refer
 
 ---
 
+## 2026-07-17 — SESSION AUDIT — PASS
+| Item | Result |
+|---|---|
+| Decision Integrity | PASS — `DECISION-001` (skillspector audit, prior session) unrelated and unaffected; no structural/auth/schema/API change this session |
+| State Integrity | PASS — `PLAN-0001`–`PLAN-0004` already `DONE`; `PLAN-0005` closed `DONE` this session with a filled Git Record; scope respected (explicit out-of-scope list honored) |
+| Operational Memory | PASS — every change recorded in this log in real time, including the mid-session `LangSwitch` follow-up; plan closed with real progress, not placeholders |
+| Debug Memory | PASS, with a note — the `LangSwitch` visibility report was investigated (introspection found the widget mapped/viewable/correctly positioned, no confirmed reproducible defect) and hardened rather than logged as a `DEBUG-HISTORY` entry, since no SYMPTOM→ROOT_CAUSE was actually confirmed; full reasoning kept in this log instead |
+| Technical Validation | PASS, same noted caveat as prior sessions — no formal lint/test-suite tool configured for this repo's Python tooling; validation was `py_compile` + live-`DISPLAY` functional checks (geometry/cutoff, language-switch retranslation + input preservation, persistence round-trip, widget introspection, full real dry-run flow) |
+| Regression Risk | PASS — no sensitive area touched (auth/payment/scheduling/external integration); change confined to the GUI presentation layer; `ProcessRunner`/subprocess wiring and the wrapped scripts untouched; no prior debug-history entry in this area |
+| Git Governance | PASS — files reviewed and summarized before commit; Conventional Commits message; Git Record of Delivery filled (`PLAN-0005` §7) with real hash/push range; commit and push both explicitly authorized by the user in the same instruction |
+
+Session summary: delivered `PLAN-0005` — SFK Launcher GUI compact layout (window
+880x620→760x580, fonts and cards shrunk so all 5 Home cards fit without manual
+resizing) + a full PT/EN language switch (`bin/lib/gui_i18n.py`, in-place
+retranslation, persisted preference), including a post-test follow-up making the
+`LangSwitch` a visible bordered chip after the user found the first version easy to
+miss testing via the real Zorin desktop shortcut. 1 commit, pushed to `origin/main`
+(`57c1f35..f0085d6`). Nothing pending, nothing blocked.
+
+Full checklist copy: `memory/logs/AUDIT_CHECKLIST_2026-07-17-PASS.md`.
+
 ## 2026-07-17 — PLAN-0005 (SFK Launcher GUI: compact layout + PT/EN language switch) — PLAN COMPLETE
 - User-reported problem: `bin/sfk_gui.py`'s default window (`880x620`) cut off the last Home card ("Checar um projeto") — cards were `92px` tall and required manual resizing to see. Also requested a PT/EN language toggle, top-right, visible on every screen, plus overall smaller fonts/window.
 - **F1 — i18n foundation:** new `bin/lib/gui_i18n.py` — `STRINGS` dict (PT/EN, one key per UI string: titles, buttons, checkboxes, console/error messages, `messagebox` dialogs), `Lang` singleton (`t()`/`load()`/`save()`/`on_change()`/`set()`), preference persisted to `Path.home() / ".sfk_launcher_lang"` (outside the repo — user-level GUI preference, not project state).

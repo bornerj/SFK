@@ -14,12 +14,12 @@
 
 ```toml
 updated      = "2026-07-17"
-active_plan  = "PLAN-0005 DONE — implemented and validated, uncommitted"
+active_plan  = "PLAN-0005 DONE — committed and pushed to origin/main"
 phase        = "idle — SFK Launcher GUI: compact layout + PT/EN language switch shipped"
 status       = "idle"                 # in-progress | paused | blocked | idle
 branch       = "main"
 blockers     = []
-next_action  = "None pending. Awaiting user's commit approval for PLAN-0005 (bin/sfk_gui.py, bin/lib/gui_i18n.py, memory/*)."
+next_action  = "None pending."
 ```
 
 **Where am I:** User reported the SFK Launcher GUI (`bin/sfk_gui.py`) window was too
@@ -29,14 +29,14 @@ smaller fonts overall. Delivered as `PLAN-0005`: new `bin/lib/gui_i18n.py` (PT/E
 string dict + `Lang` singleton, preference persisted to
 `~/.sfk_launcher_lang`); `Theme`/`Fonts`/`ActionCard` shrunk and `App.geometry`
 recalculated (760x580, was 880x620) so all 5 Home cards fit without resizing;
-`LangSwitch` widget added top-right on the root window; every static-text widget
-across `Header`, `PathPicker`, `ResultBanner` and all 6 views now retranslates
-in-place on language switch (no rebuild, no loss of typed input). Validated with a
-live `DISPLAY`: card-fit geometry check, language-switch + persistence round-trip,
-and a full real dry-run flow through `sfk_updater.py` — all passed. Nothing blocked.
-Previous session's bug-fix work (`PLAN-0002/0003/0004`) is already committed and
-pushed to `origin/main`; this plan's changes are implemented and validated but not
-yet committed — awaiting the user's explicit commit authorization.
+`LangSwitch` widget added top-right on the root window (redrawn as a bordered chip
+after the user tested the real build and found the first plain-text version easy to
+miss); every static-text widget across `Header`, `PathPicker`, `ResultBanner` and all
+6 views now retranslates in-place on language switch (no rebuild, no loss of typed
+input). Validated with a live `DISPLAY`: card-fit geometry check, language-switch +
+persistence round-trip, widget-mapped/viewable introspection, and a full real dry-run
+flow through `sfk_updater.py` — all passed. Committed (`f0085d6`) and pushed to
+`origin/main` (`57c1f35..f0085d6`). Nothing blocked, nothing pending.
 
 ---
 
